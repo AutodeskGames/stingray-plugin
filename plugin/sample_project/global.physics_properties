@@ -1,0 +1,29 @@
+materials = {
+	default = {density = 1000, dynamic_friction = 0.1, static_friction = 0.1, restitution = 0.1, restitution_combine_mode = "max"}
+}
+
+collision_types = [
+	"default"
+	"character"
+]
+
+collision_filters = {
+	default = {is = ["default"] collides_with_all_except = ["character"]}
+	character = {is = ["character"]}
+	character_trigger = {collides_with = ["character"]}
+	non_collider = {is = [] collides_with = []}
+}
+
+shapes = {
+	default = {}
+	trigger = {trigger = true}
+	sweeper = {sweep = true}
+	character = {collision_filter = "character"}
+	character_trigger = {trigger = true collision_filter = "character_trigger"}
+}
+
+actors = {
+	static = {dynamic = false}
+	dynamic = {dynamic = true linear_damping = 0.1 angular_damping = 0.1}
+	keyframed = {dynamic = true  kinematic = true linear_damping = 0.1 angular_damping = 0.1}
+}
