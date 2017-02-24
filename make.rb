@@ -828,7 +828,7 @@ end
 report_block("plugin", "Configuring", true) do
 
 	# Install build system
-	copy_dir(find_package_root("stingray-sdk"), File.join($script_dir))
+	copy_dir(find_package_root("stingray-plugin-sdk"), File.join($script_dir))
 
 	# Test cmake binaries exist
 	$cmake_bin = File.join(find_package_root("cmake"), $system_windows ? "win/cmake.exe" : $system_mac ? "mac/cmake" : "linux/cmake")
