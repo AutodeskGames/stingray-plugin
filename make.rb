@@ -932,7 +932,7 @@ report_block("plugin", "Configuring", true) do
 end
 
 # Build engine components
-report_block($options[:engine], "", "", true) do
+report_block(File.exist?(File.join($script_dir, "engine")) && $options[:engine], "", "", true) do
 
 	if $options[:distrib]
 		build_configs = ["dev", "release"]
@@ -945,7 +945,7 @@ report_block($options[:engine], "", "", true) do
 end
 
 # Build editor components
-report_block($options[:editor], "", "", true) do
+report_block(File.exist?(File.join($script_dir, "editor")) && $options[:editor], "", "", true) do
 	build_configs = $options[:distrib] ? ["release"] : ["dev"]
 	cmake_report("editor plugin", build_configs)
 	cmake_build(File.join($script_dir, "editor"), File.join($build_dir, "editor/#{$options[:platform]}"), build_configs)
