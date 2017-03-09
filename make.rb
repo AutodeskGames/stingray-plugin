@@ -76,7 +76,7 @@ def find_specific_package_root(package_name, platform = nil, devenv = nil)
 		end
 		arguments = "#{arguments} --devenvs #{modified_devenv}"
 	end
-	result = `ruby ./tools/spm.rb locate #{arguments}`.lines.select{|line| line.include?(" = ")}.first
+	result = `ruby ./tools/spm.rb locate --lib-dir "#{$lib_dir}" #{arguments}`.lines.select{|line| line.include?(" = ")}.first
 	return "" if result == nil or result.empty?
 	return result.split("=")[1].strip
 end
@@ -84,11 +84,7 @@ end
 # Initialize global variables
 $script_dir = File.expand_path(File.dirname(__FILE__))
 $build_dir = File.join($script_dir, "build")
-$lib_dir = ENV["SR_LIB_DIR"]
-if $lib_dir == nil or $lib_dir.empty?
-	puts "\nERROR: SR_LIB_DIR environment variable not set! Please set SR_LIB_DIR environment variable to library path.".bold.red
-	exit 1
-end
+$lib_dir = ENV["SR_LIB_DIR"] || $build_dir
 $lib_dir = $lib_dir.gsub("\\", "/")
 
 # Define valid options
@@ -375,7 +371,7 @@ def generate_package_root_cache()
 		arguments = "#{arguments} --devenvs #{modified_devenv}"
 	end
 
-	lines = `ruby ./tools/spm.rb locate #{arguments}`.lines
+	lines = `ruby ./tools/spm.rb locate --lib-dir "#{$lib_dir}" #{arguments}`.lines
 	for line in lines
 		if line.include?(" = ")
 			split_line = line.split("=")
@@ -547,6 +543,7 @@ def cmake_cache_init(build_dir, config=nil)
 
 	# Setup engine properties
 	content += "\n# Engine Properties\n"
+	content += get_cmake_set_command("ENGINE_LIB_DIR", $lib_dir)
 	content += get_cmake_set_command("ENGINE_USE_DEBUG_INFO", $options[:debug_info])
 
 	# Setup engine plug-ins properties
@@ -797,7 +794,7 @@ end
 
 # Update libraries
 report_block($options[:update], "packages", "Downloading") do
-	command = ["ruby", "./tools/spm.rb", "install-group", "common"]
+	command = ["ruby", "./tools/spm.rb", "install-group", "--lib-dir", $lib_dir, "common"]
 
 	command << "engine" if $options[:engine]
 	command << "editor" if $options[:editor]
