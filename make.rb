@@ -794,7 +794,7 @@ end
 
 # Update libraries
 report_block($options[:update], "packages", "Downloading") do
-	command = ["ruby", "./tools/spm.rb", "install-group", "--lib-dir", $lib_dir, "common"]
+	command = ["ruby", "./tools/spm.rb", "install-group", "--lib-dir", "\"#{$lib_dir}\"", "common"]
 
 	command << "engine" if $options[:engine]
 	command << "editor" if $options[:editor]
