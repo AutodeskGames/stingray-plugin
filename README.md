@@ -6,13 +6,13 @@ This is the main source code repository to build new Stingray plugins.
 Stingray plugins can include the following components and this startup repo contains minimal examples for all of them.
 
 - [x] A plugin descriptor (.plugin)
-- [ ] Various engine and editor components, such as:
-	- [ ] Engine runtime resources (i.e. `units`, `entity`, etc.)
+- [x] Various engine and editor components, such as:
+	- [x] Engine runtime resources (i.e. `units`, `entity`, etc.)
 	- [x] Engine native plugin extension (C/C++ dll)
 		- [x] The editor loads and unloads these extensions at runtime using `runtime_libraries` extensions.
 	- [x] Editor native plugin extension(s) (C/C++ dll)
-	- [ ] Editor scripts/modules
-	- [ ] Plugin extensions
+	- [x] Editor scripts/modules
+	- [x] Plugin extensions
 - [x] Contain a sample project.
 - [x] Build system included.
     - [x] `make.rb` is used to interface the Stingray plugin build system.
@@ -39,7 +39,7 @@ You will need to clone a local copy of this repository using the Git command lin
 Note that this repository only contains source code for platforms with public development libraries: e.g. Windows, iOS, and Android. If that is all you need access to then you can sinmply do:
 
 ```
-git clone https://git.autodesk.com/gameware/stingray-plugin.git <name of your plugin>
+git clone https://github.com/AutodeskGames/stingray-plugin.git <name of your plugin>
 ```
 
 And you should have everything you need.
