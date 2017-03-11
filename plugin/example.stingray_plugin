@@ -51,8 +51,8 @@ extensions = {
             paths = {
                 win32 = {
                     dev = "binaries/engine/win64/dev/engine_plugin_w64_dev.dll"
-                    debug = "binaries/engine/win64/dev/engine_plugin_w64_debug.dll"
-                    release = "binaries/engine/win64/dev/engine_plugin_w64_release.dll"
+                    debug = "binaries/engine/win64/debug/engine_plugin_w64_debug.dll"
+                    release = "binaries/engine/win64/release/engine_plugin_w64_release.dll"
                 }
             }
         }
