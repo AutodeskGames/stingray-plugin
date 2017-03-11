@@ -266,7 +266,6 @@ editor_metadata = {
 	}
 	Settings = {
 		FrozenLayers = [
-			"Background"
 		]
 		HiddenLayers = [
 		]
@@ -295,7 +294,7 @@ editor_metadata = {
 			}
 			Materials = {
 			}
-			Name = "Basic_Floor"
+			Name = "floor"
 			OverridePoses = {
 			}
 			Pivot = {
@@ -304,9 +303,9 @@ editor_metadata = {
 				Z = 0
 			}
 			Pos = {
-				X = 0.00958108901977539
-				Y = 8.25471305847168
-				Z = -4.37966632843018
+				X = 0
+				Y = 0
+				Z = 0
 			}
 			Rot = {
 				W = -1
@@ -335,7 +334,7 @@ editor_metadata = {
 			Material = "wall"
 			Materials = {
 			}
-			Name = "Wall"
+			Name = "wall"
 			OverridePoses = {
 			}
 			Pivot = {
@@ -345,8 +344,8 @@ editor_metadata = {
 			}
 			Pos = {
 				X = 0
-				Y = 8.20131492614746
-				Z = -4.38266658782959
+				Y = 0
+				Z = 0
 			}
 			Rot = {
 				W = -1
@@ -372,7 +371,7 @@ editor_metadata = {
 			}
 			Materials = {
 			}
-			Name = "Skydome"
+			Name = "skydome"
 			OverridePoses = {
 			}
 			Pivot = {
@@ -449,14 +448,14 @@ editor_metadata = {
 			}
 			Pos = {
 				X = 0
-				Y = 8.20131492614746
+				Y = 26.4811000823975
 				Z = 13.6173334121704
 			}
 			Rot = {
-				W = -0.763974905014038
-				X = 0.639397799968719
-				Y = -0.0662209838628769
-				Z = -0.0559249892830849
+				W = -0.187578678131104
+				X = 0.0456776134669781
+				Y = -0.64119291305542
+				Z = 0.742697477340698
 			}
 			Scl = {
 				X = 1
@@ -578,8 +577,8 @@ units = [
 		material = ""
 		materials = {
 		}
-		name = "Basic_Floor"
-		pos = [0.00958108901977539 8.25471305847168 -4.37966632843018]
+		name = "floor"
+		pos = [0 0 0]
 		rot = [0 0 0 -1]
 		scl = [1 1 1]
 		type = "floor"
@@ -595,8 +594,8 @@ units = [
 		material = "wall"
 		materials = {
 		}
-		name = "Wall"
-		pos = [0 8.20131492614746 -4.38266658782959]
+		name = "wall"
+		pos = [0 0 0]
 		rot = [0 0 0 -1]
 		scl = [1 1 1]
 		type = "wall"
@@ -612,7 +611,7 @@ units = [
 		material = ""
 		materials = {
 		}
-		name = "Skydome"
+		name = "skydome"
 		pos = [0 0 0]
 		rot = [0 0 0 1]
 		scl = [1 1 1]
@@ -646,8 +645,8 @@ units = [
 		materials = {
 		}
 		name = "light_source"
-		pos = [0 8.20131492614746 13.6173334121704]
-		rot = [0.639397799968719 -0.0662209838628769 -0.0559249892830849 -0.763974905014038]
+		pos = [0 26.4811000823975 13.6173334121704]
+		rot = [0.0456776134669781 -0.64119291305542 0.742697477340698 -0.187578678131104]
 		scl = [1 1 1]
 		type = "core/units/light_source"
 	}
