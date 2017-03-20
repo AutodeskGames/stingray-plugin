@@ -15,7 +15,7 @@ author = {
 keywords = ["stingray", "plugin", "example"]
 
 // Define plugin thumbnail
-//thumbnail = "sample_project/thumbnail.png"
+thumbnail = "sample_project/sample.svg"
 
 // Extensions
 //
@@ -23,26 +23,29 @@ extensions = {
 
     // Define plugin views.
     views = [
-        // { type = "panel" name = "<view-name>" path = "<view-relative-path>" title = "<title>" }
+        { type = "panel" name = "example" path = "example-view" title = "Example View" }
     ]
 
     // Define menu items to trigger actions, open views, etc..
     menus = [
-        // { path = "Window/My View" view = "<view-name>" order = 359 }
+        { path = "Example" order = 12000 }
+        { path = "Example/View" view = "example" order = 0 }
     ]
 
     // Define asset types that extend the asset browser.
     asset_types = [
-		// { type = "my_type" category = "Custom" icon = "<icon_file.png>" }
+        { type = "example_type" category = "Example" icon = "img/example_type_icon.svg" }
     ]
 
     // Define a project template extension that will show up in the project manager.
     templates = [
-        // { type = "project-template" path = "sample_project/sample.stingray_project" }
+        { type = "project-template" path = "sample_project/sample.stingray_project" }
     ]
 
-    // Map plugin resources
-	// resources = [ { path = "<relative resource directory path>" } ]
+    // Map plugin resources available for all projects.
+    resources = [
+        { path = "example_resources" }
+    ]
 
     // Load the engine extension in the editor engine instance.
     runtime_libraries = [

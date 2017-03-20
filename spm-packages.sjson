@@ -22,9 +22,9 @@ packages = {
 
 	stingray-plugin-sdk = {
 		groups = ["plugin", "sdk", "common"]
-		lib = "stingray-plugin-sdk-1.8"
-		url = "https://autodesk.box.com/shared/static/06pazg7jlrc06du05vdxoanwz8bvraoh.zip"
-		version = "12ce5a85714a939a3e5d525c1fff5e03a114131f"
+		lib = "stingray-plugin-sdk-1.9"
+		url = "https://autodesk.box.com/shared/static/r7u0vopj5gszn7eihu14trgoqqspq2jq.zip"
+		version = "636831a4eaa31ef1dadffc62678d4001"
 	}
 
 	cmake = {
