@@ -21,6 +21,21 @@ thumbnail = "sample_project/sample.svg"
 //
 extensions = {
 
+    // Define some actions that can be triggered. i.e. on menu triggers or system events.
+    actions = [
+        { name= "example-on-editor-started" type = "js" module = "example-actions" function_name = "onEditorStarted" }
+        { name= "example-on-level-changed" type = "js" module = "example-actions" function_name = "onLevelChanged" }
+    ]
+
+    // Define a set of event handlers that gets triggered on system events or user events.
+    events = [
+        // Raised when the editor starts. Global events do not need the `for` keyword
+        { on = "EditorStarted" do = ["example-on-editor-started"] }
+
+        // Raised when the current level changes. Use the `for` keywork when connection to a specific system or service.
+        { for = "level-editing-service" on = "CurrentLevelChanged" do = ["example-on-level-changed"] }
+    ]
+
     // Define plugin views.
     views = [
         { type = "panel" name = "example" path = "example-view" title = "Example View" }
