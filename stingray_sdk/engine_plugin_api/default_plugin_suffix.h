@@ -1,0 +1,19 @@
+#pragma once
+
+#if defined(WINDOWSPC)
+	#ifdef PLATFORM_64BIT
+		#define ENGINE_DEFAULT_PLUGIN_SUFFIX_BIT "w64"
+	#else
+		#define ENGINE_DEFAULT_PLUGIN_SUFFIX_BIT "w32"
+	#endif
+
+	#if defined(_DEBUG)
+		#define ENGINE_DEFAULT_PLUGIN_SUFFIX_CONFIG "debug"
+	#elif defined(DEVELOPMENT)
+		#define ENGINE_DEFAULT_PLUGIN_SUFFIX_CONFIG "dev"
+	#else
+		#define ENGINE_DEFAULT_PLUGIN_SUFFIX_CONFIG "release"
+	#endif
+
+	#define ENGINE_DEFAULT_PLUGIN_SUFFIX "_plugin" ENGINE_DEFAULT_PLUGIN_SUFFIX_BIT "_" ENGINE_DEFAULT_PLUGIN_SUFFIX_CONFIG ".dll"
+#endif

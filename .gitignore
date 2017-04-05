@@ -1,24 +1,7 @@
-# Build System downloads and generated folders
-stingray_sdk/
-build/
-tools/hot-reload-post-link.bat
-plugin/sample_project/.stingray-asset-server-directory
-
-# Plugin SDK CMake (synced by spm)
-cmake/CMakeCompiler.cmake
-cmake/CMakeMacros.cmake
-cmake/CMakeManifest.cmake
-cmake/CMakePlatforms.cmake
-cmake/CMakePlugin.cmake
-cmake/CMakeSettings.cmake
-cmake/Toolchain-Android.cmake
-cmake/Toolchain-PS4.cmake
-cmake/Toolchain-XBoxOne.cmake
-cmake/Toolchain-iOS.cmake
-
-
 # Build directories and intermediate files
 
+build/
+plugin/sample_project/.stingray-asset-server-directory
 Debug/
 Dev/
 Release/
