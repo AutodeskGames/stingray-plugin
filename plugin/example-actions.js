@@ -32,7 +32,7 @@ define(() => {
         let pluginId = stingray.loadNativeExtension(nativePluginDllPath);
         
         // Call our native functions.
-        let resultArgs = example.test_log_arguments({pluginId, nativePluginDllPath}, null, true, "this is a string", ["an array elements", "another array elements"]);
+        let resultArgs = example.test_log_arguments({pluginId, nativePluginDllPath}, null, true, "this is a string", ["an array element", "another array element"]);
         console.log(JSON.stringify(resultArgs));
         let specialObject = example.test_custom_allocator();
         specialObject = undefined;
