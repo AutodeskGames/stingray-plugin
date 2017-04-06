@@ -6,6 +6,8 @@ namespace PLUGIN_NAMESPACE {
 ConfigDataApi* config_data_api = nullptr;
 EditorLoggingApi* logging_api = nullptr;
 EditorEvalApi* eval_api = nullptr;
+EditorAllocatorApi* allocator_api = nullptr;
+EditorAllocator plugin_allocator = nullptr;
 
 /**
  * Return plugin extension name.
@@ -20,7 +22,7 @@ const char* get_version() { return "1.0.0"; }
 /**
  * Log received arguments arguments and return a copy of the first one.
  */
-ConfigValue log_arguments(ConfigValueArgs args, int num)
+ConfigValue test_log_arguments(ConfigValueArgs args, int num)
 {
 	if (num < 1)
 		return nullptr;
@@ -71,6 +73,46 @@ ConfigValue log_arguments(ConfigValueArgs args, int num)
 	return copy_cv;
 }
 
+/*
+ * Create a new config value using a custom allocator.
+ */
+ConfigValue test_custom_allocator(ConfigValueArgs args, int num)
+{
+	auto cvca = config_data_api->make(plugin_allocator);
+	config_data_api->set_string(cvca, "This was allocator with a custom plugin allocator.");
+	return cvca;
+}
+
+/*
+ * Allocator function used by our test plugin custom allocator.
+ * We use as an example a static buffer to write up to 1024 bytes of data.
+ */
+void* test_custom_allocate(size_t size, size_t align, void *param)
+{
+	static unsigned char small_buffer[1024] = { 0 };
+	static size_t small_buffer_cursor = 0;
+
+	if (small_buffer_cursor+size > sizeof small_buffer) {
+		logging_api->error("We do not have enough space!");
+		return nullptr;
+	}
+	
+	logging_api->info("We have enough space!");
+	auto pi = small_buffer_cursor;
+	small_buffer_cursor += size;
+	return small_buffer + pi;
+}
+
+/*
+ * Deallocation function used by our test plugin allocator.
+ * We do not release any memory since the allocator writes to a static buffer.
+ */
+size_t test_custom_deallocate(void* ptr, void *param)
+{
+	logging_api->debug("We do not deallocate in the fixed small_buffer.");
+	return 0;
+}
+
 /**
  * Setup plugin resources and define client JavaScript APIs.
  */
@@ -80,8 +122,12 @@ void plugin_loaded(GetEditorApiFunction get_editor_api)
 	config_data_api = static_cast<ConfigDataApi*>(get_editor_api(CONFIGDATA_API_ID));
 	logging_api = static_cast<EditorLoggingApi*>(get_editor_api(EDITOR_LOGGING_API_ID));
 	eval_api = static_cast<EditorEvalApi*>(get_editor_api(EDITOR_EVAL_API_ID));
+	allocator_api = static_cast<EditorAllocatorApi*>(get_editor_api(EDITOR_ALLOCATOR_ID));
 
-	api->register_native_function("plugin", "log_arguments", &log_arguments);
+	plugin_allocator = allocator_api->create("example_allocator", test_custom_allocate, test_custom_deallocate, nullptr);
+
+	api->register_native_function("example", "test_log_arguments", &test_log_arguments);
+	api->register_native_function("example", "test_custom_allocator", &test_custom_allocator);
 }
 
 /**
@@ -90,7 +136,10 @@ void plugin_loaded(GetEditorApiFunction get_editor_api)
 void plugin_unloaded(GetEditorApiFunction get_editor_api)
 {
 	auto api = static_cast<EditorApi*>(get_editor_api(EDITOR_API_ID));
-	api->unregister_native_function("plugin", "log_arguments");
+	api->unregister_native_function("example", "test_log_arguments");
+	api->unregister_native_function("example", "test_custom_allocator");
+
+	allocator_api->destroy(plugin_allocator);
 }
 
 } // end namespace

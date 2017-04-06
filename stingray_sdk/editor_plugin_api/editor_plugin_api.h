@@ -69,6 +69,7 @@ enum ProcessId
 #define CONFIG_DATA_VALUE_TYPE_BITS 3
 #define CONFIG_DATA_VALUE_TAG_BITS 29
 
+/* Primitive config value types */
 enum {
 	CD_TYPE_NULL = 0,
 	CD_TYPE_BOOL = 1,
@@ -92,7 +93,12 @@ struct ConfigValueStruct {
 		bool _bool;
 	};
 
-	void* reserved;
+	union {
+		void* _allocator;
+		void* _object;
+		void* _array;
+		void* _data;
+	};
 };
 typedef struct ConfigValueStruct* ConfigValue;
 typedef const ConfigValue ConstConfigValue;
@@ -102,19 +108,8 @@ typedef ConfigValue* ConfigValueResult;
 struct ConfigHandleObject;
 typedef ConfigHandleObject* ConfigHandle;
 
-typedef union
-{
-	int boolean;
-	int int32;
-	double number;
-	const char* str;
-	ConfigHandle handle;
-	ConfigValue obj;
-	ConfigValue arr;
-} ConfigPrimitiveValue;
-
+/* Callback used to deallocate a config value user handle */
 typedef void(*cd_handle_dealloc)(ConfigHandle handle);
-
 
 /* This function can be used by the plugin to query for editor API. */
 typedef void *(*GetEditorApiFunction)(unsigned api);
@@ -209,40 +204,95 @@ struct EditorAllocatorApi
 
 struct ConfigDataApi
 {
+	/* Create a new config value. It's type will be defined when you assign a value */
 	ConfigValue (*make)(EditorAllocator allocator);
-	ConfigValue(*from_type)(int type, ConfigPrimitiveValue data, EditorAllocator allocator);
+
+	/* Releases the memory used by the config value. */
 	void (*free)(ConfigValue value);
+
+	/* Creates a config value that is null. */
 	ConfigValue(*nil)();
 
+	/* Returns the type of a config value, see CD_TYPE_* */
 	int (*type)(ConfigValue value);
+
+	/* Returns the boolean value of the config value. */
 	int (*to_bool)(ConfigValue value);
+
+	/* Returns the numerical value of the config value. */
 	double (*to_number)(ConfigValue value);
+
+	/* Returns the string value of the config value. */
 	const char *(*to_string)(ConfigValue value);
+
+	/* Returns the user handle of the config value. */
 	ConfigHandle (*to_handle)(ConfigValue value);
+
+	/* Returns the deallocator of the user handle config value. */
 	cd_handle_dealloc (*to_handle_deallocator)(ConfigValue value);
 
+	/* Defines the config value as a boolean value. */
 	void(*set_bool)(ConfigValue value, int b);
+
+	/* Defines the config value as a numerical value. */
 	void(*set_number)(ConfigValue value, double n);
+
+	/* Defines the config value as a string value. */
 	void(*set_string)(ConfigValue value, const char *s);
+
+	/* Defines the config value as a user handle. */
 	void(*set_handle)(ConfigValue value, ConfigHandle handle, cd_handle_dealloc deallocator);
+
+	/* Defines the config value as an array. */
 	ConfigValueArgs(*set_array)(ConfigValue value, int size);
+
+	/* Defines the config value as an object. */
 	void(*set_object)(ConfigValue value);
 
+	/* Returns the number of element of the config value. */
 	int (*array_size)(ConfigValue arr);
+
+	/* Returns an element config value of a config value array. */
 	ConfigValue (*array_item)(ConfigValue arr, int i);
+
+	/* Adds an elements to a config value array. */
 	ConfigValue (*push)(ConfigValue array, ConfigValue item);
 
+	/* Returns the number of properties of a config value object. */
 	int (*object_size)(ConfigValue object);
+
+	/* Returns the property name of an object field. */
 	const char *(*object_key)(ConfigValue object, int i);
+
+	/* Returns the property value of an object field. */
 	ConfigValue(*object_value)(ConfigValue object, int i);
+
+	/* Returns the property value of an object field by matching its property 
+	 * key if it exists. */
 	ConfigValue(*object_lookup)(ConfigValue object, const char *key);
+
+	/* Adds a null property. */
 	ConfigValue(*add_nil)(ConfigValue object, const char *key);
+
+	/* Adds a boolean property. */
 	ConfigValue(*add_bool)(ConfigValue object, const char *key, int b);
+
+	/* Adds a numerical property. */
 	ConfigValue(*add_number)(ConfigValue object, const char *key, double n);
+
+	/* Adds a string property. */
 	ConfigValue(*add_string)(ConfigValue object, const char *key, const char* s);
+
+	/* Adds an object property. */
 	ConfigValue(*add_object)(ConfigValue object, const char *key, ConfigValue o);
+
+	/* Adds an array property. */
 	ConfigValue(*add_array)(ConfigValue object, const char *key, ConfigValue a);
+
+	/* Alias to object_lookup, to find a property by name. */
 	ConfigValue(*get)(ConfigValue object, const char *key);
+
+	/* Sets the config value of a property by name. */
 	ConfigValue(*set)(ConfigValue object, const char *key, ConfigValue value);
 };
 
