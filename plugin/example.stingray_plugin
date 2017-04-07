@@ -25,6 +25,7 @@ extensions = {
     actions = [
         { name= "example-on-editor-started" type = "js" module = "example-actions" function_name = "onEditorStarted" }
         { name= "example-on-level-changed" type = "js" module = "example-actions" function_name = "onLevelChanged" }
+        { name= "example-test-editor-native-extension" type = "js" module = "example-actions" function_name = "testEditorNativeExtension" }
     ]
 
     // Define a set of event handlers that gets triggered on system events or user events.
@@ -45,6 +46,7 @@ extensions = {
     menus = [
         { path = "Example" order = 12000 }
         { path = "Example/View" view = "example" order = 0 }
+        { path = "Example/Editor Native Extension" action = "example-test-editor-native-extension" }
     ]
 
     // Define asset types that extend the asset browser.
