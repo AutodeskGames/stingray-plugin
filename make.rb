@@ -943,6 +943,10 @@ report_block(File.exist?(File.join($script_dir, "editor")) && $options[:editor],
 	build_configs = $options[:distrib] ? ["release"] : ["dev"]
 	cmake_report("editor plugin", build_configs)
 	cmake_build(File.join($script_dir, "editor"), File.join($build_dir, "editor/#{$options[:platform]}"), build_configs)
+
+	# Build an editor DLL dependency.
+	cmake_report("editor dll dependency", build_configs)
+	cmake_build(File.join($script_dir, "editor_dll"), File.join($build_dir, "editor_dll/#{$options[:platform]}"), build_configs)
 end
 
 #******************************************************************************

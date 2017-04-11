@@ -19,8 +19,10 @@ describe("Plugin Example", function(require){
         expect(example).toBeDefined();
     });
 
-    it("TODO: native function call tests", function () {
-        //expect(example.test_call).toBeDefined();
+    it("native function call tests", function () {
+        expect(example.test_dll_dependency).toBeDefined();
+        let result = example.test_dll_dependency('Hello Plugin', 'This is a message from an external DLL dependency');
+        expect(result).toEqual(1);
     });
 
     it("unload native extension", function () {
