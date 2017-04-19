@@ -12,6 +12,7 @@ SRV/
 assets/
 /*/*_intermediate_*/
 /*/*/*_intermediate_*/
+node_modules/
 
 # File patterns
 
