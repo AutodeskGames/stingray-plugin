@@ -267,7 +267,7 @@ struct ConfigDataApi
 	/* Returns the property value of an object field. */
 	ConfigValue(*object_value)(ConfigValue object, int i);
 
-	/* Returns the property value of an object field by matching its property 
+	/* Returns the property value of an object field by matching its property
 	 * key if it exists. */
 	ConfigValue(*object_lookup)(ConfigValue object, const char *key);
 

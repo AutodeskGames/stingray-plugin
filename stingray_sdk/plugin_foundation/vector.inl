@@ -75,6 +75,7 @@ template <class T> void Vector<T>::pop_back()
 
 template <class T> void Vector<T>::swap(Vector<T> &o)
 {
+	XENSURE(_allocator == o._allocator);
 	std::swap(_size, o._size);
 	std::swap(_capacity, o._capacity);
 	std::swap(_data, o._data);
