@@ -48,10 +48,7 @@ typedef struct ComponentApi
 	void (*destroy_all)(ComponentPtr component, EntityRef entity);
 
 	/* Gets the component instance from the specified component id. */
-	Instance (*lookup_instance)(ComponentPtr component, EntityRef entity, InstanceId id);
-
-	/* Gets the component instance id from the specified component instance. */
-	struct EntityInstanceId (*lookup_instance_id)(ComponentPtr component, Instance i);
+	Instance (*lookup)(ComponentPtr component, EntityRef entity, InstanceId id);
 
 	/* Spawn component. */
 	void (*spawn)(ComponentPtr component, const EntityRef *entities, unsigned num_intances, const unsigned *entity_indicies, const unsigned *instance_ids, const char *data);
@@ -61,12 +58,6 @@ typedef struct ComponentApi
 
 	/* Called when the entity as been fully constructed and spawned. */
 	void (*spawned)(ComponentPtr component, const EntityRef *entities, unsigned num_entities);
-
-	/* Gets the first component instance for the entity. */
-	Instance (*first_instance)(ComponentPtr component, EntityRef entity);
-
-	/* Gets the next component instance. */
-	Instance (*next_instance)(ComponentPtr component, Instance i);
 
 	/* Gets the component property api. */
 	ComponentPropertyApi *(*get_property_api)();

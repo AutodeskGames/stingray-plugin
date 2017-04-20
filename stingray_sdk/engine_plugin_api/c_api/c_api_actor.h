@@ -64,7 +64,6 @@ struct ActorCApi
 	UnitRef (*unit) (ActorPtr actor);
 	unsigned (*node) (ActorPtr actor);
 	void (*set_collision_filter) (ActorPtr actor, unsigned collision_filter_id32);
-	unsigned (*initial_shape_template) (ActorPtr actor, unsigned shape_index);  // returns IdString32.id of the initial shape template name.
 };
 
 #ifdef __cplusplus

@@ -14,7 +14,6 @@ struct ApplicationCApi
 	WorldPtr	(*main_world) ();
 	void		(*release_world) (WorldPtr);
 	void		(*render_world) (WorldPtr, ConstCameraPtr, ConstViewportPtr, ConstShadingEnvironmentPtr, ConstWindowPtr optional);
-	CApiWorldConfig (*get_default_world_settings) ();
 
 	const char* (*build) ();
 	const char* (*platform) ();
@@ -24,7 +23,6 @@ struct ApplicationCApi
 
 	ViewportPtr (*create_viewport) (WorldPtr, unsigned viewport_template_name_id32);
 	void		(*destroy_viewport) (WorldPtr, ViewportPtr);
-	unsigned	(*can_get) (uint64_t type_id64, uint64_t name_id64);
 
 	void		(*quit) (int exit_code);
 

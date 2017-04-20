@@ -11,7 +11,7 @@ namespace stingray_plugin_foundation {
 
 // Implementation of set using the same technique as HashMap.
 // @see HashMap
-template <class K, class HASH = default_hash<K>, class EQUAL = equal_to >
+template <class K, class HASH = default_hash, class EQUAL = equal_to >
 class HashSet
 {
 public:

@@ -8,7 +8,7 @@ extern "C" {
 
 struct DataComponentCApi
 {
-	unsigned (*instance_ids_with_tag)(DataComponentPtr comp, EntityRef e_ref, unsigned tag_id32, InstanceId *buffer, unsigned buffer_size);
+	unsigned (*instances_with_tag)(DataComponentPtr comp, EntityRef e_ref, unsigned tag_id32, InstanceId *buffer, unsigned buffer_size);
 };
 
 #ifdef __cplusplus

@@ -38,7 +38,7 @@ void HashMap<K,D,H,E>::swap(HashMap<K,D,H,E> &o)
 {
 	std::swap(_hash, o._hash);
 	std::swap(_equal, o._equal);
-	_data.swap(o._data);
+	std::swap(_data, o._data);
 	std::swap(_used, o._used);
 	std::swap(_buckets, o._buckets);
 	std::swap(_spill_unused, o._spill_unused);

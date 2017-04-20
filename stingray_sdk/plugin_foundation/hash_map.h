@@ -37,7 +37,7 @@ namespace stingray_plugin_foundation {
 // \tparam D the data type
 // \tparam HASH  hash functor, defaults to default_hash>
 // \tparam EQUAL equality functor, defaults to std::equal_to<K>
-template <class K, class D, class HASH = default_hash<K>, class EQUAL = equal_to >
+template <class K, class D, class HASH = default_hash, class EQUAL = equal_to >
 class HashMap
 {
 public:

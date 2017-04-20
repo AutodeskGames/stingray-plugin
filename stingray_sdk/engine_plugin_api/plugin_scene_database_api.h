@@ -124,10 +124,6 @@ struct SDB_Geometry {
 	uint32_t n_blend_shape_targets;
 	SDB_GeometryBlendShapeTarget *blend_shape_targets;
 	uint8_t shadow_caster;
-	uint32_t n_vertex_position_remapping;
-	uint32_t *vertex_position_remapping;
-	uint32_t n_vertex_normal_remapping;
-	uint32_t *vertex_normal_remapping;
 };
 
 enum SDB_LightDefinitionType {
@@ -341,7 +337,7 @@ struct SceneDatabaseApi
 
 	uint32_t (*channel_size)(SDB_ChannelType channel_type);
 
-	void (*apply_modifiers)(SD_Scene *scene, const char *platform_name, const char *resource_name, bool modify_tangents);
+	void (*apply_modifiers)(SD_Scene *scene, const char *platform_name, const char *resource_name);
 };
 
 #endif /* CAN_COMPILE */

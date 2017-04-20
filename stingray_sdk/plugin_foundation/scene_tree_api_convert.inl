@@ -234,9 +234,9 @@ __forceinline void from_plugin(Geometry::BlendShapeTarget &dest, const SDB_Geome
 	vector_from_plugin(source.n_streams, dest.streams, source.streams);
 }
 
-__forceinline void to_plugin(SDB_Geometry &dest, const Geometry &source, Allocator &a)
+__forceinline void to_plugin(SDB_Geometry &dest, const Geometry &source, const char *name, Allocator &a)
 {
-	to_plugin(dest.name, source.name);
+	dest.name = name;
 	vector_to_plugin(dest.n_streams, dest.streams, source.streams, a);
 	to_plugin(dest.indices, source.indices, a);
 	to_plugin(dest.skin, source.skin);
@@ -244,12 +244,9 @@ __forceinline void to_plugin(SDB_Geometry &dest, const Geometry &source, Allocat
 	array_to_plugin(dest.n_primitive_smoothing, dest.primitive_smoothing, source.primitive_smoothing, a);
 	vector_to_plugin(dest.n_blend_shape_targets, dest.blend_shape_targets, source.blend_shape_targets, a);
 	dest.shadow_caster = source.shadow_caster;
-	array_to_plugin(dest.n_vertex_position_remapping, dest.vertex_position_remapping, source.vertex_position_remapping, a);
-	array_to_plugin(dest.n_vertex_normal_remapping, dest.vertex_normal_remapping, source.vertex_normal_remapping, a);
 }
 __forceinline void from_plugin(Geometry &dest, const SDB_Geometry &source)
 {
-	from_plugin(dest.name, source.name);
 	vector_from_plugin(source.n_streams, dest.streams, source.streams);
 	from_plugin(dest.indices, source.indices);
 	from_plugin(dest.skin, source.skin);
@@ -257,8 +254,6 @@ __forceinline void from_plugin(Geometry &dest, const SDB_Geometry &source)
 	array_from_plugin(source.n_primitive_smoothing, dest.primitive_smoothing, source.primitive_smoothing);
 	vector_from_plugin(source.n_blend_shape_targets, dest.blend_shape_targets, source.blend_shape_targets);
 	dest.shadow_caster = source.shadow_caster == 1;
-	array_from_plugin(source.n_vertex_position_remapping, dest.vertex_position_remapping, source.vertex_position_remapping);
-	array_from_plugin(source.n_vertex_normal_remapping, dest.vertex_normal_remapping, source.vertex_normal_remapping);
 }
 
 __forceinline void to_plugin(SDB_Light &dest, const Light &source, const char *name, Allocator &a)
@@ -330,9 +325,9 @@ __forceinline void from_plugin(AnimationTake &dest, const SDB_AnimationTake &sou
 	vector_from_plugin(source.n_animations, dest.animations, source.animations);
 }
 
-__forceinline void to_plugin(SDB_SurfaceMaterialProperty &dest, const SurfaceMaterial::Property &source, Allocator &a)
+__forceinline void to_plugin(SDB_SurfaceMaterialProperty &dest, const SurfaceMaterial::Property &source, const char *name, Allocator &a)
 {
-	to_plugin(dest.name, source.name);
+	dest.name = name;
 	dest.n_integers = source.n_integers;
 	dest.integer = source.integer;
 	dest.n_floats  = source.n_floats;
@@ -342,7 +337,6 @@ __forceinline void to_plugin(SDB_SurfaceMaterialProperty &dest, const SurfaceMat
 }
 __forceinline void from_plugin(SurfaceMaterial::Property &dest, const SDB_SurfaceMaterialProperty &source)
 {
-	from_plugin(dest.name, source.name);
 	dest.n_integers = source.n_integers;
 	dest.integer = source.integer;
 	dest.n_floats  = source.n_floats;
@@ -355,13 +349,13 @@ __forceinline void to_plugin(SDB_SurfaceMaterial &dest, const SurfaceMaterial &s
 {
 	dest.name = name;
 	dest.type = (SDB_SurfaceMaterialDefinitionType)source.type;
-	vector_to_plugin(dest.properties.size, dest.properties.data, source.properties, a);
+	hashmap_to_plugin(dest.properties, source.properties, a);
 	dest.nb_influences = source.nb_influences;
 }
 __forceinline void from_plugin(SurfaceMaterial &dest, const SDB_SurfaceMaterial &source)
 {
 	dest.type = (SurfaceMaterial::DefinitionType)source.type;
-	vector_from_plugin(source.properties.size, dest.properties, source.properties.data);
+	hashmap_from_plugin(dest.properties, source.properties);
 	dest.nb_influences = source.nb_influences;
 }
 
@@ -467,7 +461,7 @@ __forceinline void to_plugin(SDB_SceneDatabase &dest, const SceneDatabase &sourc
 	hashmap_to_plugin(dest.nodes, source.nodes, a);
 	to_plugin(dest.roots, source.roots, a);
 	hashmap_to_plugin(dest.geometry_instances, source.geometry_instances, a);
-	vector_to_plugin(dest.geometries.size, dest.geometries.data, source.geometries, a);
+	hashmap_to_plugin(dest.geometries, source.geometries, a);
 	hashmap_to_plugin(dest.lights, source.lights, a);
 	hashmap_to_plugin(dest.cameras, source.cameras, a);
 	hashmap_to_plugin(dest.skins, source.skins, a);
@@ -484,7 +478,7 @@ __forceinline void from_plugin(SceneDatabase &dest, const SDB_SceneDatabase &sou
 	hashmap_from_plugin(dest.nodes, source.nodes);
 	from_plugin(dest.roots, source.roots);
 	hashmap_from_plugin(dest.geometry_instances, source.geometry_instances);
-	vector_from_plugin(source.geometries.size, dest.geometries, source.geometries.data);
+	hashmap_from_plugin(dest.geometries, source.geometries);
 	hashmap_from_plugin(dest.lights, source.lights);
 	hashmap_from_plugin(dest.cameras, source.cameras);
 	hashmap_from_plugin(dest.skins, source.skins);

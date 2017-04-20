@@ -382,12 +382,6 @@ extern "C" {
 		void (*custom_callback)			(uint64_t sending_peer, unsigned message_id32, struct RPCMessageParameter* parameter_array, unsigned num_parameters);
 	};
 
-	struct EntityInstanceId
-	{
-		EntityRef entity;
-		InstanceId instance_id;
-	};
-
 	/* Entity property type. */
 	enum EntityPropertyType
 	{

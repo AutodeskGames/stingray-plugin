@@ -13,11 +13,11 @@ struct GuiCApi
 	void	 (*update_triangle) (GuiPtr, unsigned id, ConstVector3Ptr p0, ConstVector3Ptr p1, ConstVector3Ptr p2, unsigned layer, ConstVector4Ptr optional_color);
 	void	 (*destroy_triangle) (GuiPtr, unsigned id);
 
-	unsigned (*rect) (GuiPtr, ConstVector2Ptr position, unsigned layer, ConstVector2Ptr size, ConstVector4Ptr optional_color, MaterialPtr optional_material);
+	unsigned (*rect) (GuiPtr, ConstVector2Ptr position, unsigned layer, ConstVector2Ptr size, ConstVector4Ptr optional_color);
 	void	 (*update_rect) (GuiPtr, unsigned id, ConstVector2Ptr position, unsigned layer, ConstVector2Ptr size, ConstVector4Ptr optional_color);
 	void	 (*destroy_rect) (GuiPtr, unsigned id);
 
-	unsigned (*rect_3d) (GuiPtr, ConstMatrix4x4Ptr transform, ConstVector3Ptr position, unsigned layer, ConstVector2Ptr size, ConstVector4Ptr optional_color, MaterialPtr optional_material);
+	unsigned (*rect_3d) (GuiPtr, ConstMatrix4x4Ptr transform, ConstVector3Ptr position, unsigned layer, ConstVector2Ptr size, ConstVector4Ptr optional_color);
 	void	 (*update_rect_3d) (GuiPtr, unsigned id, ConstMatrix4x4Ptr transform, ConstVector3Ptr position, unsigned layer, ConstVector2Ptr size, ConstVector4Ptr optional_color);
 	void	 (*destroy_rect_3d) (GuiPtr, unsigned id);
 
@@ -65,8 +65,7 @@ struct GuiCApi
 	void	(*set_visible) (GuiPtr, int visible);
 	int		(*is_visible) (GuiPtr);
 
-	MaterialPtr (*material)(GuiPtr gui_pointer, uint64_t material_id64, const char *optional_debug_material_name);
-	MaterialPtr (*create_material)(GuiPtr gui_pointer, uint64_t material_id64, const char *optional_debug_material_name);
+	MaterialPtr (*material) (GuiPtr, uint64_t material_id64, const char *optional_debug_material_name);
 
 	int		(*has_all_glyphs) (GuiPtr, const char* text, uint64_t font);
 	void	(*move) (GuiPtr, float x, float y);
@@ -80,8 +79,6 @@ struct GuiCApi
 	CApiVector4	(*color_rgb) (float r, float g, float b);
 	/*	Equivalent to vector4(a, r, g, b).		*/
 	CApiVector4	(*color_argb) (float a, float r, float g, float b);
-
-	unsigned(*get_id) (GuiPtr);
 
 	void (*set_video_playback_speed)(VideoPlayerPtr video_player, float speed);
 	void (*set_video_loop)(VideoPlayerPtr video_player, unsigned loop);

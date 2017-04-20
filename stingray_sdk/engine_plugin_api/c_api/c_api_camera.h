@@ -40,7 +40,6 @@ struct CameraCApi
 	void (*set_frustum)(CameraPtr camera_pointer, float left, float right, float bottom, float top, unsigned index);
 	void (*set_frustum_half_angles)(CameraPtr camera_pointer, float left_tan, float right_tan, float bottom_tan, float top_tan, unsigned index);
 	float (*inside_frustum)(ConstCameraPtr camera_pointer, ConstVector3Ptr point, ConstWindowPtr optional_window);
-	CApiMatrix4x4 (*projection)(ConstCameraPtr camera_pointer, float aspect_ratio);
 
 	unsigned (*node)(ConstCameraPtr camera_pointer);
 
