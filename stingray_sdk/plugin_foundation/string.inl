@@ -146,16 +146,6 @@ inline bool string::contains(const char *s, const char *substring)
 	return string::find(s, substring) != string::npos;
 }
 
-inline unsigned string::find_last(const char *s, char c)
-{
-	unsigned n = strlen32(s);
-	for (int i=n - 1; i >= 0; --i) {
-		if (s[i] == c)
-			return i;
-	}
-	return npos;
-}
-
 inline unsigned string::find(const char *s, char c)
 {
 	unsigned n = strlen32(s);

@@ -17,5 +17,4 @@ migrations = {
 name = "Project Sample"
 reverse_forward_axis = true
 source_directory = "./"
-thumbnail = "sample.svg"
-version = "1.9.0.0"
+version = "1.8.0.0"

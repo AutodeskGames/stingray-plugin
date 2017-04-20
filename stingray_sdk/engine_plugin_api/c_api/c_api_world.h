@@ -60,10 +60,9 @@ struct WorldCApi
 	void				(*destroy_line_object) (WorldPtr world_pointer, LineObjectPtr line_object_pointer);
 	void				(*clear_permanent_lines) (WorldPtr world_pointer);
 
-	GuiPtr	(*create_screen_gui) (WorldPtr world_pointer, ConstVector2Ptr optional_position, ConstVector2Ptr optional_scale, int immediate, int dock_right, int dock_top);
+	GuiPtr	(*create_screen_gui) (WorldPtr world_pointer, ConstVector2Ptr optional_position, ConstVector2Ptr optional_scale, int shadow_caster, int immediate, int dock_right, int dock_top);
 	GuiPtr	(*create_world_gui) (WorldPtr world_pointer, ConstMatrix4x4Ptr transform, float width, float height, int shadow_caster, int immediate);
 	void	(*destroy_gui) (WorldPtr world_pointer, GuiPtr gui_pointer);
-	GuiPtr	(*get_gui_by_id) (WorldPtr world_pointer, unsigned gui_id);
 
 	PhysicsWorldPtr	(*physics_world) (WorldPtr world_pointer);
 

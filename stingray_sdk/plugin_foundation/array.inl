@@ -67,11 +67,10 @@ template <class T> void Array<T>::pop_back()
 
 template <class T> void Array<T>::swap(Array<T> &o)
 {
-	XENSURE(_allocator == o._allocator);
-	std::swap(_size, o._size);
-	std::swap(_capacity, o._capacity);
-	std::swap(_data, o._data);
-	std::swap(_allocator, o._allocator);
+	{unsigned temp = _size; _size = o._size; o._size = temp;}
+	{unsigned temp = _capacity; _capacity = o._capacity; o._capacity = temp;}
+	{pointer temp = _data; _data = o._data; o._data = temp;}
+	{Allocator *temp = _allocator; _allocator = o._allocator; o._allocator = temp;}
 }
 
 template <class T> template <class ASSIGNABLE>

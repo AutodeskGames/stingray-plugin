@@ -15,54 +15,34 @@ author = {
 keywords = ["stingray", "plugin", "example"]
 
 // Define plugin thumbnail
-thumbnail = "sample_project/sample.svg"
+//thumbnail = "sample_project/thumbnail.png"
 
 // Extensions
 //
 extensions = {
 
-    // Define some actions that can be triggered. i.e. on menu triggers or system events.
-    actions = [
-        { name= "example-on-editor-started" type = "js" module = "example-actions" function_name = "onEditorStarted" }
-        { name= "example-on-level-changed" type = "js" module = "example-actions" function_name = "onLevelChanged" }
-        { name= "example-test-editor-native-extension" type = "js" module = "example-actions" function_name = "testEditorNativeExtension" }
-    ]
-
-    // Define a set of event handlers that gets triggered on system events or user events.
-    events = [
-        // Raised when the editor starts. Global events do not need the `for` keyword
-        { on = "EditorStarted" do = ["example-on-editor-started"] }
-
-        // Raised when the current level changes. Use the `for` keywork when connection to a specific system or service.
-        { for = "level-editing-service" on = "CurrentLevelChanged" do = ["example-on-level-changed"] }
-    ]
-
     // Define plugin views.
     views = [
-        { type = "panel" name = "example" path = "example-view" title = "Example View" }
+        // { type = "panel" name = "<view-name>" path = "<view-relative-path>" title = "<title>" }
     ]
 
     // Define menu items to trigger actions, open views, etc..
     menus = [
-        { path = "Example" order = 12000 }
-        { path = "Example/View" view = "example" order = 0 }
-        { path = "Example/Editor Native Extension" action = "example-test-editor-native-extension" }
+        // { path = "Window/My View" view = "<view-name>" order = 359 }
     ]
 
     // Define asset types that extend the asset browser.
     asset_types = [
-        { type = "example_type" category = "Example" icon = "img/example_type_icon.svg" }
+		// { type = "my_type" category = "Custom" icon = "<icon_file.png>" }
     ]
 
     // Define a project template extension that will show up in the project manager.
     templates = [
-        { type = "project-template" path = "sample_project/sample.stingray_project" }
+        // { type = "project-template" path = "sample_project/sample.stingray_project" }
     ]
 
-    // Map plugin resources available for all projects.
-    resources = [
-        { path = "example_resources" }
-    ]
+    // Map plugin resources
+	// resources = [ { path = "<relative resource directory path>" } ]
 
     // Load the engine extension in the editor engine instance.
     runtime_libraries = [

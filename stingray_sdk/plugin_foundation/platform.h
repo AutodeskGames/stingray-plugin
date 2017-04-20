@@ -24,7 +24,7 @@
 #if defined(WINDOWSPC) || defined(UWP) || defined(XBOXONE)
 	#define __ALIGN(x) __declspec(align(x))
 	#define __THREAD __declspec(thread)
-#elif defined(IOS) || defined(ANDROID) || defined(WEB) || defined(LINUXPC) || defined(MACOSX)
+#elif defined(IOS) || defined(ANDROID) || defined(WEB) || defined(LINUXPC)
 	#define __forceinline __attribute__((__always_inline__)) inline
 	#define __ALIGN(x) __attribute__((aligned(x)))
 	#define __THREAD

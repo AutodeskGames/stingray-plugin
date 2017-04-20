@@ -95,70 +95,17 @@ inline unsigned int four_byte_hash(const void * key)
 	return k;
 }
 
-inline uint64_t eight_byte_hash_64(const void * key)
-{
-	const uint64_t m = 0xc6a4a7935bd1e995ULL;
-	const int r = 47;
-	uint64_t k = *(const uint64_t *)key;
-
-	k *= m;
-	k ^= k >> r;
-	k *= m;
-	return k;
-}
-
 // Default hashing for builtin-types.
-template <class T> struct default_hash
+struct default_hash
 {
-	static constexpr bool value = false;
-	unsigned operator()(T t) const { static_assert(value, "default_hash not implemented for this type!"); return 0; }
+	unsigned operator()(unsigned t) const {return four_byte_hash(&t);}
+	unsigned operator()(int t) const {return four_byte_hash(&t);}
+	unsigned operator()(void *t) const {return four_byte_hash(&t);}
+	unsigned operator()(const void *t) const {return four_byte_hash(&t);}
+	unsigned operator()(uint64_t t) const {return hash32(&t, sizeof(t));}
+	unsigned operator()(int64_t t) const {return hash32(&t, sizeof(t));}
 };
 
-template <class T> struct default_hash<T *>
-{
-	unsigned operator()(T *t) const
-	{
-		#ifdef PLATFORM_64BIT
-			return (unsigned)eight_byte_hash_64(&t);
-		#else
-			return four_byte_hash(&t);
-		#endif
-	}
-};
-
-template <class T> struct default_hash<const T *>
-{
-	unsigned operator()(const T *t) const
-	{
-		#ifdef PLATFORM_64BIT
-			return (unsigned)eight_byte_hash_64(&t);
-		#else
-			return four_byte_hash(&t);
-		#endif
-	}
-};
-
-template <> struct default_hash<unsigned>
-{
-	unsigned operator()(unsigned t) const { return four_byte_hash(&t); }
-};
-
-template <> struct default_hash<int>
-{
-	unsigned operator()(int t) const { return four_byte_hash(&t); }
-};
-
-template <> struct default_hash<uint64_t>
-{
-	unsigned operator()(uint64_t t) const { return hash32(&t, sizeof(t)); }
-};
-
-template <> struct default_hash<int64_t>
-{
-	unsigned operator()(int64_t t) const { return hash32(&t, sizeof(t)); }
-};
-
-// Utility functions
 inline uint64_t mix(uint64_t h, uint64_t k)
 {
 	const uint64_t m = 0xc6a4a7935bd1e995ULL;
