@@ -1,0 +1,67 @@
+// About
+//
+name = "Stingray Plugin"
+description = "Stingray Plugin Example"
+version = "1.0.0"
+changelog = {
+    "1.0.0": "First version"
+}
+author = {
+    name = "Jonathan Schmidt"
+    email = "jonathan.schmidt@autodesk.com"
+    company = "Autodesk Inc."
+    url = "https://git.autodesk.com/gameware/stingray-plugin"
+}
+keywords = ["stingray", "plugin", "example"]
+
+// Define plugin thumbnail
+//thumbnail = "sample_project/thumbnail.png"
+
+// Extensions
+//
+extensions = {
+
+    // Define plugin views.
+    views = [
+        // { type = "panel" name = "<view-name>" path = "<view-relative-path>" title = "<title>" }
+    ]
+
+    // Define menu items to trigger actions, open views, etc..
+    menus = [
+        // { path = "Window/My View" view = "<view-name>" order = 359 }
+    ]
+
+    // Define asset types that extend the asset browser.
+    asset_types = [
+		// { type = "my_type" category = "Custom" icon = "<icon_file.png>" }
+    ]
+
+    // Define a project template extension that will show up in the project manager.
+    templates = [
+        // { type = "project-template" path = "sample_project/sample.stingray_project" }
+    ]
+
+    // Map plugin resources
+	// resources = [ { path = "<relative resource directory path>" } ]
+
+    // Load the engine extension in the editor engine instance.
+    runtime_libraries = [
+        {
+            name = "engine_plugin"
+            paths = {
+                win32 = {
+                    dev = "binaries/engine/win64/dev/engine_plugin_w64_dev.dll"
+                    debug = "binaries/engine/win64/debug/engine_plugin_w64_debug.dll"
+                    release = "binaries/engine/win64/release/engine_plugin_w64_release.dll"
+                }
+            }
+        }
+    ]
+}
+
+// Dependencies
+//
+platforms = ["win64"]
+dependencies = {
+    "stingray" = ">=1.8.0"
+}

@@ -1,0 +1,97 @@
+* text=auto
+
+# Text files
+
+*.bsdoc text
+*.c text
+*.config text
+*.cpp text
+*.cs text
+*.css text
+*.DotSettings text
+*.erb text
+*.h text
+*.H text
+*.html text
+*.inl text
+*.java text
+*.js text
+*.json text
+*.m text
+*.md text
+*.mm text
+*.py text
+*.rb text
+*.resx text
+*.txt text
+*.xaml text
+*.xml text
+
+# Windows text files
+
+*.csproj text eol=crlf
+*.filters text eol=crlf
+*.sln text eol=crlf
+*.vcxproj text eol=crlf
+
+# Binary files
+
+*.dll binary
+*.exe binary
+*.gif binary
+*.gzip binary
+*.ico binary
+*.jpg binary
+*.JPG binary
+*.o binary
+*.pdb binary
+*.png binary
+*.psd binary
+*.ttf binary
+*.svg binary
+
+# Project text files
+#
+# (These are written with Unix line endings by the editors, we want to preserve that when checking
+# them out of source control.)
+
+*.animation text eol=lf
+*.animation_set text eol=lf
+*.bmfc text eol=lf
+*.bones text eol=lf
+*.bsi text eol=lf
+*.entity text eol=lf
+*.flow text eol=lf
+*.flow_editor text eol=lf
+*.font text eol=lf
+*.ini text eol=lf
+*.level text eol=lf
+*.level_editor text eol=lf
+*.lua text eol=lf
+*.material text eol=lf
+*.package text eol=lf
+*.particle_editor text eol=lf
+*.particles text eol=lf
+*.physics text eol=lf
+*.physics_properties text eol=lf
+*.render_config text eol=lf
+*.script_flow_nodes text eol=lf
+*.shader text eol=lf
+*.shader_import text eol=lf
+*.shader_node text eol=lf
+*.shader_source text eol=lf
+*.shading_environment text eol=lf
+*.shading_environment_template text eol=lf
+*.state_machine text eol=lf
+*.statemachine_editor text eol=lf
+*.stingray_project text eol=lf
+*.texture text eol=lf
+*.unit text eol=lf
+*.volume_type text eol=lf
+
+# Project binary files
+
+*.dds binary
+*.mb binary
+*.physx_metadata binary
+*.raw binary
