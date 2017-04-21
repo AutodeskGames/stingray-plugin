@@ -20,13 +20,6 @@ packages = {
 
 	// Build system packages
 
-	stingray-plugin-sdk = {
-		groups = ["plugin", "sdk", "common"]
-		lib = "stingray-plugin-sdk-1.8"
-		url = "https://autodesk.box.com/shared/static/06pazg7jlrc06du05vdxoanwz8bvraoh.zip"
-		version = "12ce5a85714a939a3e5d525c1fff5e03a114131f"
-	}
-
 	cmake = {
 		groups = ["plugin", "cmake", "common"]
 		lib = "cmake-3.7.0.rc3"
