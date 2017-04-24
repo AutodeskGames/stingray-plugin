@@ -6,6 +6,7 @@ interface Stingray {
     config: string;
 
     env: {
+        version: string;
         coreDir: string;
     }
 
@@ -63,9 +64,12 @@ interface Stingray {
      * Emit a global event in the system.
      */
     emitEvent: (name: string, ...args) => Promise<any>;
+    
+    loadNativeExtension: (path: string) => string;
+    unloadNativeExtension: (id: string) => boolean;
 
     loadAsyncExtension: (path: string) => Promise<string>;
-    unloadAsyncExtension: (id: string) => Promise<any>;
+    unloadAsyncExtension: (id: string) => Promise<boolean>;
 
     hostExecute: (type: string, firstArg?: any) => Promise<any>;
 
@@ -191,6 +195,8 @@ interface Window {
      * @memberof window
      */
     cefQuery: (request: CefRequest) => Promise<any>;
+
+    gc: () => void;
 
     layoutId: string;
     isClosing: boolean;

@@ -22,12 +22,12 @@
         "sourceMap": true,
         "baseUrl": "./",
         "rootDir": "./",
-        "outDir": "../plugin"
+        "outDir": "../../plugin"
     },
 
     "include": [
-        "../stingray_sdk/editor_foundation/types.d.ts",
-        "../stingray_sdk/editor_foundation/stingray.d.ts",
+        "../../stingray_sdk/editor_foundation/types.d.ts",
+        "../../stingray_sdk/editor_foundation/stingray.d.ts",
         "**/*.ts"
     ],
 

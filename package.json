@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "stingray-editor",
+  "name": "stingray-plugin",
   "version": "1.9.0",
   "devDependencies": {
     "@types/angular": "^1.6.14",
