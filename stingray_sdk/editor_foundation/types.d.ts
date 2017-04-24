@@ -97,83 +97,6 @@ interface HostApi {
     openWindow: (url: string, id?: string, options?: object) => Promise<any>;
 }
 
-declare enum FileSystemEnumerateFilters {
-    Dirs = 0x001,
-    Files = 0x002,
-    Drives = 0x004,
-    NoSymLinks = 0x008,
-    AllEntries = 0x001 | 0x002 | 0x004,
-    TypeMask = 0x00f,
-
-    Readable = 0x010,
-    Writable = 0x020,
-    Executable = 0x040,
-    PermissionMask = 0x070,
-
-    Modified = 0x080,
-    Hidden = 0x100,
-    System = 0x200,
-
-    AccessMask = 0x3F0,
-
-    AllDirs = 0x400,
-    CaseSensitive = 0x800,
-    NoDot = 0x2000,
-    NoDotDot = 0x4000,
-    NoDotAndDotDot = 0x2000 | 0x4000,
-    NoFilter = -1
-}
-
-/**
- * The filter criteria that the function checks to determine if the wait operation has completed.
- * @readonly
- * @enum {number}
- */
-declare enum FileNotify {
-    CHANGE_FILE_NAME = 0x00000001,
-    CHANGE_DIR_NAME = 0x00000002,
-    CHANGE_ATTRIBUTES = 0x00000004,
-    CHANGE_SIZE = 0x00000008,
-    CHANGE_LAST_WRITE = 0x00000010,
-    CHANGE_LAST_ACCESS = 0x00000020,
-    CHANGE_CREATION = 0x00000040,
-    CHANGE_SECURITY = 0x00000100,
-    ALL = 0x00000001 | 0x00000002 | 0x00000004 | 0x00000008 | 0x00000010 | 0x00000040
-}
-
-/**
- * Indicates changes done on a file or an asset.
- * @readonly
- * @enum {number}
- */
-declare enum FileAction {
-    ADDED = 0x00000001,
-    REMOVED = 0x00000002,
-    MODIFIED = 0x00000003,
-    RENAMED_OLD_NAME = 0x00000004,
-    RENAMED_NEW_NAME = 0x00000005
-}
-
-/**
- * Indicates permissions of a file.
- * @readonly
- * @enum {number}
- */
-declare enum Permission {
-    ReadOwner = 0x4000,
-    WriteOwner = 0x2000,
-    ExeOwner = 0x1000,
-    ReadUser = 0x0400,
-    WriteUser = 0x0200,
-    ExeUser = 0x0100,
-    ReadGroup = 0x0040,
-    WriteGroup = 0x0020,
-    ExeGroup = 0x0010,
-    ReadOther = 0x0004,
-    WriteOther = 0x0002,
-    ExeOther = 0x0001
-}
-
 interface FileStats {
     exists: boolean;
     dir: string;
@@ -188,10 +111,10 @@ interface FileSystemApi {
     exists: (path: string) => boolean;
     stats: (path: string) => FileStats;
 
-    Filters: FileSystemEnumerateFilters;
-    FileNotify: FileNotify;
-    FileAction: FileAction;
-    Permission: Permission;
+    Filters: any;
+    FileNotify: any;
+    FileAction: any;
+    Permission: any;
 }
 
 /**
@@ -328,8 +251,14 @@ declare module 'components/button';
 declare module 'components/textbox';
 
 declare module 'extensions/parser-utils';
+declare module 'extensions/services';
+declare module 'extensions/events';
+
+declare module 'extensions/menus';
 
 declare module 'services/host-service';
 declare module 'services/level-editing-service';
 declare module 'services/log-service';
 declare module 'services/settings-service';
+declare module 'services/plugin-service';
+declare module 'services/event-service';
