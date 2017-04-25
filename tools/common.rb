@@ -217,15 +217,12 @@ def xcodebuild_quiet(command)
 	return system "(s=/tmp/.$$_$RANDOM;((" + command + ";echo $?>$s)|(egrep #{$stdout.isatty() ? "--color=always " : ""}-A 5 \"(error|warning):\")); exit $(cat $s;rm $s))"
 end
 
-# command: Complete command and arguments string to run
-# verbose: Whether process output is printed to console output
-# pause: Whether script execution should pause on failed execution of command
-# timeout_minutes: When specified, kills the spawned process by the command if not exited after specified minutes
-# is_build: Used to control command execution for code building purposes
-# print_time: If true, prints execution time of command
 def run_process(command, verbose, pause, is_build = false, print_time = false, timeout_minutes: 0, exit_on_error: true)
 	exit_code = 0
 	command_start = Time.now
+	# stdout, stderr pipes
+	rout, wout = IO.pipe
+	rerr, werr = IO.pipe
 	if is_build and $system_mac and !verbose
 		return exit_code if xcodebuild_quiet(command)
 	else
@@ -236,7 +233,7 @@ def run_process(command, verbose, pause, is_build = false, print_time = false, t
 			$stderr.sync = true
 			pid = Process.spawn(command)
 		else
-			pid = Process.spawn(command, :out => [$log_output_path, "w"], :err => [:child, :out])
+			pid = Process.spawn(command, :out => wout, :err => [:child, :out])
 		end
 		begin
 			Timeout.timeout(timeout_minutes * 60) do
@@ -250,21 +247,20 @@ def run_process(command, verbose, pause, is_build = false, print_time = false, t
 			STDERR.puts "Process started by the following command didn't exit after #{timeout_minutes} minutes and was forcefully closed:"
 			STDERR.puts "\"#{command}\""
 			Process.kill('KILL', pid)
-		ensure
-			File.delete($log_output_path) if (exit_code == 0 && File.exist?($log_output_path))
 		end
+
+		wout.close
+		werr.close
 	end
 	if exit_on_error
 		STDERR.puts "\nFailed to run command (#{exit_code}): #{command}".bold.red
 		if !verbose
 			STDERR.puts "NOTE: For more context on this error re-run make.rb command with -v option"
-			File.open($log_output_path, "r") do |f|
-				f.each_line do |line|
-				puts line
-				end
-			end
+			@stdout = rout.readlines.join("\n")
+			@stderr = rerr.readlines.join("\n")
+			rout.close
+			rerr.close
 		end
-		File.delete($log_output_path) if File.exist?($log_output_path)
 		system "pause" if pause
 		exit exit_code
 	end

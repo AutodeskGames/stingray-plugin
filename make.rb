@@ -30,7 +30,6 @@ $script_dir = File.expand_path(File.dirname(__FILE__))
 $build_dir = File.join($script_dir, "build")
 $lib_dir = ENV["SR_LIB_DIR"] || $build_dir
 $lib_dir = $lib_dir.gsub("\\", "/")
-$log_output_path = File.join($build_dir, "build.log")
 
 # Parse command-line arguments into options
 $options = {}
