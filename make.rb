@@ -28,7 +28,7 @@ STDOUT.sync = true
 # Initialize global variables
 $script_dir = File.expand_path(File.dirname(__FILE__))
 $build_dir = File.join($script_dir, "build")
-$lib_dir = ENV["SR_LIB_DIR"] || $build_dir
+$lib_dir = ENV["SR_LIB_DIR"] || File.join($build_dir, "libs")
 $lib_dir = $lib_dir.gsub("\\", "/")
 
 # Parse command-line arguments into options

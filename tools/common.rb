@@ -173,7 +173,7 @@ def generate_package_root_cache(platform, devenv)
 
 	begin
 		Dir.chdir($script_dir) {
- 			lines = `ruby ./tools/spm.rb locate #{arguments}`.lines
+ 			lines = `ruby ./tools/spm.rb locate --lib-dir "#{$lib_dir}" #{arguments}`.lines
  			for line in lines
  				if line.include?(" = ")
  					split_line = line.split("=")
