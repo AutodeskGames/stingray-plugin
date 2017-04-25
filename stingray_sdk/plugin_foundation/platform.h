@@ -36,6 +36,8 @@
 
 #if defined(ANDROID)
 	#define PLUGIN_DLLEXPORT
+#elif defined(IOS)
+	#define PLUGIN_DLLEXPORT __attribute__((visibility("default")))
 #else
 	#define PLUGIN_DLLEXPORT __declspec(dllexport)
 #endif

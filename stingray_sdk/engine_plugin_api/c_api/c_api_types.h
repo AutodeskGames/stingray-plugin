@@ -63,6 +63,7 @@ extern "C" {
 	typedef CApiTagComponent* TagComponentPtr;
 	typedef CApiComponent* ComponentPtr;
 	typedef CApiFlowComponent* FlowComponentPtr;
+	typedef CApiUnitComponent* UnitComponentPtr;
 	typedef CApiPhysicsWorld* PhysicsWorldPtr;
 
 	typedef const CApiWorldConfig* ConstWorldConfigPtr;
