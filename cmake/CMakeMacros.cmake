@@ -466,3 +466,35 @@ macro(set_plugin_runtime_output_directory target_name target_folder)
 		set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${target_folder}")
 	endif()
 endmacro()
+
+# Removes all matching candidates from a list of files.
+macro(exclude_project_files exclude_pattern files)
+	foreach (TMP_PATH ${files})
+		string (FIND ${TMP_PATH} ${exclude_pattern} EXCLUDE_MATCH_FOUND)
+		if (NOT ${EXCLUDE_MATCH_FOUND} EQUAL -1)
+			list (REMOVE_ITEM files ${TMP_PATH})
+		endif ()
+	endforeach()
+endmacro()
+
+# Defines TypeScript projects to be compiled
+macro(add_typescript_project target source_dir tsconfig)
+	set(files ${ARGN})
+
+	set(TYPESCRIPT_EXTS "*.ts" "*.json" "*.html" "*.css" "*.stingray_plugin")
+	find_source_files_of_type("${TYPESCRIPT_EXTS}" files ${source_dir})
+
+	set(tsp "${source_dir}/${tsconfig}")
+	message("-- Generating typescript project ${tsp}...")
+
+	set (tsp_stamp "${CMAKE_CURRENT_BINARY_DIR}/${target}.ts.stamp")
+	add_custom_command(
+		OUTPUT ${tsp_stamp}
+		COMMAND "node" ./node_modules/typescript/bin/tsc -p ${tsp} --noEmitOnError --listEmittedFiles
+		COMMAND ${CMAKE_COMMAND} -E touch ${tsp_stamp}
+		WORKING_DIRECTORY "${REPOSITORY_DIR}"
+		DEPENDS ${files}
+		COMMENT "Compiling typescript project ${tsp}")
+
+	add_custom_target(${target} ALL DEPENDS ${tsp_stamp} SOURCES ${files})
+endmacro()

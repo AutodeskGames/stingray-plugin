@@ -12,6 +12,12 @@ SRV/
 assets/
 /*/*_intermediate_*/
 /*/*/*_intermediate_*/
+node_modules/
+
+# Generated editor components
+
+plugin/*.js
+plugin/*.map
 
 # File patterns
 

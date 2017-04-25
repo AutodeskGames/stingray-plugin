@@ -199,10 +199,10 @@ struct PluginApi
 	/* Called when the engine shuts down the game. */
 	void (*shutdown_game)();
 
-	/* Called when a new world is added to the engine */
+	/* Called after the world has been created and is about to be added to the engines list of worlds */
 	void (*register_world)(CApiWorld * world);
 
-	/* Called when a world is removed from the engine. */
+	/* Called before a world is about to be destroyed and removed from the engines list of worlds. */
 	void (*unregister_world)(CApiWorld * world);
 
 	/* Called when units are spawned by the engine. */
