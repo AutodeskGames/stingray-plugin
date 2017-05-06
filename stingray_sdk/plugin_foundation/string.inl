@@ -91,7 +91,7 @@ inline unsigned to_unsigned(const char *s, bool &error)
 
 inline void DynamicString::swap(DynamicString &other)
 {
-	buffer.swap(other.buffer);
+	_buffer.swap(other._buffer);
 }
 
 inline void append(DynamicString &str, const char *s)
@@ -116,8 +116,8 @@ inline void prefix(DynamicString &str, const char *s)
 {
 	unsigned len = strlen32(s);
 	str.extend(len);
-	memmove(str.buffer.begin() + len, str.buffer.begin(), str.buffer.size() - len);
-	memcpy(str.buffer.begin(), s, len);
+	memmove(str.buffer().begin() + len, str.buffer().begin(), str.buffer().size() - len);
+	memcpy(str.buffer().begin(), s, len);
 }
 
 // ----------------------------------------------------------------------

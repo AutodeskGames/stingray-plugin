@@ -34,15 +34,11 @@ template <class T> void Array<T>::operator=(const Array<T> &o)
 }
 
 template <class T> typename Array<T>::reference Array<T>::operator[](unsigned i) {
-	#if defined(_DEBUG)
-		XENSURE(i < _size);
-	#endif
+	XENSURE(i < _size);
 	return _data[i];
 }
 template <class T> typename Array<T>::const_reference Array<T>::operator[](unsigned i) const {
-	#if defined(_DEBUG)
-		XENSURE(i < _size);
-	#endif
+	XENSURE(i < _size);
 	return _data[i];
 }
 
@@ -115,6 +111,7 @@ template <class T> void Array<T>::insert(iterator pos, const_iterator from, cons
 
 template <class T> typename Array<T>::iterator Array<T>::erase(iterator pos)
 {
+	XASSERT(pos >= begin() && pos < end(), "Trying to remove outside array.");
 	move(pos, pos + 1, (unsigned)((_data + _size) - pos - 1));
 	--_size;
 	return pos;
@@ -125,6 +122,13 @@ template <class T> typename Array<T>::iterator Array<T>::erase(iterator first, i
 	move(first, last, (unsigned)((_data + _size) - last));
 	_size -= (unsigned)(last - first);
 	return first;
+}
+
+template <class T> template <typename EQUATABLE> void Array<T>::erase(const EQUATABLE &item)
+{
+	iterator it = find(item);
+	XENSURE(it != end());
+	erase(it);
 }
 
 template <class T> void Array<T>::resize(unsigned size)
@@ -158,12 +162,12 @@ template <class T> void Array<T>::set_capacity(unsigned capacity)
 
 template <class T> void Array<T>::move(pointer to, pointer from, unsigned n)
 {
-	memmove(to, from, sizeof(T) * n);
+	memmove((void *)to, (void *)from, sizeof(T) * n);
 }
 
 template <class T> void Array<T>::copy(pointer to, const_pointer from, unsigned n)
 {
-	memcpy(to, from, sizeof(T) * n);
+	memcpy((void *)to, (void *)from, sizeof(T) * n);
 }
 
 template <class T>
@@ -174,6 +178,66 @@ template <class STREAM> void Array<T>::serialize(STREAM &stream)
 	resize(sz);
 	for (unsigned i=0; i<sz; ++i)
 		stream & (*this)[i];
+}
+
+template <class STREAM, class T>
+void raw_array_serialize(STREAM &s, Array<T> &data)
+{
+	unsigned n = data.size();
+	s & n;
+	data.resize(n);
+
+	if (n > 0) {
+		if (s.is_output())
+			s.write(data.begin(), n * sizeof(T));
+		else
+			s.read(data.begin(), n * sizeof(T));
+	}
+}
+
+template <>
+template <class STREAM> void Array<char>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<uint8_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<int8_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<uint16_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<int16_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<uint32_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<int32_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<int64_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<uint64_t>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
 }
 
 template<class T> bool Array<T>::operator==(const Array<T> &o) const

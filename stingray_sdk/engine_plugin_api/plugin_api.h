@@ -2087,8 +2087,14 @@ struct RenderBufferApi
 	/* Valid ranges for slice_index and mip_index depends on RB_TextureBufferView used when creating the texture. */
 	void(*partial_update_texture)(uint32_t handle, uint32_t array_index, uint32_t slice_index, uint32_t mip_index, uint32_t offset[3], uint32_t size[3], const void *data);
 
+	/* Updates the specified descriptor object. */
+	void(*update_description_from_resource)(struct RenderResource *resource, const void *desc);
+
+	/* Updates the buffer with the specified content. */
+	void(*update_buffer_from_resource)(struct RenderResource *resource, uint32_t size, const void *data);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[28];
+	void *reserved[26];
 };
 
 /* ----------------------------------------------------------------------
@@ -2121,6 +2127,14 @@ struct MO_Geometry
 	void *indices;							/* Pointer to index list. */
 	uint32_t index_stride;					/* Stride of index list (2 or 4). */
 	uint32_t num_indices;					/* Total number of indices. */
+};
+
+/* Describes a piece of mesh geometry for rendering. */
+struct MO_MeshGeometry
+{
+	struct RenderResource *vertex_stream;
+	struct RenderResource *vertex_description;
+	struct RenderResource *index_stream;
 };
 
 /* Culling flags for meshes. */
@@ -2196,8 +2210,20 @@ struct MeshObjectApi
 	/* Returns the culling flags of the object. */
 	uint32_t (*flags)(uint32_t handle);
 
+	/* Creates a new empty mesh object. A scene graph must be associated to it and it must be dispatched
+	   to the render thread through a render interface before use with the mesh api. (this is currently
+	   used for the mesh component api) */
+	uint32_t (*create_mesh)(WorldPtr world, uint32_t mesh_name, uint32_t flags);
+
+	/* Lookup an existing mesh object by its handle */
+	MeshPtr(*lookup_mesh)(uint32_t handle);
+
+	/* Tries to retrieve the mesh geometry of an existing mesh and if successful returns it in
+	   MO_MeshGeometry. */
+	uint8_t (*read_mesh_geometry)(void *unit_resource, uint32_t mesh_name, struct MO_MeshGeometry *geometry);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[29];
 };
 
 /* ----------------------------------------------------------------------
