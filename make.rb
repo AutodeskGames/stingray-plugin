@@ -91,6 +91,10 @@ end
 # Validate options
 def validate_options(options, opt_parser)
 
+	if options[:verbose] == nil
+		options[:verbose] = true
+	end
+
 	# Test or set default platform
 	if options[:platform] == nil
 		options[:platform] = $default_platform
