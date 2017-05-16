@@ -83,6 +83,17 @@ ConfigValue test_custom_allocator(ConfigValueArgs args, int num)
 	return cvca;
 }
 
+ConfigValue test_dll_dependency(ConfigValueArgs args, int num)
+{
+	__declspec(dllimport) int editor_dll_message_box(const char* title, const char* message);
+
+	auto result = config_data_api->make(nullptr);
+	const char* title = config_data_api->to_string(&args[0]);
+	const char* message = config_data_api->to_string(&args[1]);
+	config_data_api->set_number(result, (double)editor_dll_message_box(title, message));
+	return result;
+}
+
 /*
  * Allocator function used by our test plugin custom allocator.
  * We use as an example a static buffer to write up to 1024 bytes of data.
@@ -128,6 +139,7 @@ void plugin_loaded(GetEditorApiFunction get_editor_api)
 
 	api->register_native_function("example", "test_log_arguments", &test_log_arguments);
 	api->register_native_function("example", "test_custom_allocator", &test_custom_allocator);
+	api->register_native_function("example", "test_dll_dependency", &test_dll_dependency);
 }
 
 /**
@@ -138,6 +150,7 @@ void plugin_unloaded(GetEditorApiFunction get_editor_api)
 	auto api = static_cast<EditorApi*>(get_editor_api(EDITOR_API_ID));
 	api->unregister_native_function("example", "test_log_arguments");
 	api->unregister_native_function("example", "test_custom_allocator");
+	api->unregister_native_function("example", "test_dll_dependency");
 
 	allocator_api->destroy(plugin_allocator);
 }

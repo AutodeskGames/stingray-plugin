@@ -1,24 +1,18 @@
 cmake_minimum_required(VERSION 3.6)
-project(editor_plugin)
+project(editor_dll)
 
 # Include common plugin CMake scripts and set the type of plugin to be to and EDITOR_PLUGIN
-set(EDITOR_PLUGIN ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${REPOSITORY_DIR}/cmake")
 include(CMakePlugin)
-
-# Define automatic namespace for C++
-add_compile_options(-DPLUGIN_NAMESPACE=${PROJECT_NAME})
+include(GenerateExportHeader)
 
 # Scan and add project source files
 find_source_files(ALL_SOURCE_FILES)
 
-# Include editor plugin sdk files
-include_directories(${REPOSITORY_DIR}/stingray_sdk)
-
-# Setup plugin shared library
+# Setup DLL dynamic library
+set(BUILD_SHARED_LIBS TRUE)
 add_library(${PROJECT_NAME} SHARED ${ALL_SOURCE_FILES})
-
-target_link_libraries(${PROJECT_NAME} ${REPOSITORY_DIR}/build/editor_dll/win64/lib/$<LOWER_CASE:$<CONFIG>>/editor_dll_w64_$<LOWER_CASE:$<CONFIG>>.lib)
+generate_export_header(${PROJECT_NAME})
 
 # Set target properties
 set(TARGET_BASE_NAME "${PROJECT_NAME}_${ENGINE_PLUGIN_SUFFIX}_$<LOWER_CASE:$<CONFIG>>")
