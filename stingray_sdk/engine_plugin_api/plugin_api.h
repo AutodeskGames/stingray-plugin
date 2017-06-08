@@ -1643,8 +1643,11 @@ struct ApplicationOptionsApi
 	/* Returns the data directory if the engine was launched in data directory mode. */
 	const char * (*data_directory)(const struct ApplicationOptions * application_options);
 
+	/* Returns true if rendering is enabled. */
+	int (*is_rendering_enabled)(const struct ApplicationOptions * application_options);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[31];
 };
 
 /* ----------------------------------------------------------------------

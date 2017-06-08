@@ -64,7 +64,7 @@ interface Stingray {
      * Emit a global event in the system.
      */
     emitEvent: (name: string, ...args) => Promise<any>;
-    
+
     loadNativeExtension: (path: string) => string;
     unloadNativeExtension: (id: string) => boolean;
 
@@ -99,6 +99,7 @@ interface HostApi {
     createService: (name, path) => Promise<any>;
     setCursorStyle: (style: string) => Promise<boolean>;
     openWindow: (url: string, id?: string, options?: object) => Promise<any>;
+    crash: () => {};
 }
 
 interface FileStats {

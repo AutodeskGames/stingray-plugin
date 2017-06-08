@@ -87,6 +87,7 @@ struct UnitCApi
 	void		(*enable_animation_state_machine) (UnitRef);
 	void		(*set_animation_state_machine) (UnitRef, uint64_t machine_name_id64, const char *optional_debug_machine_name);
 	int			(*has_animation_state_machine) (UnitRef);
+	int         (*has_animation_blender) (UnitRef);
 	int			(*has_animation_event) (UnitRef, unsigned event_name_id32);
 
 	void		(*animation_trigger_event) (UnitRef unit_ref, unsigned event_name_id32, const char *optional_debug_event_name);
