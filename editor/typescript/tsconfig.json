@@ -28,6 +28,9 @@
     "include": [
         "../../stingray_sdk/editor_foundation/types.d.ts",
         "../../stingray_sdk/editor_foundation/stingray.d.ts",
+        "../../stingray_sdk/editor_foundation/widgets.d.ts",
+        "../../stingray_sdk/editor_foundation/properties.d.ts",
+        "../../stingray_sdk/editor_foundation/node-editor.d.ts",
         "**/*.ts"
     ],
 

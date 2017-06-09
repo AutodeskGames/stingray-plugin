@@ -428,6 +428,7 @@ __forceinline void to_plugin(SDB_SceneImportOptions &dest, const SceneImportOpti
 	dest.skip_lights = source.skip_lights;
 	dest.skip_cameras = source.skip_cameras;
 	dest.create_missing_uvs = source.create_missing_uvs;
+	dest.bake_scale = source.bake_scale;
 	dest.tangents = (SDB_SceneImportTangents)source.tangents;
 }
 __forceinline void from_plugin(SceneImportOptions &dest, const SDB_SceneImportOptions &source)
@@ -440,6 +441,7 @@ __forceinline void from_plugin(SceneImportOptions &dest, const SDB_SceneImportOp
 	dest.skip_lights = source.skip_lights == 1;
 	dest.skip_cameras = source.skip_cameras == 1;
 	dest.create_missing_uvs = source.create_missing_uvs == 1;
+	dest.bake_scale = source.bake_scale == 1;
 	dest.tangents = (SceneImportOptions::TangentsOption)source.tangents;
 }
 

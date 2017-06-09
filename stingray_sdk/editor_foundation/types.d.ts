@@ -8,6 +8,19 @@ interface Stingray {
     env: {
         version: string;
         coreDir: string;
+        userDocumentsDir: string;
+        tccFilePath: string;
+        pluginsDir: string;
+        appDir: string;
+        editorDir: string;
+
+        config: {
+            build_info: {
+                project_name: string;
+                build_name: string;
+                build_version: string;
+            }
+        }
     }
 
     /**
@@ -79,6 +92,7 @@ interface Stingray {
     host: HostApi;
     fs: FileSystemApi;
     path: PathApi;
+    sjson: SJSONApi;
 }
 
 /**
@@ -100,11 +114,16 @@ interface HostApi {
     setCursorStyle: (style: string) => Promise<boolean>;
     openWindow: (url: string, id?: string, options?: object) => Promise<any>;
     crash: () => {};
+
+    /**
+     * Execute a shell command or open an URL in the default browser.
+     */
+    openUrl(url:string): boolean;
 }
 
 interface FileStats {
     exists: boolean;
-    dir: string;
+    dir: boolean;
     url: string;
     size: number;
     readonly: boolean;
@@ -113,13 +132,30 @@ interface FileStats {
 }
 
 interface FileSystemApi {
-    exists: (path: string) => boolean;
-    stats: (path: string) => FileStats;
+    exists (path: string): boolean;
+    enumerate (directory:string, searchPattern: any, recursive: boolean): string[];
+    stats (path: string): FileStats;
+    unlink(path:string): boolean;
+    copy(source:string, dest:string): boolean;
+    move(source:string, dest:string): boolean;
+    read(path:string, asBinary:boolean): string;
+    write(path:string, content:any, asBinary:boolean): boolean;
+    unzip(path:string, destination:string): boolean;
+    mkdir(path:string): boolean;
+    toUniqueFileName (name:string, baseFolder:string): string;
+    toUniqueDirectoryName (name:string, baseFolder:string): string;
 
     Filters: any;
     FileNotify: any;
     FileAction: any;
     Permission: any;
+}
+
+interface SJSONApi {
+    load(path:string): any;
+    save(path:string, any): boolean;
+    parse(sjson:string): any;
+    stringify(obj:any): string;
 }
 
 /**
@@ -134,10 +170,10 @@ interface PathApi {
      * @param {string} path
      * @param {boolean} [withExtension=true] - Set to false if you want the extension to be omitted.
      */
-    basename: (path: string, withExtension: boolean) => string;
+    basename: (path: string, withExtension?: boolean) => string;
 
     dirname: (path: string) => string;
-    join: (path: string, ...paths: string[]) => string;
+    join: (...paths: string[]) => string;
 
     absolute: (base: string, relative: string, isFileName?: boolean) => string;
     clean: (path: string, addSeparatorsAtEnd?: boolean) => string;
@@ -150,22 +186,69 @@ interface PathApi {
     isFileOrFolderNameValid: (name: string) => boolean;
 }
 
+interface BaseService {
+    new(id:string, resolveCallback?: Function): BaseService;
+
+    _remoteService: any;
+    promise: Promise<any>;
+    marshallingService: any;
+
+    ready: () => Promise<boolean>;
+    invoke: (methodName:string, ...args) => Promise<any>;
+    invokeMethod: (methodName:string, args:any[], options?: any) => Promise<any>;
+}
+
+interface ExtensionDynamicString {
+    resolve(args:any[], keepAsString?:boolean): Promise<string>;
+}
+
+interface IExtension {
+    new(data: any): IExtension;
+
+    module:any;
+
+    define(extensionName: string, behaviors: object, parsers: Function[], toBeMerged: object): any;
+
+    wrap (extensionData, pluginName): object;
+    expandToPluginDir (fieldName, setDefaultToPluginRoot?): Function;
+    toDynamicString (s:string): ExtensionDynamicString;
+}
+
+interface EventSource {
+    new(): this;
+    emit (name:string, ...args): any;
+    on (name:string, ...args): any;
+    off(name: string, callback): any;
+}
+
 interface Promise<T> {
-    spread(a: (...args)=>PromiseLike<T>, b?:()=>Promise<T>): Promise<T>;
-    finally(a, b): Promise<T>;
+    cancel: () => void;
+    spread(a: (...args)=>any, b?:()=>Promise<T>): Promise<T>;
+    finally(a, b?): Promise<T>;
 }
 
 interface String {
     hashCode: () => number;
+    regexIndexOf: (regex: RegExp, startPos?: number) => number;
+    regexLastIndexOf: (regex: RegExp, startPos?: number) => number;
+}
+
+interface Math {
+    between: (min: number, max: number) => number
 }
 
 interface PromiseConstructor {
     filter(array, promiseReturningFilter): Promise<any>;
     map(collection, promiseReturningTransformer): Promise<any>;
-    series(items:any[]|Object, next:any, initialValue?:Promise<any>): Promise<any>;
+    series(items:any[]|Object, next:any, initialValue?:any): Promise<any>;
     while(predicate, action, result): Promise<any>;
-    require(modules:string[]): Promise<any>;
-    waterfall(funcs:Function[]):Promise<any>;
+    require(modules:string[], doNotPrintErrors?:boolean): Promise<any>;
+    waterfall(funcs:Function[]): Promise<any>;
+    and(a: Promise<any>|any, b: Promise<any>): Promise<any>;
+    or(a: Promise<any>, b: Promise<any>): Promise<any>;
+    on(eventSource: EventSource, eventName: string, eventHandler: Function): Promise<any>;
+    timeout(timeoutMs: number): Promise<any>;
+    until(condition: () => Promise<any>, timeoutMs?: number, intervalMs?:number): Promise<any>;
 }
 
 interface Console {
@@ -174,12 +257,14 @@ interface Console {
 
 interface CefRequest {
     request: string;
-    persistent: boolean;
+    persistent?: boolean;
     onSuccess: (result: string) => void;
     onFailure: (code:number, msg:string) => void;
 }
 
 interface Window {
+
+    $(...args:any[]): any;
 
     stingray: Stingray;
 
@@ -198,6 +283,22 @@ interface Window {
     cefQuery: (request: CefRequest) => Promise<any>;
 
     gc: () => void;
+
+    options: any;
+    promise: PromiseLike<any>;
+    reject: Function;
+    accept: (result) => void;
+
+    module: any;
+    global: any;
+    jsonpatch: any;
+
+    // Test APIs
+
+    jasmineReporters: any;
+    describe: Function;
+    stubModules: Function;
+    inject: (Function) => void;
 
     layoutId: string;
     isClosing: boolean;
@@ -223,12 +324,49 @@ interface Window {
 
     hide: ()=>void;
     show: ()=>void;
+    dpiScale: ()=>number;
+
+    stingrayDragEnterFiles: string[];
+
+    ondownloadfileprogress: (id, loaded, total) => void;
+
+    unsavedDocumentsSent: boolean;
+
+    // Used by the node editor
+    PIXI: any;
+}
+
+interface EventTarget {
+    nodeName: string;
+
+    addEventListenerBase(type: string, listener?: EventListenerOrEventListenerObject, useCapture?: boolean): void;
+    removeEventListenerBase(type: string, listener?: EventListenerOrEventListenerObject, useCapture?: boolean): void;
+}
+
+interface XMLHttpRequestEventTarget {
+    status: number;
+    response: string|ArrayBuffer|any;
+    statusText: string;
 }
 
 interface Document {
     // Document Editing Model Extensions
     getParentTab: Function;
     getToolName: () => string;
+    isDirty: (value: boolean) => any;
+    save: (resourcePath: string) => any;
+    discard: (resourcePath: string) => any;
+    getDocumentName: () => string;
+    getResourcePath: () => any;
+    getDocking(): any;
+    focusTab(): void;
+    close(): any;
+    updateTabName: (tabName: string, isDirty?: boolean) => any;
+    updateTabResourceName: (tabRessourceName: string) => any;
+}
+
+interface Element {
+    contentDocument: Document;
 }
 
 interface RequireInternals {
@@ -238,34 +376,152 @@ interface RequireInternals {
 interface Require {
     s: RequireInternals;
     resolvable: Function;
+
+    (config: any, modules: string[], ready: Function, errback: Function): void;
+}
+
+interface Performance {
+    memory: {
+        usedJSHeapSize: number;
+        totalJSHeapSize: number;
+        jsHeapSizeLimit: number;
+    };
 }
 
 interface WindowEventMap extends GlobalEventHandlersEventMap {
     "ConsoleMessage": CustomEvent;
+    "ContextMenuAction": CustomEvent;
+    "ContextMenuDismiss": CustomEvent;
+    "ContextMenuHide": CustomEvent;
+    "MenuAction": CustomEvent;
+    "running": CustomEvent;
+}
+
+interface ErrorConstructor {
+    captureStackTrace(thisArg: any, func: any): void
 }
 
 interface OffHandler { (): any; promise: Promise<any>; }
+interface NestedCallbackHandler { (): any; callback: () => any; }
+
+interface IDataStore
+{
+    new(url:string): IDataStore;
+    findEvent (name, uri): any;
+    getCandidates (uri, initialCandidate, enumerator?): any[];
+    url: URL;
+}
+
+interface ITreeModel {
+    new (name: string);
+}
+
+interface IDefaultViewportMouseBehavior {
+    new (engineService: any, engineViewportId: string, engineViewportInterops: any)
+}
+
+interface IDefaultViewportController {
+    new (engineService: any)
+}
+
+interface Vector2Object {
+    x: number;
+    y: number;
+}
+
+interface Vector3Object {
+    x: number;
+    y: number;
+    z: number;
+}
+
 
 // Module not (yet) ported to TypeScript
 declare module 'lodash';
+declare module 'ace';
+declare module 'pixi';
+
+declare module 'core/views/viewport-context-menus';
 
 declare module 'common/asset-utils';
 declare module 'common/keycodes';
 declare module 'common/context-menu-utils';
+declare module 'common/file-system-utils';
+declare module 'common/profiler';
+declare module 'common/lodash-ext';
+declare module 'common/console-connection';
+declare module 'common/math-utils';
+declare module 'common/project-utils';
+declare module 'common/default-viewport-controller';
+declare module 'common/default-viewport-mouse-behavior';
+declare module 'common/console-connection';
+declare module 'common/color-utils';
+declare module 'common/drag-utils';
+declare module 'common/string-utils';
 
 declare module 'components/mithril-ext';
 declare module 'components/button';
 declare module 'components/textbox';
+declare module 'components/dom-tools';
+declare module 'components/journal-view';
+declare module 'components/list-view';
+declare module 'components/accordion';
+declare module 'components/filter-view';
+declare module 'components/resizer';
+declare module 'components/tree-view';
+declare module 'components/accordion';
+declare module 'components/color-gradient';
+declare module 'components/engine-viewport';
+declare module 'components/toolbar';
+declare module 'components/typeahead';
+declare module 'components/loading';
+declare module 'components/spinner';
 
-declare module 'extensions/parser-utils';
-declare module 'extensions/services';
+declare module '3rdparty/marked/marked.min';
+
+declare module 'properties/mithril-property-ext';
+declare module 'properties/property-editor-utils';
+declare module 'properties/property-editor-component';
+declare module 'properties/property-document';
+declare module 'properties/property-models';
+
+declare module 'docking/docking-utils';
+
+declare module 'foundation/spm-registry';
+declare module 'foundation/project';
+declare module 'foundation/backend-client';
+declare module 'foundation/data-server-store';
+declare module 'foundation/file-system-store';
+declare module 'foundation/document-editing';
+declare module 'foundation/asset-server';
+
+declare module 'extensions/actions';
+declare module 'extensions/asset-types';
+declare module 'extensions/contextual-actions';
 declare module 'extensions/events';
-
+declare module 'extensions/generic-parser';
 declare module 'extensions/menus';
+declare module 'extensions/migrations';
+declare module 'extensions/parser-utils';
+declare module 'extensions/preview-behaviors';
+declare module 'extensions/resources';
+declare module 'extensions/services';
+declare module 'extensions/views';
+declare module 'extensions/node-customizers';
 
-declare module 'services/host-service';
 declare module 'services/level-editing-service';
 declare module 'services/log-service';
 declare module 'services/settings-service';
 declare module 'services/plugin-service';
-declare module 'services/event-service';
+declare module 'services/project-service';
+declare module 'services/asset-service';
+declare module 'services/file-system-service';
+declare module 'services/savable-service';
+declare module 'services/asset-service';
+declare module 'services/content-database-service';
+declare module 'services/object-editing-service';
+declare module 'services/data-service';
+declare module 'services/engine-viewport-service';
+declare module 'services/object-creator-service';
+declare module 'services/animation-editing-service';
+

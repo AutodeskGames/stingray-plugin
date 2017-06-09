@@ -87,6 +87,7 @@ enum PluginApiID {
 	CAMERA_API_ID =						38,
 	ENTITY_COMPILE_DATA_API_ID =		39,
 	PHYSICS_RUNTIME_COOKING_API_ID =	40,
+	VIDEO_PLAYER_API_ID =				41,
 	END_OF_ENGINE_RESERVED_RANGE =		65535,
 
 	/* API IDs in the range 0--65535 are reserved by the engine. If you want to
@@ -789,8 +790,11 @@ struct DataCompileParametersApi
 	/* Returns true if the path exists. */
 	int (*exists)(struct DataCompileParameters *input, const char *path);
 
+	/* Reads the given path name and returns the entire contents as a raw buffer. */
+	struct DataCompileResult(*read_file)(struct DataCompileParameters* input, const char* path);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[31];
 };
 
 /* ----------------------------------------------------------------------
@@ -2734,6 +2738,99 @@ struct PhysicsRuntimeCookingApi
 
 	/* Releases physics mesh */
 	void (*release_physics_mesh)(void *physics_mesh);
+
+	/* Reserved for expansion of the API. */
+	void *reserved[32];
+};
+
+
+/* ----------------------------------------------------------------------
+	VideoPlayerApi
+---------------------------------------------------------------------- */
+
+/* Version of the video data format shared by custom video readers. */
+#define VIDEO_RESOURCE_VERSION 5
+
+/* Represents the basic information for video data. */
+struct VideoResource
+{
+	unsigned	version;
+	uint64_t	decoder_type;				/* IdString64 equivalent */
+	unsigned	width;
+	unsigned	height;
+	unsigned	num_frames;
+	double		frame_rate;
+	unsigned	num_audio_streams;
+};
+
+/* Represents the basic information for video data. */
+struct VideoFrameData
+{
+	/* Index of the frame (0 for the first frame) */
+	unsigned	index;
+
+	/* Time of the frame since the beginning of the video (in seconds) */
+	double		time;
+
+	/* Opaque raw frame data to be handled by the decoder */
+	void*		raw_data;
+};
+
+/* A decoder session is a pointer to a piece of data holding relevant information. */
+typedef void* DecoderSession;
+
+/* Callback function for reading video frame data of a certain frame from a session. */
+typedef int (*ReadFrameDataFunction)(DecoderSession session, unsigned frame_index, struct VideoFrameData *frame_data);
+
+/* Callback function for starting a video decoder session. Returns the pointer to generated session or nullptr if unable to generate a new session */
+typedef DecoderSession (*CreateDecoderSession)(struct VideoResource *video, struct InputArchive *input);
+
+/* Callback function for re-starting a video decoder session, mostly used when video player is set to loop such that re-allocation is minimized . */
+typedef int(*ResetDecoderSession)(DecoderSession session);
+
+/* Callback function for stopping a video decoder session. */
+typedef int (*DestroyDecoderSession)(DecoderSession session);
+
+/* Callback function to decode video from raw data. */
+typedef int (*DecodeFrameFunction)(DecoderSession session, struct VideoFrameData *frame_data);
+
+/* Callback function to export decoded frame data. */
+typedef int (*ExportFrameFunction)(DecoderSession session, unsigned char **output_buffer);
+
+/* Supported video texture layout */
+enum VideoTextureLayout
+{
+	UNKNOWN_TEXTURE_LAYOUT = 0,
+	YUV2,
+	YCBCR3
+};
+
+/* A structure containing the information needed for a video decoder. */
+struct VideoDecoder
+{
+	/* Callback functions */
+	ReadFrameDataFunction			read_frame_data;
+	CreateDecoderSession			create_session;
+	ResetDecoderSession				reset_session;
+	DestroyDecoderSession			destroy_session;
+	DecodeFrameFunction				decode_frame;
+	ExportFrameFunction				export_frame;
+
+	/* Texture layout needed for rendering */
+	enum VideoTextureLayout			texture_layout;
+
+	/* Name string for the video type */
+	char							name[32];
+};
+
+/* Interface for video players. */
+struct VideoPlayerApi
+{
+	/* Registers the video decoder type with the specified type_id64. */
+	void(*register_video_decoder)(uint64_t type_id64, const struct VideoDecoder *decoder);
+
+	/* Unregisters the video decoder type with the specified type_id64. */
+	void(*unregister_video_decoder)(uint64_t type_id64);
 
 	/* Reserved for expansion of the API. */
 	void *reserved[32];

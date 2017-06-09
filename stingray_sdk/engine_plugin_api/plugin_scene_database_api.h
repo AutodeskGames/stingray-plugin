@@ -241,6 +241,7 @@ struct SDB_SceneImportOptions {
 	uint8_t skip_lights;
 	uint8_t skip_cameras;
 	uint8_t create_missing_uvs;
+	uint8_t bake_scale;
 	SDB_SceneImportTangents tangents;
 };
 

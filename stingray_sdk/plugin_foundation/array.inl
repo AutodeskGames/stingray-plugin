@@ -1,4 +1,5 @@
 #include "assert.h"
+#include <string.h>
 
 namespace stingray_plugin_foundation {
 

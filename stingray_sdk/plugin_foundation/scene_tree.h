@@ -404,6 +404,7 @@ struct SceneImportOptions {
 		skip_lights(false),
 		skip_cameras(false),
 		create_missing_uvs(false),
+		bake_scale(false),
 		tangents(TANGENTS_IMPORT)
 	{ }
 
@@ -417,6 +418,7 @@ struct SceneImportOptions {
 	bool skip_lights;
 	bool skip_cameras;
 	bool create_missing_uvs;
+	bool bake_scale;
 	TangentsOption tangents;
 };
 
@@ -487,4 +489,3 @@ struct SceneDatabase {
 }
 
 #include "scene_tree.inl"
-

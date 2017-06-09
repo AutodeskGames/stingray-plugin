@@ -67,8 +67,7 @@ struct WorldCApi
 
 	PhysicsWorldPtr	(*physics_world) (WorldPtr world_pointer);
 
-	VideoPlayerPtr	(*create_video_player) (WorldPtr world_pointer, uint64_t resource_id64, int loop);
-	void			(*destroy_video_player) (WorldPtr world_pointer, VideoPlayerPtr video_player);
+	VideoPlayerPtr	(*video_player) (WorldPtr world_pointer, uint64_t resource_id64);
 
 	ConstMatrix4x4Ptr	(*debug_camera_pose) (WorldPtr world_pointer);
 
