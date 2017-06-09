@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "name": "stingray-plugin",
+  "version": "1.9.0",
+  "devDependencies": {
+    "@types/angular": "^1.6.14",
+    "@types/jquery": "^2.0.41",
+    "@types/requirejs": "^2.1.28",
+    "jshint": "^2.9.4",
+    "typescript": "^2.3.0",
+    "uglify-js": "github:mishoo/UglifyJS2#harmony"
+  },
+  "scripts": {}
+}

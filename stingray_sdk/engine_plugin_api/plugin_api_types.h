@@ -47,6 +47,8 @@ typedef struct CApiDataComponentPtr CApiDataComponentPtr;
 typedef struct CApiRenderDataComponent CApiRenderDataComponent;
 typedef struct CApiTagComponent CApiTagComponent;
 typedef struct CApiComponent CApiComponent;
+typedef struct CApiFlowComponent CApiFlowComponent;
+typedef struct CApiUnitComponent CApiUnitComponent;
 
 typedef unsigned CApiUnitRef;
 typedef unsigned CApiInstance;

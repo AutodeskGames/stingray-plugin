@@ -5,7 +5,7 @@ endif()
 set(_PS4_TOOLCHAIN_ 1)
 
 # PS4 SCE version requirement
-set(REQUIRED_PS4_VERSION "3.500")
+set(REQUIRED_PS4_VERSION "4.000")
 
 # Get PS4 SCE environment
 if( EXISTS "$ENV{SCE_ROOT_DIR}" AND IS_DIRECTORY "$ENV{SCE_ROOT_DIR}" )

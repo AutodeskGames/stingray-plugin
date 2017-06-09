@@ -95,8 +95,8 @@ public:
 	// Resets the array to initial state (no memory allocated).
 	void reset() {set_capacity(0);}
 
-	// Extends the array with the specified number of elements.
-	void extend(unsigned elements) { resize(size() + elements); }
+	// Extends the array with the specified number of elements and returns a pointer to the first new element.
+	pointer extend(unsigned elements) { resize(size() + elements); return _data + _size - elements; }
 
 	// Extends the array with one elements and returns a reference to the newly created element.
 	reference extend() { resize(size() + 1); return back(); }
@@ -125,7 +125,7 @@ public:
 	template <typename EQUATABLE> bool has(const EQUATABLE &x) const {return (find(x) != end());}
 
 	// Erases the first occurrence of x in the array.
-	template <typename EQUATABLE> void erase(const EQUATABLE &item) {erase(find(item));}
+	template <typename EQUATABLE> void erase(const EQUATABLE &item);
 
 	// "Steals" the data buffer from the array. The array will be empty after this operation. The "stealer" is
 	// responsible for deallocating the stolen buffer.

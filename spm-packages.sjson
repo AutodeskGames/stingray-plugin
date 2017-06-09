@@ -22,8 +22,8 @@ packages = {
 
 	cmake = {
 		groups = ["plugin", "cmake", "common"]
-		lib = "cmake-3.7.0.rc3"
-		url = "https://draoqiiudbn5q.cloudfront.net/stingray-libs/cmake-3.7.0.rc3.zip"
-		version = "UfQV0Mx2bMvOpW7rQ4AE868lzAtPqP5g"
+		lib = "cmake-3.8.0"
+		url = "https://autodesk.box.com/shared/static/gw9qcjvk9r92awmnbh3q18v9zm0ju5nn.zip"
+		version = "OChmM96B98lJhKa69y5LCWxG1Wq27rnr"
 	}
 }

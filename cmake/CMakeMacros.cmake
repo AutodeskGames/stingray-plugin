@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.8)
 
 # Set each source file proper source group
 macro(set_source_groups pList)
@@ -61,7 +61,7 @@ macro(find_source_files pResult)
 	# Patch for Android compiler that refuse -std=c++11 flag on .c files.
 	# Normally we would use CMAKE_CXX_FLAGS to add this flag only to .cpp files,
 	# but somehow with NVidia NSight Tegra it also passes to .c files.
-	if( PLATFORM_ANDROID OR PLATFORM_WEBGL )
+	if( PLATFORM_ANDROID OR PLATFORM_WEB )
 		foreach(FilePath ${FileList})
 			get_filename_component(ExtName ${FilePath} EXT)
 			if( "${ExtName}" STREQUAL ".cpp" )
@@ -311,6 +311,7 @@ endmacro()
 # Generate the package location cache
 macro(generate_package_location_cache)
 	set(SpmCmd)
+	# PLUGIN CUSTOM CHANGE
 	list(APPEND SpmCmd "ruby" "${REPOSITORY_DIR}/tools/spm.rb" "locate" "--lib-dir" ${ENGINE_LIB_DIR} "-a")
 	if( PLATFORM_WINDOWS )
 		list(APPEND SpmCmd "-p" "win${ARCH_BITS}")
@@ -428,11 +429,15 @@ endmacro()
 
 # Used to add target link libraries that have circular dependencies. i.e. groups
 macro(target_link_libraries_group pTarget pLibraries)
-	if( PLATFORM_WEBGL )
+	if( PLATFORM_WEB )
 		target_link_libraries(${pTarget} -Wl,--start-group ${pLibraries} -Wl,--end-group)
 	elseif( PLATFORM_ANDROID )
-		target_link_libraries(${pTarget} ${pLibraries})
-		target_link_libraries(${pTarget} ${pLibraries})
+		if( BUILD_SHARED_LIBS )
+			target_link_libraries(${pTarget} -Wl,--start-group ${pLibraries} -Wl,--end-group)
+		else()
+			target_link_libraries(${pTarget} ${pLibraries})
+			target_link_libraries(${pTarget} ${pLibraries})
+		endif()
 	else()
 		target_link_libraries(${pTarget} ${pLibraries})
 	endif()
@@ -441,28 +446,147 @@ endmacro()
 # Used to add target dependency with platform specific code
 macro(add_dependencies_platform pTarget pDependencies)
 	if( PLATFORM_ANDROID )
-		# Don't use add_dependencies to avoid linker dependencies between pTarget and pDependencies,
-		# which are undesirable when pDependencies are dynamic plugins. This seems to be a bug since
-		# libraries created with add_library(... MODULE ...) shouldn't create a linker dependency
-		# as opposed to add_library(... SHARED ...), according to the CMake documentation.
-		# The problem with not using `add_dependencies`, however, is that pDependencies may be built after pTarget
+		# Setting ANDROID_NATIVE_LIB_DEPENDENCIES tells Gradle which libraries to copy into the APK.
 		foreach(Dep ${pDependencies})
 			get_target_property(DependencyOutputName ${Dep} OUTPUT_NAME)
 			set_property(TARGET ${pTarget} APPEND PROPERTY ANDROID_NATIVE_LIB_DEPENDENCIES ${DependencyOutputName})
 		endforeach()
+		# add_dependencies() makes cmake build dependencies in the correct order.
+		add_dependencies(${pTarget} ${pDependencies})
 	else()
 		add_dependencies(${pTarget} ${pDependencies})
 	endif()
 endmacro()
 
+macro(configure_plugin_linking plugin_name plugin_enabled_flag)
+	if( NOT BUILD_SHARED_LIBS )
+		if (${plugin_enabled_flag})
+			set(PLUGIN_NAME ${plugin_name})
+			configure_file("${REPOSITORY_DIR}/runtime/plugins/plugin_static_linking.cpp.in" "${CMAKE_BINARY_DIR}/plugins/${plugin_name}_linking.cpp")
+		else()
+			file(REMOVE "${CMAKE_BINARY_DIR}/plugins/${plugin_name}_linking.cpp")
+		endif()
+	endif()
+endmacro()
+
+
 macro(set_plugin_runtime_output_directory target_name target_folder)
 	if (PLATFORM_WINDOWS)
 		# Safely clean out previously built dlls and copy them to the engine plugin folder - for hot reloading of plugins
+		# PLUGIN CUSTOM CHANGE
 		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${REPOSITORY_DIR}/tools/hot-reload-post-link.bat ARGS "$(OutDir)" "${target_folder}" "${target_name}")
 		# Workaround for using the correct path in manifest generation
 		set_target_properties(${PROJECT_NAME} PROPERTIES PLUGIN_DLL_FILEPATH "${target_folder}/${target_name}.dll")
+		# PLUGIN CUSTOM CHANGE
 		set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${target_folder}")
 	else()
 		set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${target_folder}")
 	endif()
+endmacro()
+
+macro(get_child_folders result curdir)
+	file(GLOB children RELATIVE ${curdir} ${curdir}/*)
+	set(dirlist "")
+	foreach(child ${children})
+		if(IS_DIRECTORY ${curdir}/${child})
+	    	list(APPEND dirlist ${child})
+	    endif()
+	endforeach()
+	set(${result} ${dirlist})
+endmacro()
+
+macro(add_plugin_subfolder plugin_folder plugin_enabled_flag)
+	if (${plugin_enable_flag})
+		if (EXISTS "${plugin_folder}/CMakeLists.txt")
+			add_subdirectory(${plugin_folder})
+		endif()
+	endif()
+endmacro()
+
+macro(link_plugin plugin_name plugin_enable_flag)
+	if (${plugin_enable_flag})
+		if( BUILD_SHARED_LIBS )
+			add_dependencies_platform(${PROJECT_NAME} ${plugin_name})
+		else()
+			target_link_libraries(${PROJECT_NAME} ${plugin_name})
+		endif()
+	endif()
+endmacro()
+
+macro(configure_plugin_linking_from_folder plugins_folder)
+	get_child_folders(PLUGIN_FOLDER_LIST ${plugins_folder})
+	foreach(plugin_dir ${PLUGIN_FOLDER_LIST})
+		string(TOUPPER ${plugin_dir} plugin_preprocessor_name)
+		set(plugin_enable_flag "ENGINE_USE_${plugin_preprocessor_name}")
+		configure_plugin_linking(${plugin_dir} ${plugin_enable_flag})
+	endforeach()
+endmacro()
+
+macro(add_plugins_from_folders plugins_folder)
+	get_child_folders(PLUGIN_FOLDER_LIST ${plugins_folder})
+	foreach(plugin_dir ${PLUGIN_FOLDER_LIST})
+		string(TOUPPER ${plugin_dir} plugin_preprocessor_name)
+		set(plugin_enable_flag "ENGINE_USE_${plugin_preprocessor_name}")
+		add_plugin_subfolder(${plugins_folder}/${plugin_dir} ${plugin_enable_flag})
+	endforeach()
+endmacro()
+
+macro(link_plugins_from_folders plugins_folder)
+	get_child_folders(PLUGIN_FOLDER_LIST ${plugins_folder})
+	foreach(plugin_dir ${PLUGIN_FOLDER_LIST})
+		string(TOUPPER ${plugin_dir} plugin_preprocessor_name)
+		set(plugin_enable_flag "ENGINE_USE_${plugin_preprocessor_name}")
+		link_plugin(${plugin_dir} ${plugin_enable_flag})
+	endforeach()
+endmacro()
+
+macro(register_plugin_file)
+	# Registers a full path to a plugin dynamic library in the CMake cache
+	# variable PLUGIN_RESOURCE_FILES so it can be read by a higher-level
+	# CMake project.  This is used for adding libs to a bundle for platforms
+	# that don't support doing it automatically through CMake dependencies.
+	# Currently that is only iOS.
+	list(APPEND PLUGIN_RESOURCE_FILES "$<TARGET_FILE:${PROJECT_NAME}>")
+	set(PLUGIN_RESOURCE_FILES "${PLUGIN_RESOURCE_FILES}" CACHE INTERNAL "" FORCE)
+endmacro()
+
+macro(enable_ios_code_signing)
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME LaunchImage
+		XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "${ENGINE_IOS_CODE_SIGN_IDENTITY}"
+		XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
+		XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${ENGINE_IOS_DEVELOPMENT_TEAM}"
+		)
+endmacro()
+
+# Removes all matching candidates from a list of files.
+macro(exclude_project_files exclude_pattern files)
+	foreach (TMP_PATH ${files})
+		string (FIND ${TMP_PATH} ${exclude_pattern} EXCLUDE_MATCH_FOUND)
+		if (NOT ${EXCLUDE_MATCH_FOUND} EQUAL -1)
+			list (REMOVE_ITEM files ${TMP_PATH})
+		endif ()
+	endforeach()
+endmacro()
+
+# Defines TypeScript projects to be compiled
+macro(add_typescript_project target source_dir tsconfig)
+	set(files ${ARGN})
+
+	set(TYPESCRIPT_EXTS "*.ts" "*.json" "*.html" "*.css" "*.stingray_plugin")
+	find_source_files_of_type("${TYPESCRIPT_EXTS}" files ${source_dir})
+
+	set(tsp "${source_dir}/${tsconfig}")
+	message("-- Generating typescript project ${tsp}...")
+
+	set (tsp_stamp "${CMAKE_CURRENT_BINARY_DIR}/${target}.ts.stamp")
+	add_custom_command(
+		OUTPUT ${tsp_stamp}
+		COMMAND "node" ./node_modules/typescript/bin/tsc -p ${tsp} --noEmitOnError --listEmittedFiles
+		COMMAND ${CMAKE_COMMAND} -E touch ${tsp_stamp}
+		WORKING_DIRECTORY "${REPOSITORY_DIR}"
+		DEPENDS ${files}
+		COMMENT "Compiling typescript project ${tsp}")
+
+	add_custom_target(${target} ALL DEPENDS ${tsp_stamp} SOURCES ${files})
 endmacro()

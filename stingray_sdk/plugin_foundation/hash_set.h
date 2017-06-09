@@ -22,21 +22,6 @@ public:
 	typedef EQUAL key_equal;
 	typedef HashSet<K, HASH, EQUAL> this_type;
 
-	template <class T, int N>
-	struct node_type_base {
-		key_type	value;
-		unsigned	marker;
-	};
-
-	template <int N>
-	struct node_type_base< Int2Type<true>, N > {
-		ALLOCATOR_AWARE;
-		node_type_base(Allocator &a) : value(a) {}
-		key_type	value;
-		unsigned	marker;
-	};
-	typedef node_type_base< IS_ALLOCATOR_AWARE_TYPE(K), 0 > node_type;
-	typedef Vector< node_type> storage_type;
 	typedef ConstBucketIterator<this_type, key_type> const_iterator;
 	typedef BucketIterator<this_type, key_type> iterator;
 
@@ -45,6 +30,7 @@ public:
 	HashSet(Allocator &a);
 	HashSet(unsigned buckets, unsigned spill, Allocator &a);
 	HashSet(const HashSet<K,HASH,EQUAL> &o);
+	~HashSet();
 	void operator=(const HashSet<K,HASH,EQUAL> &o);
 
 	void reserve(unsigned size);
@@ -80,14 +66,26 @@ private:
 	unsigned allocate_spill();
 	void free_spill(unsigned i);
 	void clear_freelist();
+	void allocate_data(unsigned count);
+	void construct(key_type &p, const Int2Type<true> &) { new (&p) key_type(_allocator); }
+	void construct(key_type &p, const Int2Type<false> &) { new (&p) key_type(); }
+	void destruct(key_type &p) { p.~key_type(); }
+
+	struct Data {
+		Data() : size(), marker(), key() {}
+		unsigned size;
+		unsigned *marker;
+		key_type *key;
+	};
 
 	key_hash		_hash;
 	key_equal		_equal;
-	storage_type	_data;
+	Data			_data;
 	unsigned		_used;
 	unsigned		_buckets;
 	unsigned		_spill_unused;
 	unsigned		_spill_freelist;
+	Allocator		&_allocator;
 };
 
 } // namespace stingray_plugin_foundation

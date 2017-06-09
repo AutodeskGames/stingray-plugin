@@ -108,64 +108,76 @@ public:
 	ALLOCATOR_AWARE;
 
 	// Creates a new dynamic string using the specified allocator.
-	DynamicString(Allocator &a) : buffer(a) {buffer.push_back(0);}
+	DynamicString(Allocator &a) : _buffer(a) {}
 
 	// Creates a new dynamic string initialized from s.
-	DynamicString(Allocator &a, const char *s) : buffer(strlen32(s)+1, a) {memmove(buffer.begin(), s, buffer.size());}
+	DynamicString(Allocator &a, const char *s) : _buffer(a) { unsigned length = s ? strlen32(s) : 0;  if (length > 0) { _buffer.resize(length + 1);  memmove(_buffer.begin(), s, _buffer.size()); } }
 
 	// Creates a new dynamic string initialized from the first n characters of s.
-	DynamicString(Allocator &a, const char *s, unsigned n) : buffer(n+1,a) {memmove(buffer.begin(), s, n); buffer[n] = 0;}
+	DynamicString(Allocator &a, const char *s, unsigned n) : _buffer(a) { if (n > 0) { _buffer.resize(n + 1);  memmove(_buffer.begin(), s, n); _buffer[n] = 0; } }
+
+	// Copy constructor
+	DynamicString(const DynamicString &o) : _buffer(o._buffer) {}
 
 	// Assignment.
-	void operator=(const char *s) {buffer.resize(strlen32(s)+1); memmove(buffer.begin(), s, buffer.size());}
+	void operator=(const char *s) { unsigned length = strlen32(s); if (length > 0) { _buffer.resize(length + 1); memmove(_buffer.begin(), s, _buffer.size()); } else _buffer.clear(); }
 
 	// Assigns the characters from ds to this string. Does not change the allocator.
-	void operator=(const DynamicString &ds) {(*this) = ds.c_str();}
+	void operator=(const DynamicString &ds) { _buffer = ds._buffer; }
 
 	// Returns the size/length of the string. The size does not include the terminating zero.
-	unsigned size() const {return buffer.size() - 1;}
+	unsigned size() const {return _buffer.empty() ? 0 : _buffer.size() - 1;}
 
 	// Returns true if the string is empty.
 	bool empty() const {return size() == 0;}
 
 	// Returns the C-string held by this dynamic string.
-	char *c_str() {return buffer.begin();}
-	const char *c_str() const {return buffer.begin();}
+	char *c_str() { return _buffer.empty() ? empty_string() : _buffer.begin(); }
+	const char *c_str() const {return _buffer.empty() ? empty_string() : _buffer.begin();}
 
 	// Returns a pointer to the terminating zero at the end of C-string.
-	char *end() {return buffer.end() - 1;}
-	const char *end() const {return buffer.end() - 1;}
+	char *end() { return _buffer.empty() ? c_str() : _buffer.end() - 1; }
+	const char *end() const { return _buffer.empty() ? c_str() : _buffer.end() - 1; }
 
 	// Accesses characters in the string.
-	char &operator[](unsigned i) {return buffer[i];}
-	const char &operator[](unsigned i) const {return buffer[i];}
+	char &operator[](unsigned i) { return c_str()[i];}
+	const char &operator[](unsigned i) const { return c_str()[i]; }
 
 	// Resizes the string to the specified size (size does not include terminating zero).
-	void resize(unsigned size) {buffer.resize(size + 1); buffer[size] = 0;}
+	void resize(unsigned size) { bool empty = _buffer.empty(); _buffer.resize(size + 1); if (empty) _buffer[0] = '\0'; _buffer[size] = '\0'; }
 
 	// Extends the string with the specified number of bytes.
 	void extend(unsigned bytes) {resize(size() + bytes);}
 
 	// Clears the memory and sets this string to the empty string.
-	void clear() {buffer.resize(1); buffer[0] = 0;}
+	void clear() { _buffer.clear(); }
 
 	// Returns the allocator of the string.
-	Allocator &allocator() const {return buffer.allocator();}
+	Allocator &allocator() const {return _buffer.allocator();}
 
 	// Swaps the contents efficiently.
 	void swap(DynamicString &other);
 
 	// Serializes the string to the stream
-	template <class STREAM> void serialize(STREAM &a) {
+	template <class STREAM> void serialize(STREAM &s) {
 		unsigned sz = size();
-		a & sz;
-		resize(sz);
-		for (unsigned i=0; i<sz; ++i)
-			a & buffer[i];
+		s & sz;
+		if (sz != size())
+			resize(sz);
+
+		if (sz != 0) {
+			if (s.is_output())
+				s.write(_buffer.begin(), sz);
+			else
+				s.read(_buffer.begin(), sz);
+		}
 	}
 
-	// Raw access to the string buffer.
-	Array<char> buffer;
+	Array<char> &buffer() { if (_buffer.empty()) _buffer.push_back(0); return _buffer; }
+	private:
+		// Raw access to the string buffer.
+		Array<char> _buffer;
+		static char *empty_string() { static char c = '\0'; return &c; }
 };
 
 // Comparison operators

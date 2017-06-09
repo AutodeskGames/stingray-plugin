@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.8)
 
 # Lock the process
 file(LOCK "${LOCKDIR}/${OUTFILE}.lock")

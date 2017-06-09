@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "hash_function.h"
+#include "array.h"
 
 namespace stingray_plugin_foundation {
 
@@ -72,6 +73,16 @@ inline const char *IdString32::to_id_hex() const
 	char *s = p;
 	p += strlen(p) + 1;
 	return s;
+}
+
+template <>
+template <class STREAM> void Array<IdString64>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
+}
+
+template <>
+template <class STREAM> void Array<IdString32>::serialize(STREAM &stream) {
+	raw_array_serialize(stream, *this);
 }
 
 }

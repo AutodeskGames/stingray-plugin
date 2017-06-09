@@ -62,6 +62,8 @@ extern "C" {
 	typedef CApiRenderDataComponent* RenderDataComponentPtr;
 	typedef CApiTagComponent* TagComponentPtr;
 	typedef CApiComponent* ComponentPtr;
+	typedef CApiFlowComponent* FlowComponentPtr;
+	typedef CApiUnitComponent* UnitComponentPtr;
 	typedef CApiPhysicsWorld* PhysicsWorldPtr;
 
 	typedef const CApiWorldConfig* ConstWorldConfigPtr;
@@ -598,6 +600,26 @@ extern "C" {
 	enum CameraMode {
 		CAMERA_MODE_MONO,
 		CAMERA_MODE_STEREO
+	};
+
+	enum FlowType {
+		FLOW_NIL_TYPE = 0,
+		FLOW_UNIT_TYPE = 1,
+		FLOW_ACTOR_TYPE = 2,
+		FLOW_MOVER_TYPE = 3,
+		FLOW_VECTOR3_TYPE = 4,
+		FLOW_FLOAT_TYPE = 5,
+		FLOW_BOOL_TYPE = 6,
+		FLOW_STRING_TYPE = 7,
+		FLOW_ID64_TYPE = 8,
+		FLOW_QUATERNION_TYPE = 9,
+		FLOW_UNSIGNED_TYPE = 10,
+		FLOW_CAMERA_TYPE = 11,
+		FLOW_LIGHT_TYPE = 12,
+		FLOW_MESH_TYPE = 13,
+		FLOW_MATERIAL_TYPE = 14,
+		FLOW_ID32_TYPE = 15,
+		FLOW_ENTITY_TYPE = 16
 	};
 
 #ifdef __cplusplus

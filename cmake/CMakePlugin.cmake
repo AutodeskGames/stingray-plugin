@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.8)
 
 include(CMakeSettings)
 
@@ -8,6 +8,10 @@ set(CMAKE_C_FLAGS_DEBUG "-D_DEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG")
 set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG")
+
+# Global cache entry filled with file paths to any plugins built as dynamic
+# libraries for platforms that need to bundle them (eg: iOS)
+set(PLUGIN_RESOURCE_FILES "" CACHE INTERNAL "" FORCE)
 
 # Setup platforms
 if( PLATFORM_WINDOWS )
@@ -38,14 +42,14 @@ elseif( PLATFORM_PS4 )
 	endif()
 	add_definitions(-DPS4)	# Patch for PS4: Scaleform use a namespace named 'PS4', and it conflicts with the define 'PS4'. Using add_definitions allow us to remove it later.
 	add_compile_options(-D__ORBIS__ -DX64 -D__SSE3__)
-elseif( PLATFORM_WEBGL )
-	add_compile_options(-DWEBGL -DSINGLE_THREAD)
-	if( ENGINE_USE_WEBGL_SIMD )
-		add_compile_options(-DUSE_WEBGL_SIMD)
+elseif( PLATFORM_WEB )
+	add_compile_options(-DWEB -DSINGLE_THREAD)
+	if( ENGINE_USE_WEB_SIMD )
+		add_compile_options(-DUSE_WEB_SIMD)
 	endif()
 elseif( PLATFORM_UWP )
 	add_compile_options(-DUWP -DWINAPI_PARTITION_APP=1)
-	if( PLATFORM_HOLOLENS )
+	if( ENGINE_USE_HOLOLENS_PLUGIN )
 		add_compile_options(-DHOLOLENS)
 	endif()
 elseif( PLATFORM_LINUX )
@@ -68,6 +72,25 @@ set(CMAKE_SHARED_LINKER_FLAGS_DEV "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
 set(CMAKE_MODULE_LINKER_FLAGS_DEV "${CMAKE_MODULE_LINKER_FLAGS_RELEASE}")
 set(CMAKE_EXE_LINKER_FLAGS_DEV "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
+# Get the current working branch and latest commit hash and generate build identifier header file
+determine_build_revision("${PROJECT_SOURCE_DIR}" ENGINE_BUILD_IDENTIFIER)
+if( ENGINE_BUILD_IDENTIFIER )
+	execute_process(COMMAND git rev-parse --abbrev-ref HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE ENGINE_BUILD_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+#configure_file("${PROJECT_SOURCE_DIR}/build_identifier.h.in" "${PROJECT_BINARY_DIR}/build_identifier.h")
+
+# Compute the resource version offset based on product version
+math(EXPR BRANCH_RESOURCE_VERSION_OFFSET "(${PRODUCT_VERSION_MAJOR}*10000 + ${PRODUCT_VERSION_MINOR}*100 + ${PRODUCT_VERSION_REVISION}) * 1000")
+#configure_file("${PROJECT_SOURCE_DIR}/resource_version.h.in" "${PROJECT_BINARY_DIR}/resource_version.h")
+
+# Generate Emscripten config file if targeting platform Web
+if( PLATFORM_WEB AND NOT "${EMSCRIPTEN_CONFIG}" STREQUAL "" )
+	configure_file("${PROJECT_SOURCE_DIR}/main/web/emscripten.in" "${EMSCRIPTEN_CONFIG}" @ONLY)
+	configure_file("${PROJECT_SOURCE_DIR}/main/web/emscripten_sanity.in" "${EMSCRIPTEN_CONFIG_SANITY}" @ONLY)
+	# Prevent Emscripten from believing we changed the config: sanity timestamp must be greater than config timestamp
+	execute_process(COMMAND ${CMAKE_COMMAND} -E touch "${EMSCRIPTEN_CONFIG_SANITY}")
+endif()
+
 # Allow subfolders in solution file
 if ( ENGINE_USE_SOLUTION_FOLDERS )
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -83,13 +106,16 @@ endif()
 
 add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DDEVELOPMENT>)
 add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DUNIT_TESTS>)
-if( NOT PLATFORM_UWP )
-	add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DUSE_CALLSTACK>)
-endif()
+add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DUSE_CALLSTACK>)
+
 add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DHAS_PROFILER>)
+add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DHAS_LOADING_PROFILER>)
+if( NOT PLATFORM_WEB)
+	add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DHAS_CONSOLE_SERVER>)
+endif()
 
 # Define platform architecture
-if( PLATFORM_WINDOWS OR PLATFORM_OSX OR PLATFORM_LINUX OR PLATFORM_XBOXONE OR PLATFORM_PS4 OR PLATFORM_WEBGL OR PLATFORM_UWP )
+if( PLATFORM_WINDOWS OR PLATFORM_OSX OR PLATFORM_LINUX OR PLATFORM_XBOXONE OR PLATFORM_PS4 OR PLATFORM_WEB OR PLATFORM_UWP )
 	add_compile_options(-DPLATFORM_ARCH_X86)
 elseif( PLATFORM_IOS OR PLATFORM_ANDROID )
 	add_compile_options(-DPLATFORM_ARCH_ARM)
@@ -104,9 +130,14 @@ else()
 	add_compile_options(-DPLATFORM_32BIT)
 endif()
 
+if(NOT BUILD_SHARED_LIBS)
+	add_compile_options(-DSTATIC_PLUGIN_LINKING)
+endif()
+
 # Define if platform can compile game data
 if( ENGINE_CAN_COMPILE )
 	add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DCAN_COMPILE>)
+	add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DMOJOSHADER_NO_VERSION_INCLUDE>)
 endif()
 
 # Setup global per-platform compiler/linker options
@@ -137,6 +168,7 @@ if( PLATFORM_WINDOWS OR PLATFORM_XBOXONE OR PLATFORM_UWP )
 	add_compile_options(/GF)
 
 	# Disable C++ exceptions
+	# PLUGIN CUSTOM CHANGES
 	if (NOT EDITOR_PLUGIN)
 		replace_compile_flags("/EHsc" "")
 	endif()
@@ -326,6 +358,9 @@ elseif( PLATFORM_IOS OR PLATFORM_OSX )
 
 	# Disable specific warnings
 	add_compile_options(-Wno-parentheses -Wno-reorder -Wno-missing-braces -Wno-unused-private-field)
+	if( ${XCODE_VERSION} VERSION_GREATER_EQUAL 8.3 )
+		add_compile_options(-Wno-nonportable-include-path -Wno-null-dereference)
+	endif()
 
 	# Treat all other warnings as errors
 	add_compile_options(-Werror)
@@ -353,9 +388,9 @@ elseif( PLATFORM_PS4 )
 	add_compile_options(-Wno-reorder -Wno-overloaded-virtual -Wno-missing-braces -Wno-logical-op-parentheses -Wno-unknown-pragmas)
 
 	# Treat all other warnings as errors
-	add_compile_options(-Werror)
+	add_compile_options(-Werror -Wno-deprecated-declarations)
 
-elseif( PLATFORM_WEBGL )
+elseif( PLATFORM_WEB )
 	# Debug information
 	add_compile_flags("-g" debug)
 
@@ -364,12 +399,12 @@ elseif( PLATFORM_WEBGL )
 	add_compile_flags("-O3" dev release)
 
 	# Enable pthread support (if available)
-	if( ENGINE_USE_WEBGL_THREADS )
+	if( ENGINE_USE_WEB_THREADS )
 		add_compile_flags("-s USE_PTHREADS=2")
 	endif()
 
 	# Enable SIMD
-	if( ENGINE_USE_WEBGL_SIMD )
+	if( ENGINE_USE_WEB_SIMD )
 		add_compile_options(-msse3)
 	endif()
 
