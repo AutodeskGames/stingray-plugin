@@ -439,7 +439,7 @@ def cmake_cache_init(build_dir, config=nil)
 		content += get_cmake_set_command("EMSCRIPTEN_LLVM_VERSION", $em_llvm_version)
 	elsif $options[:platform] == "uwp32" or $options[:platform] == "uwp64"
 		content += get_cmake_set_command("CMAKE_SYSTEM_NAME", "WindowsStore")
-		content += get_cmake_set_command("CMAKE_SYSTEM_VERSION", "10.0")
+		content += get_cmake_set_command("CMAKE_SYSTEM_VERSION", "10.0.14393.0")
 	end
 	content += get_cmake_set_command("REPOSITORY_DIR", $script_dir)
 
