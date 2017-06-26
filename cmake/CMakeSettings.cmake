@@ -115,8 +115,6 @@ set(ENGINE_USE_SCALEFORMSTUDIO_PLUGIN ON CACHE BOOL "Enable ScaleformStudio supp
 set(ENGINE_USE_WWISE_PLUGIN ON CACHE BOOL "Enable WWise sound support.")
 set(ENGINE_USE_OCULUS_PLUGIN ON CACHE BOOL "Enable Oculus support.")
 set(ENGINE_USE_STEAMVR_PLUGIN ON CACHE BOOL "Enable SteamVR support.")
-set(ENGINE_USE_GEARVR_PLUGIN ON CACHE BOOL "Enable GearVR support.")
-set(ENGINE_USE_GOOGLEVR_PLUGIN ON CACHE BOOL "Enable GoogleVR support.")
 set(ENGINE_USE_TEXTUREREADER_PLUGIN ON CACHE BOOL "Enable TextureReader support.")
 set(ENGINE_USE_ALEMBIC_PLUGIN ON CACHE BOOL "Enable Alembic support.")
 set(ENGINE_USE_HOLOLENS_PLUGIN ON CACHE BOOL "Enable Hololens support.")
