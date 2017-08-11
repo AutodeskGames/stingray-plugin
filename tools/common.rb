@@ -66,7 +66,6 @@ $devenvs_whitelist = {
 	"uwp32" => ["msvc14"]
 }
 
-
 $configs = ["debug", "dev", "release"]
 
 $remote_platforms = ["android", "ios", "ps4", "xb1"]
@@ -217,6 +216,12 @@ def xcodebuild_quiet(command)
 	return system "(s=/tmp/.$$_$RANDOM;((" + command + ";echo $?>$s)|(egrep #{$stdout.isatty() ? "--color=always " : ""}-A 5 \"(error|warning):\")); exit $(cat $s;rm $s))"
 end
 
+# command: Complete command and arguments string to run
+# verbose: Whether process output is printed to console output
+# pause: Whether script execution should pause on failed execution of command
+# timeout_minutes: When specified, kills the spawned process by the command if not exited after specified minutes
+# is_build: Used to control command execution for code building purposes
+# print_time: If true, prints execution time of command
 def run_process(command, verbose, pause, is_build = false, print_time = false, timeout_minutes: 0, exit_on_error: true)
 	exit_code = 0
 	command_start = Time.now
