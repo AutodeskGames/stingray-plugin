@@ -2,9 +2,10 @@
 //
 name = "Stingray Plugin"
 description = "Stingray Plugin Example"
-version = "1.0.0"
+version = "1.9.0"
 changelog = {
     "1.0.0": "First version"
+    "1.9.0": "Updated plugin for Stingray 1.9"
 }
 author = {
     name = "Jonathan Schmidt"
@@ -83,5 +84,5 @@ extensions = {
 //
 platforms = ["win64"]
 dependencies = {
-    "stingray" = ">=1.8.0"
+    "stingray" = "~1.9.0"
 }

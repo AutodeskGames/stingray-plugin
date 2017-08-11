@@ -26,6 +26,17 @@ if( NOT NSIGHT_TEGRA_VERSION )
 	message(FATAL_ERROR "Engine requires Android Nsight Tegra to be installed in order to build Android platform.")
 endif()
 
+set(ANDROID_NDK_ROOT "$ENV{ANDROID_NDK_ROOT}")
+string(STRIP "${ANDROID_NDK_ROOT}" ANDROID_NDK_ROOT)
+string(REPLACE "\\" "/" ANDROID_NDK_ROOT "${ANDROID_NDK_ROOT}")
+if(NOT ANDROID_NDK_ROOT)
+	message(FATAL_ERROR "Engine requires ANDROID_NDK_ROOT environment variable to point to your Android NDK.")
+endif()
+
+file(GLOB ANDROID_TOOLCHAIN_DIR "${ANDROID_NDK_ROOT}/toolchains/arm-linux-androideabi-*")
+message("Android NDK directory: ${ANDROID_TOOLCHAIN_DIR}")
+file(GLOB_RECURSE ANDROID_STRIP_BIN "${ANDROID_TOOLCHAIN_DIR}/*/strip.exe")
+
 # Tell CMake we are cross-compiling to Android
 set(CMAKE_SYSTEM_NAME Android)
 

@@ -544,20 +544,8 @@ struct LuaApi
 	/* Gets a Unit at the specified index. */
 	CApiUnit * (*getunit) (lua_State *L, int i);
 
-	/* Gets an Entity at the specified index. */
-	EntityRef (*getentity)(lua_State *L, int i);
-
-	/* Pushes an Entity to the stack. */
-	void (*pushentity)(lua_State *L, EntityRef e_ref);
-
 	/* Gets the Lua state where the main scripts execute. */
 	lua_State* (*getscriptenvironmentstate)();
-
-	/* Returns true if the stack entry is a nil. */
-	int(*isnil) (lua_State *L, int i);
-
-	/* Returns true if the stack entry is a boolean. */
-	int(*isbool) (lua_State *L, int i);
 
 	/* Returns true if the stack entry is a table. */
 	int (*istable) (lua_State *L, int i);
@@ -583,8 +571,20 @@ struct LuaApi
 	/* Pops the top value from the Lua stack. */
 	void (*pop) (lua_State *L);
 
+	/* Gets an Entity at the specified index. */
+	EntityRef (*getentity)(lua_State *L, int i);
+
+	/* Pushes an Entity to the stack. */
+	void (*pushentity)(lua_State *L, EntityRef e_ref);
+
+	/* Returns true if the stack entry is a nil. */
+	int(*isnil) (lua_State *L, int i);
+
+	/* Returns true if the stack entry is a boolean. */
+	int(*isbool) (lua_State *L, int i);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[28];
 };
 
 /* ----------------------------------------------------------------------
@@ -963,12 +963,6 @@ struct ResourceManagerApi
 	/* As get() but uses a hashed type and name instead. */
 	void *(*get_by_id)(uint64_t type_id, uint64_t name_id);
 
-	/* Returns true if the specified resource is online. */
-	int(*is_online)(const char *type, const char *name);
-
-	/* As is_online() but uses a hashed type and name instead. */
-	int(*is_online_by_id)(uint64_t type_id, uint64_t name_id);
-
 	/* Opens the streamed data belonging to the resource. When you are done with using the data
 	   you should destroy it with delete_stream().
 
@@ -983,6 +977,12 @@ struct ResourceManagerApi
 
 	/* Destroys a stream opened by new_open_stream(). */
 	void (*delete_stream)(struct FutureInputArchive * fia, struct AllocatorObject * allocator);
+
+	/* Returns true if the specified resource is online. */
+	int(*is_online)(const char *type, const char *name);
+
+	/* As is_online() but uses a hashed type and name instead. */
+	int(*is_online_by_id)(uint64_t type_id, uint64_t name_id);
 
 	/* Reserved for expansion of the API. */
 	void *reserved[30];
@@ -1419,14 +1419,15 @@ struct UnitApi
 	   Returns true if the curve value was successfully fetched. */
 	uint8_t (*get_curve_value)(CApiUnit *unit, uint32_t object, uint32_t parameter, unsigned count, float* floats);
 
-	/* Query number of playing animation clips and fill in playback details. */
-	uint32_t (*get_playing_animation_infos)(CApiUnit *unit, uint32_t layer_id, struct U_AnimationPlayingInfo *playing_infos, uint32_t maximum);
-
 	/* The world that the unit lives in. */
 	CApiWorld* (*world)(CApiUnit *unit);
 
+	/* Query number of playing animation clips and fill in playback details. */
+	uint32_t (*get_playing_animation_infos)(CApiUnit *unit, uint32_t layer_id, struct U_AnimationPlayingInfo *playing_infos, uint32_t maximum);
+
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[31];
 };
 
 /*
@@ -1738,7 +1739,7 @@ struct FileSystemApi
 	ConstConfigRootPtr (*parse_sjson)(struct FileSystem *filesystem, const char *file, struct AllocatorObject *allocator, const char **error);
 
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[31];
 };
 
 /* ----------------------------------------------------------------------

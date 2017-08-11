@@ -82,7 +82,7 @@ interface Stingray {
     unloadNativeExtension: (id: string) => boolean;
 
     loadAsyncExtension: (path: string) => Promise<string>;
-    unloadAsyncExtension: (id: string) => Promise<boolean>;
+    unloadAsyncExtension: (id: string) => Promise<any>;
 
     hostExecute: (type: string, firstArg?: any) => Promise<any>;
 

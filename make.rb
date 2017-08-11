@@ -3,24 +3,22 @@
 #
 # make.rb - launch build with default options
 #
-# This file will call make_switch.rb with multiple default options. If you
-# need fine control over what is built, please use make_switch.rb instead. The
-# script make_switch.rb does not have any components or plug-ins enabled by
-# default.
-#
 #******************************************************************************
 
 #******************************************************************************
 #
 # Display and validate options
 #
+# This secion is responsible to control which options are available, parse them,
+# and verify their coherence.
+#
 #******************************************************************************
 
-require 'optparse'
 require 'fileutils'
 require 'stringio'
 require 'tmpdir'
 require 'open3'
+require 'optparse'
 
 # Force stdout to flush its content immediately
 STDOUT.sync = true
@@ -50,16 +48,16 @@ def parse_options(argv, options)
 		opts.banner = "Usage: make.rb [options]"
 		opts.separator ""
 		opts.separator "Common Options:"
-		opts.on("-o", "--output DIRECTORY", "Binaries output directory (override SR_BIN_DIR)") { |v| options[:output] = v }
 		opts.on("-p", "--platform PLATFORM", "Platform to target (#{$platforms.join(", ")}, #{$platform_aliases.keys.join(", ")})") { |v| options[:platform] = v }
 		opts.on("-c", "--config CONFIGURATION", "Build configuration to use (#{$configs.join(", ")})") { |v| options[:config] = v }
 		opts.on("-e", "--devenv ENVIRONMENT", "Development environment to use (#{$devenvs.join(", ")})") { |v| options[:devenv] = v }
 		opts.on("-t", "--target TARGET", "Target project to build (default is all)") { |v| options[:target] = v }
-		opts.on("-r", "--rebuild", "Clean all output targets before build") { |v| options[:rebuild] = v }
-		opts.on("-x", "--clean", "Clean all output targets only") { |v| options[:clean] = v }
+		opts.on("-o", "--output DIRECTORY", "Binaries output directory (override SR_BIN_DIR)") { |v| options[:output] = v }
 		opts.on("-g", "--[no-]generate", "Generate project files (default)") { |v| options[:generate] = v }
 		opts.on("-b", "--[no-]build", "Launch a build of generated project files (default)") { |v| options[:build] = v }
 		opts.on("-z", "--[no-]debug-info", "Enable debug information in all configurations (default)") { |v| options[:debug_info] = v }
+		opts.on("-r", "--rebuild", "Clean all output targets before build") { |v| options[:rebuild] = v }
+		opts.on("-x", "--clean", "Clean all output targets only") { |v| options[:clean] = v }
 		opts.on("--[no-]engine", "Enable Engine target") { |v| options[:engine] = v }
 		opts.on("--[no-]editor", "Enable Editor target") { |v| options[:editor] = v }
 		opts.separator ""
@@ -239,6 +237,8 @@ end
 #
 # Generate and build targets
 #
+# This secion is responsible for generating and building targets.
+#
 #******************************************************************************
 
 start_time = Time.now
@@ -311,49 +311,58 @@ report_block("plugin", "Configuring", true) do
 		end
 	end
 
-	# Setup Emscripten build environment if targeting platform WebGL
-	if $options[:platform] == "webgl"
-		# Locate Emscripten in library directory
-		$emsdk_dir = find_package_root($options[:platform], $options[:devenv], "emscripten")
-		if $emsdk_dir == nil or !Dir.exists?($emsdk_dir)
-			puts "\nERROR: Emscripten not found in library path!".bold.red
-			exit 1
+
+	# Setup Emscripten build environment if targeting platform Web
+	if $options[:platform] == "web"
+		if ENV["EMSDK"] == nil
+			# Locate Emscripten in library directory
+			$emsdk_dir = find_package_root($options[:platform], $options[:devenv], "emsdk")
+			if $emsdk_dir == nil or !Dir.exists?($emsdk_dir)
+				puts "\nERROR: Emscripten not found in library path!".bold.red
+				exit 1
+			end
+
+			# Find Emscripten directories
+			$emsdk_emscripten_dir = File.dirname(Dir.glob("#{$emsdk_dir}/**/emcc.bat").first)
+			$emsdk_llvm_dir = File.dirname(Dir.glob("#{$emsdk_dir}/**/clang.exe").first)
+			$emsdk_binaryen_dir = File.expand_path(File.join(File.dirname(Dir.glob("#{$emsdk_dir}/**/asm2wasm.exe").first), "../"))
+			$emsdk_nodejs = Dir.glob("#{$emsdk_dir}/**/node.exe").first
+			$emsdk_python = Dir.glob("#{$emsdk_dir}/**/python.exe").first
+			$emsdk_java = Dir.glob("#{$emsdk_dir}/**/java.exe").first
+			$emsdk_optimizer = Dir.glob("#{$emsdk_dir}/**/optimizer.exe").first
+			$emsdk_config = File.join($emsdk_dir, ".emscripten")
+			$emsdk_config_sanity = $emsdk_config + "_sanity"
+			$emsdk_cache_dir = File.join($emsdk_dir, ".emscripten_cache")
+			$emsdk_tmp_dir = (ENV["SR_TMP_DIR"] || Dir.tmpdir).gsub("\\", "/")
+
+			# Find Emscripten and LLVM version
+			$emsdk_emscripten_version = File.read(File.join($emsdk_emscripten_dir, "emscripten-version.txt")).lines[0].gsub(/[\n\r"]/, '')
+			Open3.popen3("#{File.join($emsdk_llvm_dir, "clang.exe")} -v") do |stdin, stdout, stderr, wait_thr|
+				$emsdk_llvm_version = stderr.read.lines[0][/[\d].[\d]/]
+			end
+
+			# Temporarily override Emscripten environment
+			ENV["EMSDK"] = $emsdk_dir
+			ENV["EM_CONFIG"] = $emsdk_config
+			ENV["EM_CACHE"] = $emsdk_cache_dir
+			ENV["BINARYEN_ROOT"] = $emsdk_binaryen_dir
+			ENV["JAVA_HOME"] = File.dirname($emsdk_java)
+			ENV["EMSCRIPTEN"] = $emsdk_emscripten_dir
+
+			# Temporarily add paths to PATH environment
+			ENV["PATH"] = "#{$emsdk_dir};#{ENV["PATH"]}"
+			ENV["PATH"] = "#{$emsdk_llvm_dir};#{ENV["PATH"]}"
+			ENV["PATH"] = "#{File.dirname($emsdk_nodejs)};#{ENV["PATH"]}"
+			ENV["PATH"] = "#{File.dirname($emsdk_python)};#{ENV["PATH"]}"
+			ENV["PATH"] = "#{File.dirname($emsdk_java)};#{ENV["PATH"]}"
+			ENV["PATH"] = "#{$emsdk_emscripten_dir};#{ENV["PATH"]}"
+
+			# Make sure directories exist
+			FileUtils.mkdir_p($emsdk_cache_dir) unless Dir.exists?($emsdk_cache_dir)
+			FileUtils.mkdir_p($emsdk_tmp_dir) unless Dir.exists?($emsdk_tmp_dir)
+		else
+			$emsdk_emscripten_dir = ENV["EMSCRIPTEN"].gsub("\\", "/")
 		end
-
-		# Find Emscripten directories
-		$emcc_dir = File.dirname(Dir.glob("#{$emsdk_dir}/**/emcc.bat").first)
-		$em_llvm_dir = File.dirname(Dir.glob("#{$emsdk_dir}/**/clang.exe").first)
-		$em_binaryen_dir = File.expand_path(File.join(File.dirname(Dir.glob("#{$emsdk_dir}/**/asm2wasm.exe").first), "../"))
-		$em_nodejs = Dir.glob("#{$emsdk_dir}/**/node.exe").first
-		$em_python = Dir.glob("#{$emsdk_dir}/**/python.exe").first
-		$em_java = Dir.glob("#{$emsdk_dir}/**/java.exe").first
-		$em_optimizer = Dir.glob("#{$emsdk_dir}/**/optimizer.exe").first
-		$em_config = File.join($emsdk_dir, ".emscripten")
-		$em_config_sanity = $em_config + "_sanity"
-		$em_cache_dir = File.join($emsdk_dir, ".emscripten_cache")
-		$em_tmp_dir = (ENV["SR_TMP_DIR"] || Dir.tmpdir).gsub("\\", "/")
-
-		# Find Emscripten and LLVM version
-		$em_version = File.read(File.join($emcc_dir, "emscripten-version.txt")).lines[0].gsub(/[\n\r"]/, '')
-		Open3.popen3("#{File.join($em_llvm_dir, "clang.exe")} -v") do |stdin, stdout, stderr, wait_thr|
-			$em_llvm_version = stderr.read.lines[0][/[\d].[\d]/]
-		end
-
-		# Temporarily override Emscripten environment
-		ENV["EM_CONFIG"] = $em_config
-		ENV["EM_CACHE"] = $em_cache_dir
-		ENV["JAVA_HOME"] = File.dirname($em_java)
-		ENV["EMSCRIPTEN"] = $emcc_dir
-		ENV["PATH"] = "#{$emsdk_dir};#{ENV["PATH"]}"
-		ENV["PATH"] = "#{$em_llvm_dir};#{ENV["PATH"]}"
-		ENV["PATH"] = "#{File.dirname($em_nodejs)};#{ENV["PATH"]}"
-		ENV["PATH"] = "#{File.dirname($em_python)};#{ENV["PATH"]}"
-		ENV["PATH"] = "#{File.dirname($em_java)};#{ENV["PATH"]}"
-		ENV["PATH"] = "#{$emcc_dir};#{ENV["PATH"]}"
-
-		# Make sure directories exist
-		FileUtils.mkdir_p($em_cache_dir) unless Dir.exists?($em_cache_dir)
-		FileUtils.mkdir_p($em_tmp_dir) unless Dir.exists?($em_tmp_dir)
 	end
 
 	# Kill running processes

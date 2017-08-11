@@ -1,7 +1,7 @@
 
 data_directory = "../../build/sample_project_data"
 default_startup_level = "sample"
-description = "Create a sample project that demonstrates the usages of the Stingray plugin."
+description = "Create a sample project that demonstrates the usages of the Stingray Example Plugin."
 libraries = {
 }
 migrations = {
@@ -11,6 +11,12 @@ migrations = {
 				"successfully applied"
 			]
 		}
+		version = "1.8.0"
+	}
+	"level-flow-editor" = {
+		patches = [
+			"347e4fc5-db57-4c84-94a6-bf93a2b89c0b"
+		]
 		version = "1.8.0"
 	}
 }
