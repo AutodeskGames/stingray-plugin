@@ -22,7 +22,7 @@ export function onLevelChanged(args) {
  */
 export function testEditorNativeExtension() {
     // Dynamically load the version of native extension DLL
-    const nativePluginDllPath = require.toUrl('example/binaries/editor/win64/dev/editor_plugin_w64_dev.dll');
+    const nativePluginDllPath = require.toUrl('@example/binaries/editor/win64/dev/editor_plugin_w64_dev.dll');
     if (!stingray.fs.exists(nativePluginDllPath))
         throw new Error('Example editor native extension does not exists at `' + nativePluginDllPath + '`. Was it compiled?');
 

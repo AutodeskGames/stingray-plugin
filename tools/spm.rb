@@ -16,7 +16,7 @@ to build the Stingray engine.
 A "package" in spm terminology is a collection of files identified by a name.
 You can install a package with the `install` command
 
-	spm install cmake
+    spm install cmake
 
 "Installing" a package means downloading the latest version of the package and
 extracting it to the *LIBRARY* directory.
@@ -167,8 +167,8 @@ readable extension of the JSON format. Their basic format is
 		default = {
 			type = "s3"
 			bucket = "stingray-public-platform-libs"
-			access-key-id = "*******"
-			secret-access-key = "******"
+			access-key-id = "************"
+			secret-access-key = "**************"
 			region = "us-west-2"
 		}
 	}

@@ -1,81 +1,31 @@
 
 editor_metadata = {
-	Entities = [
-		{
-			id = "7af7d534-39c8-4dd7-956f-553537a28a46"
-			inherit = {
-				"$resource_name" = "core/stingray_renderer/environments/midday/midday_shading_environment"
-				"$resource_type" = "entity"
-			}
-			layer = "Background"
-			modified_components = {
-				"04d5202f-c4cb-45b5-8e0f-4c5605fb7533" = {
-					color_grading_map = null
-				}
-				"3eb1ba63-3a53-4846-970b-57e3d4d75d2b" = {
-					baked_diffuse_tint = {
-						alpha = 1
-						intensity = 1
-						rgb = [1 1 1]
-					}
-					global_diffuse_map = null
-					global_specular_map = null
-					reflections_tint = {
-						alpha = 1
-						intensity = 1
-						rgb = [1 1 1]
-					}
-				}
-				"597d400f-c916-454b-9912-b9bb35e6e689" = {
-					shadow_log_linear_blend = 0.381
-					shadow_max_distance = 80
-				}
-				"8386face-d486-49d6-9b8b-6d8cba24d4f7" = {
-					ssr_enabled = true
-					ssr_screen_edge_threshold = 0.18349
-					ssr_surface_thickness_threshold = [0.0023 10.0145]
-				}
-				"a9f83eb8-b54a-4c45-bf62-4fe7e02a8ce4" = {
-					ao_intensity = 0.23
-					ao_quality = 3
-					ao_radius = 1
-				}
-				"cd8f2898-5821-4e3f-8348-a7d2f3c869d2" = {
-					motion_blur_enabled = false
-				}
-			}
-			name = "midday_shading_environment"
-		}
-	]
+	Groups = []
+	Prototypes = []
 	Flow = {
-		Connections = [
-		]
 		Groups = [
 			{
-				Collapsed = false
-				Groups = [
-				]
+				Groups = []
 				Id = "caa85c18-9380-42b2-9dc6-641a24bfda54"
+				Collapsed = false
 				Nodes = [
 					"d2725917-aa5d-4a1e-9110-7f8f1f5b4b1b"
 				]
 				Title = "Level Shutdown"
 			}
 			{
-				Collapsed = false
-				Groups = [
-				]
+				Groups = []
 				Id = "f90783ad-4881-417e-95f6-501ab6134830"
+				Collapsed = false
 				Nodes = [
 					"78dc0648-dd68-4940-98d0-01ec9cb049bb"
 				]
 				Title = "Level Start"
 			}
 			{
-				Collapsed = false
-				Groups = [
-				]
+				Groups = []
 				Id = "56b89461-d382-4d67-9424-1e9aa75a0c8a"
+				Collapsed = false
 				Nodes = [
 					"9b3fe10b-3aef-40df-b7d2-9993b7ce3e9a"
 					"20c9fb7d-3eee-4227-b272-b806c75186a0"
@@ -85,571 +35,544 @@ editor_metadata = {
 		]
 		Nodes = [
 			{
+				Id = "78dc0648-dd68-4940-98d0-01ec9cb049bb"
 				Brief = "Passes an event when the level has been loaded into the world."
-				Category = "Event"
 				Class = "Stingray.Foundation.Flow.DataDrivenFlowNode"
 				ColorCategory = ""
-				ExportTypeName = "level_loaded"
-				FlowNodesResourceKey = "flow_nodes_resource"
-				Id = "78dc0648-dd68-4940-98d0-01ec9cb049bb"
-				Inputs = [
-				]
-				NodeLocation = {
-					X = -220
-					Y = -960
-				}
 				Outputs = [
 					{
-						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						RawName = "out"
-						Type = "event"
+						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						UIName = "Out"
+						Type = "event"
 						Variable = {
 							Class = "Stingray.Foundation.Flow.OutEvent"
 						}
 					}
 				]
+				NodeLocation = {
+					Y = -960
+					X = -220
+				}
 				Title = "Level Loaded"
+				FlowNodesResourceKey = "flow_nodes_resource"
+				Inputs = []
+				Category = "Event"
+				ExportTypeName = "level_loaded"
 				Width = 160
 			}
 			{
+				Id = "9b3fe10b-3aef-40df-b7d2-9993b7ce3e9a"
 				Brief = "Returns the time elapsed since the last frame update."
-				Category = "Utilities/Time"
 				Class = "Stingray.Foundation.Flow.DataDrivenFlowNode"
 				ColorCategory = ""
-				ExportTypeName = "get_last_delta_time"
-				FlowNodesResourceKey = "flow_nodes_resource"
-				Id = "9b3fe10b-3aef-40df-b7d2-9993b7ce3e9a"
-				Inputs = [
-				]
-				NodeLocation = {
-					X = -220
-					Y = -600
-				}
 				Outputs = [
 					{
-						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						RawName = "time"
-						Type = "float"
+						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						UIName = "Time"
+						Type = "float"
 						Variable = {
 							Class = "Stingray.Foundation.Flow.OutVariableFloat"
 						}
 					}
 				]
+				NodeLocation = {
+					Y = -600
+					X = -220
+				}
 				Title = "Get Last Delta Time"
+				FlowNodesResourceKey = "flow_nodes_resource"
+				Inputs = []
+				Category = "Utilities/Time"
+				ExportTypeName = "get_last_delta_time"
 				Width = 160
 			}
 			{
-				Brief = "Passes an event at every update interval of the engine."
-				Category = "Event"
-				Class = "Stingray.Foundation.Flow.DataDrivenFlowNode"
-				ColorCategory = ""
-				ExportTypeName = "level_update"
-				FlowNodesResourceKey = "flow_nodes_resource"
 				Id = "20c9fb7d-3eee-4227-b272-b806c75186a0"
-				Inputs = [
-				]
-				NodeLocation = {
-					X = -220
-					Y = -540
-				}
+				Brief = "Passes an event at every update interval of the engine."
+				Class = "Stingray.Foundation.Flow.DataDrivenFlowNode"
+				ColorCategory = ""
 				Outputs = [
 					{
-						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						RawName = "out"
-						Type = "event"
+						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						UIName = "Out"
+						Type = "event"
 						Variable = {
 							Class = "Stingray.Foundation.Flow.OutEvent"
 						}
 					}
 				]
+				NodeLocation = {
+					Y = -540
+					X = -220
+				}
 				Title = "Level Update"
+				FlowNodesResourceKey = "flow_nodes_resource"
+				Inputs = []
+				Category = "Event"
+				ExportTypeName = "level_update"
 				Width = 160
 			}
 			{
+				Id = "d2725917-aa5d-4a1e-9110-7f8f1f5b4b1b"
 				Brief = "Passes an event when the level shuts down."
-				Category = "Event"
 				Class = "Stingray.Foundation.Flow.DataDrivenFlowNode"
 				ColorCategory = ""
-				ExportTypeName = "level_shutdown"
-				FlowNodesResourceKey = "flow_nodes_resource"
-				Id = "d2725917-aa5d-4a1e-9110-7f8f1f5b4b1b"
-				Inputs = [
-				]
-				NodeLocation = {
-					X = -220
-					Y = -780
-				}
 				Outputs = [
 					{
-						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						RawName = "out"
-						Type = "event"
+						Class = "Stingray.Foundation.Flow.DataDrivenFlowNode+Output"
 						UIName = "Out"
+						Type = "event"
 						Variable = {
 							Class = "Stingray.Foundation.Flow.OutEvent"
 						}
 					}
 				]
+				NodeLocation = {
+					Y = -780
+					X = -220
+				}
 				Title = "Level Shutdown"
+				FlowNodesResourceKey = "flow_nodes_resource"
+				Inputs = []
+				Category = "Event"
+				ExportTypeName = "level_shutdown"
 				Width = 160
 			}
 		]
+		Connections = []
 	}
-	Groups = [
+	LevelReferences = []
+	Entities = [
+		{
+			id = "7af7d534-39c8-4dd7-956f-553537a28a46"
+			name = "midday_shading_environment"
+			inherit = {
+				"$resource_name" = "core/stingray_renderer/environments/midday/midday_shading_environment"
+				"$resource_type" = "entity"
+			}
+			layer = "Background"
+			modified_components = {
+				"a9f83eb8-b54a-4c45-bf62-4fe7e02a8ce4" = {
+					ao_intensity = 0.23
+					ao_quality = 3
+					ao_radius = 1
+				}
+				"3eb1ba63-3a53-4846-970b-57e3d4d75d2b" = {
+					global_diffuse_map = null
+					reflections_tint = {
+						rgb = [1 1 1]
+						intensity = 1
+						alpha = 1
+					}
+					baked_diffuse_tint = {
+						rgb = [1 1 1]
+						intensity = 1
+						alpha = 1
+					}
+					global_specular_map = null
+				}
+				"8386face-d486-49d6-9b8b-6d8cba24d4f7" = {
+					ssr_screen_edge_threshold = 0.18349
+					ssr_surface_thickness_threshold = [0.0023 10.0145]
+					ssr_enabled = true
+				}
+				"04d5202f-c4cb-45b5-8e0f-4c5605fb7533" = {
+					color_grading_map = null
+				}
+				"cd8f2898-5821-4e3f-8348-a7d2f3c869d2" = {
+					motion_blur_enabled = false
+				}
+				"597d400f-c916-454b-9912-b9bb35e6e689" = {
+					shadow_log_linear_blend = 0.381
+					shadow_max_distance = 80
+				}
+			}
+		}
 	]
+	Navmeshes = []
+	Scatter = {
+		ScatterData = {}
+		PoolSettings = {}
+	}
+	Notes = []
 	Layers = [
 		"Default"
 		"Background"
 	]
-	LevelObjectSets = {
-		NestedSetNamesBySetName = {
-		}
-		ObjectIdsBySetName = {
-		}
-		VisibleSetNames = [
-		]
-	}
-	LevelReferences = [
-	]
-	LightBakeSettings = {
-		Baker = "Stingray"
-		DiffuseBoost = 1
-		EmissiveScaleRGB = {
-			X = 1
-			Y = 1
-			Z = 1
-		}
-		ExcludedObjectSets = [
-		]
-		FilterGain = 20
-		FilterLightmaps = true
-		FilterType = "Both"
-		IlluminationType = "Both"
-		IndirectScaleRGB = {
-			X = 1
-			Y = 1
-			Z = 1
-		}
-		Layers = [
-		]
-		LightmapType = "Standard"
-		MaxSamples = 16
-		MinSamples = 4
-		QualityPreset = "Low"
-		SkylightIntensityRGB = {
-			X = 1
-			Y = 1
-			Z = 1
-		}
-		TexelScale = 10
-		TotalPasses = 64
-		Variance = 0.5
-	}
-	Navmeshes = [
-	]
-	Notes = [
-	]
-	ParticleEffects = [
-	]
-	PositionMarkers = [
-	]
-	Prototypes = [
-	]
-	Scatter = {
-		PoolSettings = {
-		}
-		ScatterData = {
-		}
-	}
-	Settings = {
-		FrozenLayers = [
-		]
-		HiddenLayers = [
-		]
-		HiddenObjects = [
-		]
-		LastHiddenObjects = [
-		]
-		SoundEnvironment = ""
-		TimpaniSoundEnvironment = "default"
-	}
-	Sounds = [
-	]
-	Splines = [
-	]
-	Stories = [
-	]
-	Triggers = [
-	]
+	Stories = []
+	PositionMarkers = []
 	Units = [
 		{
-			Cameras = {
-			}
-			Id = "f6747d7e-5ebd-40c6-ac1f7b6afe7bada8"
+			Materials = {}
+			Cameras = {}
 			Layer = "Background"
-			Lights = {
-			}
-			Materials = {
-			}
-			Name = "floor"
-			OverridePoses = {
-			}
-			Pivot = {
-				X = 0
+			Pos = {
 				Y = 0
+				X = 0
 				Z = 0
 			}
-			Pos = {
-				X = 0
+			ScriptData = {}
+			Lights = {}
+			Name = "floor"
+			Id = "f6747d7e-5ebd-40c6-ac1f7b6afe7bada8"
+			OverridePoses = {}
+			Pivot = {
 				Y = 0
+				X = 0
 				Z = 0
 			}
 			Rot = {
-				W = -1
-				X = 0
 				Y = 0
+				X = 0
 				Z = 0
+				W = -1
 			}
 			Scl = {
-				X = 1
 				Y = 1
+				X = 1
 				Z = 1
 			}
-			ScriptData = {
-			}
-			StoryOverridePoses = {
-			}
+			StoryOverridePoses = {}
 			Type = "floor"
 		}
 		{
-			Cameras = {
-			}
-			Id = "e1a17142-4951-4a47-84dab8b946feb94f"
+			Materials = {}
+			Cameras = {}
 			Layer = "Background"
-			Lights = {
-			}
-			Material = "wall"
-			Materials = {
-			}
-			Name = "wall"
-			OverridePoses = {
-			}
-			Pivot = {
-				X = 0
+			Pos = {
 				Y = 0
+				X = 0
 				Z = 0
 			}
-			Pos = {
-				X = 0
+			Material = "wall"
+			ScriptData = {}
+			Lights = {}
+			Name = "wall"
+			Id = "e1a17142-4951-4a47-84dab8b946feb94f"
+			OverridePoses = {}
+			Pivot = {
 				Y = 0
+				X = 0
 				Z = 0
 			}
 			Rot = {
-				W = -1
-				X = 0
 				Y = 0
+				X = 0
 				Z = 0
+				W = -1
 			}
 			Scl = {
-				X = 1
 				Y = 1
+				X = 1
 				Z = 1
-			}
-			ScriptData = {
 			}
 			Type = "wall"
 		}
 		{
-			Cameras = {
-			}
-			Id = "2f1a551b-3457-490f-827c-aeb788bb46b0"
+			Materials = {}
+			Cameras = {}
 			Layer = "Background"
-			Lights = {
-			}
-			Materials = {
-			}
-			Name = "skydome"
-			OverridePoses = {
-			}
-			Pivot = {
-				X = 0
+			Pos = {
 				Y = 0
+				X = 0
 				Z = 0
 			}
-			Pos = {
-				X = 0
+			ScriptData = {}
+			Lights = {}
+			Name = "skydome"
+			Id = "2f1a551b-3457-490f-827c-aeb788bb46b0"
+			OverridePoses = {}
+			Pivot = {
 				Y = 0
+				X = 0
 				Z = 0
 			}
 			Rot = {
-				W = 1
-				X = 0
 				Y = 0
+				X = 0
 				Z = 0
+				W = 1
 			}
 			Scl = {
-				X = 1
 				Y = 1
+				X = 1
 				Z = 1
-			}
-			ScriptData = {
 			}
 			Type = "core/editor_slave/units/skydome/skydome"
 		}
 		{
-			Cameras = {
-			}
-			Id = "ffd94a57-fe64-4025-abe1-eda1d4904d8e"
+			Materials = {}
+			Cameras = {}
 			Layer = "Background"
+			Pos = {
+				Y = 26.4811
+				X = 0
+				Z = 13.6173
+			}
+			ScriptData = {}
 			Lights = {
 				light = {
+					FalloffStart = 0
+					MaterialResource = ""
 					Baked = false
 					BoxMax = {
-						X = 10
 						Y = 10
+						X = 10
 						Z = 10
 					}
+					Enabled = true
+					Material = ""
 					BoxMin = {
-						X = -10
 						Y = 0
+						X = -10
 						Z = -10
 					}
 					CastShadows = true
+					ShadowDepthBias = 0.4
 					Color = {
-						A = 255
 						B = 255
+						A = 255
 						G = 255
 						R = 255
 					}
-					Enabled = true
 					FalloffEnd = 5
-					FalloffStart = 0
 					Intensity = 5
-					Material = ""
-					MaterialResource = ""
-					ShadowDepthBias = 0.4
 					SpotAngleEnd = 45
 					SpotAngleStart = 0
 					Type = "directional"
 				}
 			}
-			Materials = {
-			}
 			Name = "light_source"
-			OverridePoses = {
-			}
+			Id = "ffd94a57-fe64-4025-abe1-eda1d4904d8e"
+			OverridePoses = {}
 			Pivot = {
-				X = 0
 				Y = 0
+				X = 0
 				Z = 0
 			}
-			Pos = {
-				X = 0
-				Y = 26.4811000823975
-				Z = 13.6173334121704
-			}
 			Rot = {
-				W = -0.187578678131104
-				X = 0.0456776134669781
-				Y = -0.64119291305542
-				Z = 0.742697477340698
+				Y = -0.641193
+				X = 0.0456776
+				Z = 0.742697
+				W = -0.187579
 			}
 			Scl = {
-				X = 1
 				Y = 1
+				X = 1
 				Z = 1
-			}
-			ScriptData = {
 			}
 			Type = "core/units/light_source"
 		}
 	]
-	Volumes = [
-	]
-}
-entities = [
-	{
-		id = "7af7d534-39c8-4dd7-956f-553537a28a46"
-		inherit = {
-			"$resource_name" = "core/stingray_renderer/environments/midday/midday_shading_environment"
-			"$resource_type" = "entity"
+	LightBakeSettings = {
+		Baker = "Stingray"
+		IlluminationType = "Both"
+		IndirectScaleRGB = {
+			Y = 1
+			X = 1
+			Z = 1
 		}
-		modified_components = {
-			"04d5202f-c4cb-45b5-8e0f-4c5605fb7533" = {
-				color_grading_map = null
-			}
-			"3eb1ba63-3a53-4846-970b-57e3d4d75d2b" = {
-				baked_diffuse_tint = {
-					alpha = 1
-					intensity = 1
-					rgb = [1 1 1]
-				}
-				global_diffuse_map = null
-				global_specular_map = null
-				reflections_tint = {
-					alpha = 1
-					intensity = 1
-					rgb = [1 1 1]
-				}
-			}
-			"597d400f-c916-454b-9912-b9bb35e6e689" = {
-				shadow_log_linear_blend = 0.381
-				shadow_max_distance = 80
-			}
-			"8386face-d486-49d6-9b8b-6d8cba24d4f7" = {
-				ssr_enabled = true
-				ssr_screen_edge_threshold = 0.18349
-				ssr_surface_thickness_threshold = [0.0023 10.0145]
-			}
-			"a9f83eb8-b54a-4c45-bf62-4fe7e02a8ce4" = {
-				ao_intensity = 0.23
-				ao_quality = 3
-				ao_radius = 1
-			}
-			"cd8f2898-5821-4e3f-8348-a7d2f3c869d2" = {
-				motion_blur_enabled = false
-			}
+		FilterGain = 20
+		ExcludedObjectSets = []
+		MinSamples = 4
+		TotalPasses = 64
+		Layers = []
+		FilterLightmaps = true
+		LightmapType = "Standard"
+		QualityPreset = "Low"
+		DiffuseBoost = 1
+		EmissiveScaleRGB = {
+			Y = 1
+			X = 1
+			Z = 1
 		}
-		name = "midday_shading_environment"
+		FilterType = "Both"
+		MaxSamples = 16
+		SkylightIntensityRGB = {
+			Y = 1
+			X = 1
+			Z = 1
+		}
+		TexelScale = 10
+		Variance = 0.5
 	}
-]
+	LevelObjectSets = {
+		NestedSetNamesBySetName = {}
+		VisibleSetNames = []
+		ObjectIdsBySetName = {}
+	}
+	ParticleEffects = []
+	Settings = {
+		HiddenLayers = []
+		SoundEnvironment = ""
+		HiddenObjects = []
+		LastHiddenObjects = []
+		FrozenLayers = []
+		TimpaniSoundEnvironment = "default"
+	}
+	Sounds = []
+	Splines = []
+	Triggers = []
+	Volumes = []
+}
 entity_version = "0.2.0"
 flow = {
 	nodes = [
 		{
-			id = "78dc0648-dd68-4940-98d0-01ec9cb049bb"
 			type = "level_loaded"
+			id = "78dc0648-dd68-4940-98d0-01ec9cb049bb"
 		}
 		{
-			id = "9b3fe10b-3aef-40df-b7d2-9993b7ce3e9a"
 			type = "get_last_delta_time"
+			id = "9b3fe10b-3aef-40df-b7d2-9993b7ce3e9a"
 			variable_values = {
 				time = null
 			}
 		}
 		{
-			id = "20c9fb7d-3eee-4227-b272-b806c75186a0"
 			type = "level_update"
+			id = "20c9fb7d-3eee-4227-b272-b806c75186a0"
 		}
 		{
-			id = "d2725917-aa5d-4a1e-9110-7f8f1f5b4b1b"
 			type = "level_shutdown"
+			id = "d2725917-aa5d-4a1e-9110-7f8f1f5b4b1b"
 		}
 	]
 }
-level_references = [
-]
-level_settings = {
-	num_background_units = 0
-	sound_environment = ""
-	timpani_sound_environment = "default"
-}
-navmeshes = [
-]
-object_sets = {
-}
-particle_effects = [
-]
-prototypes = [
-]
-scatter = [
-]
-sounds = [
-]
-splines = [
-]
-stories = [
-]
-triggers = [
-]
 units = [
 	{
-		cameras = {
-		}
-		data = {
-		}
-		id = "f6747d7e-5ebd-40c6-ac1f7b6afe7bada8"
-		lights = {
-		}
-		material = ""
-		materials = {
-		}
-		name = "floor"
-		pos = [0 0 0]
-		rot = [0 0 0 -1]
-		scl = [1 1 1]
 		type = "floor"
-	}
-	{
-		cameras = {
-		}
-		data = {
-		}
-		id = "e1a17142-4951-4a47-84dab8b946feb94f"
-		lights = {
-		}
-		material = "wall"
-		materials = {
-		}
-		name = "wall"
+		data = {}
+		name = "floor"
+		lights = {}
+		cameras = {}
+		materials = {}
+		scl = [1 1 1]
+		material = ""
+		id = "f6747d7e-5ebd-40c6-ac1f7b6afe7bada8"
 		pos = [0 0 0]
 		rot = [0 0 0 -1]
-		scl = [1 1 1]
-		type = "wall"
 	}
 	{
-		cameras = {
-		}
-		data = {
-		}
-		id = "2f1a551b-3457-490f-827c-aeb788bb46b0"
-		lights = {
-		}
-		material = ""
-		materials = {
-		}
+		type = "wall"
+		data = {}
+		name = "wall"
+		lights = {}
+		cameras = {}
+		materials = {}
+		scl = [1 1 1]
+		material = "wall"
+		id = "e1a17142-4951-4a47-84dab8b946feb94f"
+		pos = [0 0 0]
+		rot = [0 0 0 -1]
+	}
+	{
+		type = "core/editor_slave/units/skydome/skydome"
+		data = {}
 		name = "skydome"
+		lights = {}
+		cameras = {}
+		materials = {}
+		scl = [1 1 1]
+		material = ""
+		id = "2f1a551b-3457-490f-827c-aeb788bb46b0"
 		pos = [0 0 0]
 		rot = [0 0 0 1]
-		scl = [1 1 1]
-		type = "core/editor_slave/units/skydome/skydome"
 	}
 	{
-		cameras = {
-		}
-		data = {
-		}
-		id = "ffd94a57-fe64-4025-abe1-eda1d4904d8e"
+		type = "core/units/light_source"
+		data = {}
+		name = "light_source"
 		lights = {
 			light = {
-				baked = false
-				box_max = [10 10 10]
-				box_min = [-10 0 -10]
-				cast_shadows = true
 				color = [1 1 1]
+				falloff_start = 0
+				box_max = [10 10 10]
+				spot_angle_end = 0.785398
+				cast_shadows = true
+				intensity = 5
+				baked = false
+				box_min = [-10 0 -10]
 				enabled = true
 				falloff_end = 5
-				falloff_start = 0
-				intensity = 5
 				material = ""
 				shadow_depth_bias = 0.4
-				spot_angle_end = 0.785398163397448
 				spot_angle_start = 0
 				type = "directional"
 			}
 		}
-		material = ""
-		materials = {
-		}
-		name = "light_source"
-		pos = [0 26.4811000823975 13.6173334121704]
-		rot = [0.0456776134669781 -0.64119291305542 0.742697477340698 -0.187578678131104]
+		cameras = {}
+		materials = {}
 		scl = [1 1 1]
-		type = "core/units/light_source"
+		material = ""
+		id = "ffd94a57-fe64-4025-abe1-eda1d4904d8e"
+		pos = [0 26.4811 13.6173]
+		rot = [0.0456776 -0.641193 0.742697 -0.187579]
 	}
 ]
-volumes = [
+particle_effects = []
+level_settings = {
+	timpani_sound_environment = "default"
+	num_background_units = 0
+	sound_environment = ""
+}
+stories = []
+volumes = []
+scatter = []
+splines = []
+entities = [
+	{
+		id = "7af7d534-39c8-4dd7-956f-553537a28a46"
+		name = "midday_shading_environment"
+		inherit = {
+			"$resource_name" = "core/stingray_renderer/environments/midday/midday_shading_environment"
+			"$resource_type" = "entity"
+		}
+		modified_components = {
+			"a9f83eb8-b54a-4c45-bf62-4fe7e02a8ce4" = {
+				ao_intensity = 0.23
+				ao_quality = 3
+				ao_radius = 1
+			}
+			"3eb1ba63-3a53-4846-970b-57e3d4d75d2b" = {
+				global_diffuse_map = null
+				reflections_tint = {
+					rgb = [1 1 1]
+					intensity = 1
+					alpha = 1
+				}
+				baked_diffuse_tint = {
+					rgb = [1 1 1]
+					intensity = 1
+					alpha = 1
+				}
+				global_specular_map = null
+			}
+			"8386face-d486-49d6-9b8b-6d8cba24d4f7" = {
+				ssr_screen_edge_threshold = 0.18349
+				ssr_surface_thickness_threshold = [0.0023 10.0145]
+				ssr_enabled = true
+			}
+			"04d5202f-c4cb-45b5-8e0f-4c5605fb7533" = {
+				color_grading_map = null
+			}
+			"cd8f2898-5821-4e3f-8348-a7d2f3c869d2" = {
+				motion_blur_enabled = false
+			}
+			"597d400f-c916-454b-9912-b9bb35e6e689" = {
+				shadow_log_linear_blend = 0.381
+				shadow_max_distance = 80
+			}
+		}
+	}
 ]
+object_sets = {}
+level_references = []
+navmeshes = []
+prototypes = []
+sounds = []
+triggers = []
