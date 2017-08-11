@@ -54,10 +54,10 @@ typedef struct ComponentApi
 	struct EntityInstanceId (*lookup_instance_id)(ComponentPtr component, Instance i);
 
 	/* Spawn component. */
-	void (*spawn)(ComponentPtr component, const EntityRef *entities, unsigned num_intances, const unsigned *entity_indicies, const unsigned *instance_ids, const char *data);
+	void (*spawn)(ComponentPtr component, const EntityRef *entities, unsigned num_instances, const unsigned *entity_indicies, const unsigned *instance_ids, const char *data);
 
 	/* Set entity parent. */
-	void (*set_parent)(ComponentPtr component, const EntityRef *entities, unsigned num_entities, const unsigned *parent_index);
+	void (*set_parent)(ComponentPtr component, const EntityRef *entities, unsigned num_entities, const unsigned *parent_indices);
 
 	/* Called when the entity as been fully constructed and spawned. */
 	void (*spawned)(ComponentPtr component, const EntityRef *entities, unsigned num_entities);
@@ -89,19 +89,19 @@ struct EntityCApi
 		Retrieves a pointer to the Component API registered with the specified name.
 		To use the member functions of the specified Component API cast the ComponentApiPtr to the relevant definition represented in it's header file."
 	*/
-	ComponentApiPtr (*component_api)(uint32_t name_id32);
+	ComponentApiPtr (*component_api)(uint32_t component_type_id32);
 
 	/*	Registers a pointer to a component api with the specified name, the caller is responsible for keeping it allocated.	*/
-	void (*register_component_api)(uint32_t name_id32, ComponentApiPtr component_api);
+	void (*register_component_api)(uint32_t component_type_id32, ComponentApiPtr component_api);
 
 	/*	Returns true (1) if a component api with the specified name has already been registered.	*/
-	int (*has_component_api)(uint32_t name_id32);
+	int (*has_component_api)(uint32_t component_type_id32);
 
 	/*	Unregisters a component struct with the specified name.	*/
-	void (*unregister_component_api)(uint32_t name_id32);
+	void (*unregister_component_api)(uint32_t component_type_id32);
 
 	/* Registers the entity component to the specified world. */
-	void (*register_entity_component)(WorldPtr world_pointer, ComponentPtr component, struct ComponentApi *component_api);
+	void (*register_entity_component)(WorldPtr world_pointer, ComponentPtr component, uint32_t component_type_id32);
 
 	/* Unregisters the entity component from the specified world. */
 	void (*unregister_entity_component)(WorldPtr world_pointer, ComponentPtr component);

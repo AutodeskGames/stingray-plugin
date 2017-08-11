@@ -1,7 +1,7 @@
 // nodeEditor.js interfaces
 interface EventEmitter {
     on (evtName: string, fn: (source: any, ...args: any[]) => any): void;
-    off (evtName: string, fn: (source: any, ...args: any[]) => any): void;
+    off (evtName: string, fn?: (source: any, ...args: any[]) => any): void;
     fire (evtName: string, ...args: any[]): void;
 }
 
@@ -157,12 +157,12 @@ interface PixiNodeDefinition {
     title: string;
     brief: string;
     elements: PixiElementDefinition[];
-    category: string,
+    category: string;
     shape: typeof PixiNodeShape;
 }
 
 interface PixiNodeOptions {
-    id: string,
+    id: string;
     typeDefinition: PixiNodeDefinition;
     nodeStyle: any;
     position: {x: number, y: number};
@@ -173,7 +173,7 @@ interface PixiElementDefinition {
     id: string;
     interactive: boolean;
     value: string|number;
-    type: string
+    type: string;
     allowMultiple: boolean;
     alignment: string;
     inConnector: {color: any};

@@ -22,6 +22,18 @@ namespace path
 
 	// Joins `dir` to the beginning of all the file names in `files`.
 	void join(const char *dir, const Vector<DynamicString> &files, Vector<DynamicString> &res);
+
+	// Returns true if 'c' is a directory separator character.
+	bool is_directory_separator(char c);
+
+	// Returns the length of the directory name pointed to by 'path'.
+	unsigned directory_name_length(const char *path);
+
+	// Returns the directory name pointed to by 'path'.
+	DynamicString directory_name(const char *path, Allocator &a);
+
+	// Joins 'dir' and 'file' with the proper path separator.
+	DynamicString join(const char *dir, const char *file, Allocator &a);
 }
 
 }
@@ -67,6 +79,38 @@ namespace path {
 			}
 		}
 		return pattern[0] == '\0';
+	}
+
+	inline bool is_directory_separator(char c) {
+		return c == '\\' || c == '/';
+	}
+
+	inline unsigned directory_name_length(const char *path) {
+		int n = strlen32(path);
+		for (int i = n - 1; i >= 0; --i) {
+			if (is_directory_separator(path[i]))
+				return i;
+		}
+		return 0;
+	}
+
+	inline DynamicString directory_name(const char *path, Allocator &a) {
+		unsigned n = directory_name_length(path);
+		return DynamicString(a, path, n);
+	}
+
+	inline DynamicString join(const char *dir, const char *file, Allocator &a) {
+		DynamicString s(a);
+		bool lhs_is_root = strequal(dir, "/");
+
+		append(s, dir);
+
+		if (s.size() > 0 && *file && !lhs_is_root)
+			append(s, '\\');
+
+		append(s, file);
+
+		return s;
 	}
 
 } // namespace path

@@ -28,7 +28,6 @@ set_default(PRODUCT_VERSION_TCID "$ENV{SR_PRODUCT_VERSION_TCID}" "0")
 set_default(PRODUCT_BUILD_TIMESTAMP "$ENV{SR_PRODUCT_BUILD_TIMESTAMP}" "${PRODUCT_DEFAULT_BUILD_TIMESTAMP}")
 set_default(PRODUCT_LICENSING_KEY "$ENV{SR_PRODUCT_LICENSING_KEY}" "A72J1")
 set_default(PRODUCT_LICENSING_VERSION "$ENV{SR_PRODUCT_LICENSING_VERSION}" "2018.0.0.F")
-set_default(PRODUCT_EDITOR_STEAM_APPID "$ENV{SR_PRODUCT_EDITOR_STEAM_APPID}" "0")
 
 # Allow environment variables to override some build options
 set(ENGINE_BUILD_IDENTIFIER $ENV{SR_BUILD_IDENTIFIER})
@@ -92,7 +91,26 @@ else()
 endif()
 
 if( PLATFORM_IOS )
+	# In order to find what value to set for SR_IOS_DEVELOPMENT_TEAM, follow these steps:
+	#    - Open the generated XCode project
+	#    - Set the development team manually to the desired team
+	#    - Close XCode
+	#    - Find and open the XCode project file in a text editor: stingray_engine_ios.xcodeproj/project.pbxproj
+	#    - Find the team entry: DEVELOPMENT_TEAM
+	#    - The value assigned is an ID that looks like this: 2C7C55VMJ0
+	#    - This is the value you need to use and set for the environment variable
+
 	set_default(ENGINE_IOS_CODE_SIGN_IDENTITY "$ENV{SR_IOS_CODE_SIGN_IDENTITY}" "iPhone Developer")
+	if (NOT DEFINED ENV{SR_IOS_DEVELOPMENT_TEAM} OR "$ENV{SR_IOS_DEVELOPMENT_TEAM}" STREQUAL "")
+		message(WARNING "
+****************************************
+ERROR: No iOS development team is set.
+Please set SR_IOS_DEVELOPMENT_TEAM environment var.
+****************************************
+Try running:
+$ source tools/ios_resign/set_ios_dev_team.sh
+****************************************")
+	endif()
 	set_default(ENGINE_IOS_DEVELOPMENT_TEAM "$ENV{SR_IOS_DEVELOPMENT_TEAM}" "")
 endif()
 
@@ -110,7 +128,7 @@ set(ENGINE_PLUGINS_FOLDER_NAME "plugins")
 set(ENGINE_USE_SOLUTION_FOLDERS ON)
 
 # Define if platform can compile game data
-if( PLATFORM_64BIT AND (PLATFORM_WINDOWS OR PLATFORM_OSX) )
+if( PLATFORM_64BIT AND (PLATFORM_WINDOWS) )
 	set(ENGINE_CAN_COMPILE 1)
 endif()
 

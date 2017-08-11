@@ -110,16 +110,16 @@ def validate_options(options, opt_parser)
 		end
 
 		if !$platforms.include?(options[:platform])
-			puts "\nError: Invalid platform '#{options[:platform]}' specified.".bold.red
-			puts
-			puts "Valid choices are one of: #{$platforms.join(", ")}, #{$platform_aliases.keys.join(", ")}"
+			STDERR.puts "\nError: Invalid platform '#{options[:platform]}' specified.".bold.red
+			STDERR.puts
+			STDERR.puts "Valid choices are one of: #{$platforms.join(", ")}, #{$platform_aliases.keys.join(", ")}"
 			exit 1
 		end
 	end
 
 	# Make sure the host system can build this platform
 	if !$platforms_whitelist[$system_name].include?(options[:platform])
-		puts "\nError: Platform '#{options[:platform]}' is not supported on #{$system_name} host system.".bold.red
+		STDERR.puts "\nError: Platform '#{options[:platform]}' is not supported on #{$system_name} host system.".bold.red
 		exit 1
 	end
 
@@ -128,9 +128,9 @@ def validate_options(options, opt_parser)
 		options[:config] = $default_config
 	else
 		if !$configs.include?(options[:config])
-			puts "\nError: Invalid configuration '#{options[:config]}' specified.".bold.red
-			puts
-			puts "Valid choices are one of: #{$configs.join(", ")}"
+			STDERR.puts "\nError: Invalid configuration '#{options[:config]}' specified.".bold.red
+			STDERR.puts
+			STDERR.puts "Valid choices are one of: #{$configs.join(", ")}"
 			exit 1
 		end
 		if options[:distrib]
@@ -143,14 +143,14 @@ def validate_options(options, opt_parser)
 		options[:devenv] = $default_devenv[options[:platform]]
 	else
 		if !$devenvs.include?(options[:devenv])
-			puts "\nError: Invalid development environment '#{options[:devenv]}' specified.".bold.red
-			puts
-			puts "Valid choices are one of: #{$devenvs.join(", ")}"
+			STDERR.puts "\nError: Invalid development environment '#{options[:devenv]}' specified.".bold.red
+			STDERR.puts
+			STDERR.puts "Valid choices are one of: #{$devenvs.join(", ")}"
 			exit 1
 		end
 
 		if !$devenvs_whitelist[options[:platform]].include?(options[:devenv])
-			puts "\nError: Platform '#{options[:platform]}' using development environment '#{options[:devenv]}' is not supported.".bold.red
+			STDERR.puts "\nError: Platform '#{options[:platform]}' using development environment '#{options[:devenv]}' is not supported.".bold.red
 			exit 1
 		end
 	end
@@ -194,8 +194,8 @@ def validate_options(options, opt_parser)
 
 	# Make sure output dir is not equal to build dir
 	if options[:output] == $build_dir
-		puts "\nError: Output directory cannot be the same as build directory!".bold.red
-		puts "Output directory: #{options[:output]}"
+		STDERR.puts "\nError: Output directory cannot be the same as build directory!".bold.red
+		STDERR.puts "Output directory: #{options[:output]}"
 		exit 1
 	end
 end
@@ -252,16 +252,17 @@ report_block($options[:update], "packages", "Downloading") do
 	command << "distrib" if $options[:distrib]
 	command << "--platforms"
 	command << $options[:platform]
+
 	command << "--devenvs"
 	if $options[:devenv].include?("msvc")
-		if $options[:devenv] == "msvc12"
-			command << "vc12"
-		elsif $options[:devenv] == "msvc11"
+		if $options[:devenv] == "msvc11"
 			command << "vc11"
 		elsif $options[:devenv] == "msvc14"
 			command << "vc14"
+		elsif $options[:devenv] == "msvc15"
+			command << "vc14"
 		else
-			puts "\nERROR: Unknown development environment for spm.rb script!".bold.red
+			STDERR.puts "\nERROR: Unknown development environment for spm.rb script!".bold.red
 			exit 1
 		end
 	else
@@ -295,7 +296,7 @@ report_block("plugin", "Configuring", true) do
 		$jom_dir = find_package_root("jom")
 		$jom_bin = File.join($jom_dir, "jom.exe")
 		if $jom_bin == nil or !File.exist?($jom_bin)
-			puts "\nERROR: JOM binary not found in library path!".bold.red
+			STDERR.puts "\nERROR: JOM binary not found in library path!".bold.red
 			exit 1
 		end
 

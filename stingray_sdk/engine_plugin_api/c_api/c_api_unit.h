@@ -98,8 +98,8 @@ struct UnitCApi
 	float		(*animation_get_variable) (UnitRef, unsigned index);
 	void		(*animation_set_variable) (UnitRef, unsigned index, float value);
 
-	void		(*animation_set_state) (UnitRef, struct AnimationStates*);
-	struct AnimationStates (*animation_get_state) (UnitRef);
+	void		(*animation_set_states) (UnitRef, struct AnimationStates*);
+	struct AnimationStates (*animation_get_states) (UnitRef);
 
 	void(*animation_set_seeds) (UnitRef, struct AnimationLayerSeeds*);
 	struct AnimationLayerSeeds(*animation_get_seeds) (UnitRef);
@@ -201,6 +201,9 @@ struct UnitCApi
 					float *out_distance, CApiVector3 *out_normal_world, unsigned *out_best_mesh_index, unsigned *out_best_triangle_index);
 	unsigned	(*mesh_closest_point_raycast)(UnitRef unit_ref, ConstVector3Ptr from, ConstVector3Ptr dir, float ray_length,
 					CApiVector3 *out_best_point_world, float *out_best_point_distance_along_ray, float *out_best_point_distance_to_ray);
+
+	double      (*animation_get_length)(uint64_t animation_name_id64, const char *optional_debug_animation_name);
+	void        (*get_animation_merge_options) (UnitRef unit_ref, float *max_start_time, float *max_drift, float *clock_fidelity);
 };
 #ifdef __cplusplus
 }

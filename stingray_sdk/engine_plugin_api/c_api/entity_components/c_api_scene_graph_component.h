@@ -10,6 +10,9 @@ struct SceneGraphComponentCApi
 {
 	unsigned (*num_nodes)(SceneGraphComponentPtr comp, EntityRef e_ref);
 	unsigned (*node_index)(SceneGraphComponentPtr comp, EntityRef e_ref, unsigned node_name_id32);
+	unsigned (*add_node)(SceneGraphComponentPtr comp, EntityRef e_ref, unsigned node_name_id32);
+	void     (*reserve)(SceneGraphComponentPtr comp, EntityRef e_ref, unsigned capacity);
+	unsigned (*capacity)(SceneGraphComponentPtr comp, EntityRef e_ref);
 	unsigned (*parent)(SceneGraphComponentPtr comp, EntityRef e_ref, unsigned node_index);
 
 	void (*set_local_position)(SceneGraphComponentPtr comp, EntityRef e_ref, unsigned node_index, ConstVector3Ptr new_pos);

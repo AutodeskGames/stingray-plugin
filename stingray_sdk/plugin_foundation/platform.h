@@ -17,7 +17,7 @@
 	__forceinline uint64_t rdtsc(void) { return __rdtsc(); }
 #endif
 
-#if defined(IOS)
+#if defined(IOS) || defined(MACOSX) || defined(LINUXPC)
 	#include <errno.h>
 #endif
 

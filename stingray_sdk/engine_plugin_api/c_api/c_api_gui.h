@@ -91,6 +91,7 @@ struct GuiCApi
 	unsigned (*video_number_of_frames)(VideoPlayerPtr video_player);
 	unsigned (*video_current_frame)(VideoPlayerPtr video_player);
 	unsigned (*video_times_looped)(VideoPlayerPtr video_player);
+	enum VideoCApi_TextureLayout (*video_texture_layout)(VideoPlayerPtr video_player);
 
 	/*	Not available in Release builds.	*/
 	unsigned (*texture_size) (uint64_t resource_id64, unsigned int *out_width, unsigned int *out_height);

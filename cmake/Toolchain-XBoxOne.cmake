@@ -5,7 +5,7 @@ endif()
 set(_XB1_TOOLCHAIN_ 1)
 
 # XB1 XDK version requirement
-set(REQUIRED_XB1_TOOLCHAIN_VERSION "160305")
+set(REQUIRED_XB1_TOOLCHAIN_VERSION "161002")
 
 # Get XDK environment
 if( EXISTS "$ENV{DurangoXDK}" AND IS_DIRECTORY "$ENV{DurangoXDK}" )

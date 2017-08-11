@@ -118,7 +118,7 @@ add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DUSE_CALLSTACK>)
 
 add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DHAS_PROFILER>)
 add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DHAS_LOADING_PROFILER>)
-if( NOT PLATFORM_WEB)
+if( NOT PLATFORM_WEB )
 	add_compile_options($<$<NOT:$<CONFIG:RELEASE>>:-DHAS_CONSOLE_SERVER>)
 endif()
 
@@ -223,7 +223,7 @@ if( PLATFORM_WINDOWS OR PLATFORM_XBOXONE OR PLATFORM_UWP )
 
 	# Disable specific warnings for MSVC14 and above
 	if( (PLATFORM_WINDOWS OR PLATFORM_UWP) AND (NOT MSVC_VERSION LESS 1900) )
-		add_compile_options(/wd4838 /wd4312 /wd4477 /wd4244 /wd4091 /wd4311 /wd4302 /wd4476 /wd4474)
+		add_compile_options(/wd4838 /wd4312 /wd4477 /wd4091 /wd4311 /wd4302 /wd4476 /wd4474)
 		add_compile_options(/wd4309)	# truncation of constant value
 	endif()
 
@@ -370,6 +370,11 @@ elseif( PLATFORM_IOS OR PLATFORM_OSX )
 		add_compile_options(-Wno-nonportable-include-path -Wno-null-dereference)
 	endif()
 
+	if( PLATFORM_OSX )
+		# Disable deprecation warnings for now
+		add_compile_options(-Wno-deprecated-declarations)
+	endif()
+
 	# Treat all other warnings as errors
 	add_compile_options(-Werror)
 
@@ -463,7 +468,7 @@ elseif( PLATFORM_LINUX )
 	add_compile_options(-msse3)
 
 	# Disable specific warnings
-	add_compile_options(-Wno-parentheses -Wno-reorder -Wno-missing-braces -Wno-unused-private-field -Wno-return-type-c-linkage)
+	add_compile_options(-Wno-parentheses -Wno-reorder -Wno-missing-braces -Wno-unused-private-field -Wno-return-type-c-linkage -Wno-null-dereference)
 
 	# Treat all other warnings as errors
 	add_compile_options(-Werror)

@@ -31,7 +31,11 @@ interface Stingray {
         config: {
             ports: {[portName: string]: number|[number, number]};
 
+            resources: {[resourceType: string]: {[resourceName: string]: any}};
+
             features: {[switchName: string]: boolean | string};
+
+            docking: {[dockingConfigName: string]: any};
 
             build_settings: {
                 [setting: string]: any;
@@ -165,7 +169,7 @@ interface FileSystemApi {
     enumerate (directory: string, searchPattern: any, recursive: boolean, filter?: any): string[];
     stats (path: string): FileStats;
     unlink(path: string): boolean;
-    copy(source: string, dest: string): boolean;
+    copy(source: string, dest: string, overwrite?: boolean): boolean;
     move(source: string, dest: string): boolean;
     read(path: string, asBinary?: boolean): string;
     write(path: string, content: any, asBinary?: boolean): boolean;
@@ -177,6 +181,9 @@ interface FileSystemApi {
     watch(path: string): any;
     unlock(path: string): any;
     lock(path: string): any;
+
+    // TODO: Is that ok?
+    getVersionInfo(exePath: string): {ProductVersion: string};
 
     Filters: any;
     FileNotify: any;
@@ -217,6 +224,9 @@ interface PathApi {
     areEquals: (path1: string, path2: string) => boolean;
     getFilePathWithoutExtension: (path: string) => string;
     isFileOrFolderNameValid: (name: string) => boolean;
+    getFilePathWithTrailingSlash: (path: string) => string;
+    getFilePathWithForwardSlashes: (path: string) => string;
+    isLocatedInDirectory: (path: string, directory: string) => boolean;
 }
 
 declare class BaseService {
@@ -607,36 +617,16 @@ interface Screen {
 
 // Module not (yet) ported to TypeScript
 declare module "lodash";
+declare module "ace";
+declare module "pixi";
+declare module "mithril";
 
-declare module "common/asset-utils";
-declare module "common/context-menu-utils";
-declare module "common/file-system-utils";
-declare module "common/keycodes";
-declare module "common/math-utils";
-declare module "common/version";
+declare module "core/views/viewport-context-menus";
 
-declare module "components/button";
-declare module "components/mithril-ext";
 declare module "components/list-view";
-declare module "components/textbox";
 
-declare module "extensions/events";
-declare module "extensions/menus";
-declare module "extensions/migrations";
-declare module "extensions/parser-utils";
-declare module "extensions/services";
-declare module "extensions/templates";
+declare module "directives/loading";
 
-declare module "foundation/project";
-declare module "foundation/spm-registry";
+declare module "3rdparty/marked/marked.min";
 
-declare module "services/event-service";
-declare module "services/file-system-service";
-declare module "services/host-service";
-declare module "services/level-editing-service";
-declare module "services/log-service";
-declare module "services/marshalling-service";
-declare module "services/plugin-service";
-declare module "services/project-service";
-declare module "services/savable-service";
-declare module "services/settings-service";
+declare module "docking/docking-utils";

@@ -40,7 +40,9 @@ struct WindowCApi
 	WindowPtr (*get_main_window)();
 
 	void	(*minimize) (WindowPtr optional);
+	int		(*is_minimized) (WindowPtr optional);
 	void	(*maximize) (WindowPtr optional);
+	int		(*is_maximized) (WindowPtr optional);
 	void	(*restore) (WindowPtr optional);
 	int		(*is_closing) (WindowPtr optional);
 	void	(*close) (WindowPtr optional);

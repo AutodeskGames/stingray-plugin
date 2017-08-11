@@ -583,8 +583,14 @@ struct LuaApi
 	/* Returns true if the stack entry is a boolean. */
 	int(*isbool) (lua_State *L, int i);
 
+	/* Pushes a table to the stack and returns the index of the created table*/
+	int (*pushnewtable) (lua_State *L);
+
+	/* Sets the item at index `i` in the table at stack index t to the value at stack index -1 and pops the value at stack index -1.*/
+	void(*settableindex) (lua_State *L, int t, int i);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[28];
+	void *reserved[26];
 };
 
 /* ----------------------------------------------------------------------
@@ -1505,8 +1511,12 @@ struct SceneGraphApi
 	   array can be(useful when defining a post animation callback that changes local node transforms. */
 	struct SceneFlags * (*dirty_array_pointer)(struct SceneGraph *scene_graph);
 
+	/*  Sets the world transform of the node at the given index and also updates its local transform, and
+		the child transforms. */
+	void (*set_world_and_local)(struct SceneGraph * scene_graph, int index, ConstMatrix4x4Ptr transform);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[31];
 };
 
 /* ----------------------------------------------------------------------
@@ -2236,8 +2246,11 @@ struct MeshObjectApi
 	   MO_MeshGeometry. */
 	uint8_t (*read_mesh_geometry)(void *unit_resource, uint32_t mesh_name, struct MO_MeshGeometry *geometry);
 
+	/* Retrieve scene graph from mesh object */
+	struct SceneGraph * (*scene_graph)(uint32_t handle);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[29];
+	void *reserved[28];
 };
 
 /* ----------------------------------------------------------------------
@@ -2809,7 +2822,7 @@ enum VideoTextureLayout
 {
 	UNKNOWN_TEXTURE_LAYOUT = 0,
 	YUV2,
-	YCBCR3
+	RGBA
 };
 
 /* A structure containing the information needed for a video decoder. */

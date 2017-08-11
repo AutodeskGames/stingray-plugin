@@ -21,6 +21,7 @@ plugin/*.map
 
 # File patterns
 
+*.backup
 *.lastcodeanalysissucceeded
 *.a
 *.app

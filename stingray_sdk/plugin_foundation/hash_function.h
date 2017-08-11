@@ -189,4 +189,19 @@ inline unsigned mix(unsigned h, unsigned k)
 	return h;
 }
 
+inline uint32_t entity_component_property_key(const char *s)
+{
+	uint32_t hash = 0;
+	const char *key_start = s;
+	while (*s) {
+		if (*s == '.') {
+			hash = mix(hash, hash32(key_start, (int)(s - key_start)));
+			key_start = s + 1;
+		}
+		++s;
+	}
+	hash = mix(hash, hash32(key_start, (int)(s - key_start)));
+	return hash;
+}
+
 } // namespace stingray_plugin_foundation

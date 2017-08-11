@@ -555,6 +555,8 @@ extern "C" {
 		struct CApiVector2 caret;
 	};
 
+	enum VideoCApi_TextureLayout { VIDEO_TEXTURE_LAYOUT_UNKNOWN = 0, VIDEO_TEXTURE_LAYOUT_YUV2, VIDEO_TEXTURE_LAYOUT_RGBA };
+
 	enum WorldCApi_OrphanedParticlePolicy
 	{
 		WA_OPP_DESTROY_ORPHAN,
@@ -597,6 +599,11 @@ extern "C" {
 		CAMERA_PROJ_PERSPECTIVE
 	};
 
+	enum ApplicationImageFormats {
+		APPLICATION_RAW,
+		APPLICATION_PNG,
+		APPLICATION_DDS
+	};
 	enum CameraMode {
 		CAMERA_MODE_MONO,
 		CAMERA_MODE_STEREO
