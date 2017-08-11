@@ -1,21 +1,21 @@
-Welcome to the Stingray plug-in startup repo
-============================================
+Welcome to the Stingray 1.9 plug-in startup repo
+================================================
 
-This repository provides an easy way to get started creating new plug-ins for [Autodesk® Stingray©](http://www.autodesk.com/products/stingray/overview).
+This repository provides an easy way to get started creating new plug-ins for [Autodesk Stingray 1.9](http://www.autodesk.com/products/stingray/overview).
 
 You'll find a sample plug-in that is already set up with some basic content, and a framework that you can build on:
 
-- [x] A sample *.stingray_plugin* descriptor file, which tells Stingray what your plug-in is and what it does.
-- [x] Various components that extend the Stingray environment:
-	- [x] Content resources that your plug-in makes available to all the Stingray projects you open in the editor.
-	- [x] C/C++ code that extends the runtime engine with new functionality.
-	- [x] C/C++ code that extends the editor's JavaScript environment with hooks to functions implemented in native code.
-	- [x] JavaScript modules that extend the Stingray editor with new panels, menus, and commands.
-	- [x] A Stingray content project that your plug-in users will see in the Templates tab of the **Project Manager**.
-- [x] Everything you need to build C/C++ plug-in code into *.dll* files ready for the engine and editor to load:
-	- [x] `make.rb` launches the plug-in build system.
-	- [x] `spm.rb` fetches and installs build packages and external libraries. It's called internally by `make.rb`, but you can also use it on its own as well if your plug-in has other dependencies that you want to download automatically.
-	- [x] `cmake` generates and compiles Visual Studio solutions for the native plug-in extensions.
+- A sample *.stingray_plugin* descriptor file, which tells Stingray what your plug-in is and what it does.
+- Various components that extend the Stingray environment:
+	- Content resources that your plug-in makes available to all the Stingray projects you open in the editor.
+	- C/C++ code that extends the runtime engine with new functionality.
+	- C/C++ code that extends the editor's JavaScript environment with hooks to functions implemented in native code.
+	- JavaScript modules that extend the Stingray editor with new panels, menus, and commands.
+	- A Stingray content project that your plug-in users will see in the Templates tab of the **Project Manager**.
+- Everything you need to build C/C++ plug-in code into *.dll* files ready for the engine and editor to load:
+	- `make.rb` launches the plug-in build system.
+	- `spm.rb` fetches and installs build packages and external libraries. It's called internally by `make.rb`, but you can also use it on its own as well if your plug-in has other dependencies that you want to download automatically.
+	- `cmake` generates and compiles Visual Studio solutions for the native plug-in extensions.
 
 For more information about plug-ins, how they work, and what you can do with them, see the [Stingray SDK Help](http://help-staging.autodesk.com/view/Stingray/ENU/?contextId=SDK_HOME).
 
