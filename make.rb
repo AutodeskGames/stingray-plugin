@@ -276,7 +276,7 @@ end
 report_block("plugin", "Configuring", true) do
 
 	# Test cmake binaries exist
-	$cmake_bin = File.join(find_package_root($options[:platform], $options[:devenv], "cmake"), $system_windows ? "win/cmake.exe" : $system_mac ? "mac/cmake" : "linux/cmake")
+	$cmake_bin = File.join(find_package_root("cmake"), $system_windows ? "win/cmake.exe" : $system_mac ? "mac/cmake" : "linux/cmake")
 	if $cmake_bin == nil or !File.exist?($cmake_bin)
 		puts "\nERROR: CMake binaries not found in library path!".bold.red
 		exit 1
@@ -292,7 +292,7 @@ report_block("plugin", "Configuring", true) do
 	# Setup NMake JOM build environment on Windows if using makefile
 	if $system_windows and $options[:devenv] == "makefile"
 		# Locate NMake JOM in library directory
-		$jom_dir = find_package_root($options[:platform], $options[:devenv], "jom")
+		$jom_dir = find_package_root("jom")
 		$jom_bin = File.join($jom_dir, "jom.exe")
 		if $jom_bin == nil or !File.exist?($jom_bin)
 			puts "\nERROR: JOM binary not found in library path!".bold.red
@@ -316,9 +316,9 @@ report_block("plugin", "Configuring", true) do
 	if $options[:platform] == "web"
 		if ENV["EMSDK"] == nil
 			# Locate Emscripten in library directory
-			$emsdk_dir = find_package_root($options[:platform], $options[:devenv], "emsdk")
+			$emsdk_dir = find_package_root("emsdk")
 			if $emsdk_dir == nil or !Dir.exists?($emsdk_dir)
-				puts "\nERROR: Emscripten not found in library path!".bold.red
+				STDERR.puts "\nERROR: Emscripten not found in library path!".bold.red
 				exit 1
 			end
 

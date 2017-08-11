@@ -1,11 +1,12 @@
 // About
 //
-name = "Stingray Plugin"
-description = "Stingray Plugin Example"
-version = "1.9.0"
+name = "Interactive Plugin"
+description = "Autodesk Interactive Plugin Example"
+version = "2.0.0"
 changelog = {
     "1.0.0": "First version"
     "1.9.0": "Updated plugin for Stingray 1.9"
+    "2.0.0": "Update plugin for Autodesk Interactive 2.0"
 }
 author = {
     name = "Jonathan Schmidt"
@@ -13,7 +14,7 @@ author = {
     company = "Autodesk Inc."
     url = "https://git.autodesk.com/gameware/stingray-plugin"
 }
-keywords = ["stingray", "plugin", "example"]
+keywords = ["autodesk", "interactive", "stingray", "plugin", "example"]
 
 // Define plugin thumbnail
 thumbnail = "sample_project/sample.svg"
@@ -84,5 +85,5 @@ extensions = {
 //
 platforms = ["win64"]
 dependencies = {
-    "stingray" = "~1.9.0"
+    "stingray" = "~2.0.0"
 }

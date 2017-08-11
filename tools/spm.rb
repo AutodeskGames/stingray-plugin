@@ -57,6 +57,9 @@ packages in the `engine` group that have `win64` listed as a platform:
 * `--verbose`:
   Display verbose output.
 
+* `--packages-root-dir=*value*`:
+  Overrides default directory lookup root for sjson files to parse
+
 ## ENVIRONMENT
 
 * `SR_LIB_DIR`:
@@ -323,12 +326,17 @@ end
 stderr = $stderr
 Thread.abort_on_exception = true
 
+passed_zip_min_version_check = false
+
 # Auto install required gems
 begin
 	# Temporary redirect $stderr to get rid of "DL is deprecated, please use Fiddle" warning
 	$stderr = StringIO.new
 	require 'thor'
 	$stderr = stderr
+
+	gem 'zip', '>=2.0.2'
+	passed_zip_min_version_check = true
 
 	require 'aws-sdk-core'
 	require 'artifactory'
@@ -337,12 +345,14 @@ begin
 	require 'slop'
 	require 'childprocess'
 	require 'websocket'
+
 rescue LoadError => e
 	$stderr = stderr
 	puts e
 	print "Error loading gems, should I try to install them for you [Y/n]: "
 	answer = STDIN.gets.strip
 	exit(-1) unless answer == '' || answer[/^[yY]/]
+
 	sys = lambda do |s|
 		puts(s)
 		res = system(s)
@@ -350,7 +360,11 @@ rescue LoadError => e
 	end
 	sys.call("gem install thor --conservative")
 	sys.call("gem install aws-sdk-core --conservative")
-	sys.call("gem install zip --conservative")
+	if passed_zip_min_version_check
+		sys.call("gem install zip --conservative")
+	else
+		sys.call("gem install zip -v 2.0.2")
+	end
 	sys.call("gem install os --conservative")
 	sys.call("gem install artifactory --conservative")
 	sys.call("gem install slop --conservative")
@@ -397,7 +411,7 @@ end
 # Global configuration
 Configuration = Object.new
 class << Configuration
-	attr_accessor :verbose, :lib_dir, :tmp_dir, :num_threads, :part_size
+	attr_accessor :verbose, :lib_dir, :tmp_dir, :packages_root_dir, :num_threads, :part_size
 	def installed_file; File.join(lib_dir, 'spm-installed.sjson'); end
 end
 
@@ -736,9 +750,10 @@ class ArtifactorySource < Source
 		begin
 			Zip::ZipFile.open(zipfile) do |file|
 				file.each do |f|
-					path = File.join(zipdir, File.dirname(f.name))
+					filename = f.name.force_encoding("UTF-8")
+					path = File.join(zipdir, File.dirname(filename))
 					FileUtils.mkdir_p(path)
-					file.extract(f, File.join(path, f.name))
+					file.extract(f, File.join(path, filename))
 				end
 			end
 			retry_mv(zipdir, dest_dir)
@@ -922,8 +937,9 @@ class S3Source < Source
 			dest_dir_temp = Dir.mktmpdir("temp-#{File.basename(dest_dir)[0,10]}-", Cache.root)
 			Zip::ZipFile.open(zip.path) { |zip_file|
 				zip_file.each { |f|
-					FileUtils.mkdir_p(File.join(dest_dir_temp, File.dirname(f.name)))
-					zip_file.extract(f, File.join(dest_dir_temp, f.name))
+					filename = f.name.force_encoding("UTF-8")
+					FileUtils.mkdir_p(File.join(dest_dir_temp, File.dirname(filename)))
+					zip_file.extract(f, File.join(dest_dir_temp, filename))
 				}
 			}
 
@@ -1040,18 +1056,24 @@ class GitSource < Source
 			ssh_failed = false
 			https_timeout = false
 
-			Open3.popen3("git clone --progress #{@sshUrl} #{dir}") do |i,o,e|
-				i.close
-				e.each do |line|
-					@progress = line.strip
-					if line.include? "Permission denied (publickey)."
-						ssh_failed = true
+			if @sshUrl
+				Open3.popen3("git clone --progress #{@sshUrl} #{dir}") do |i,o,e|
+					i.close
+					e.each do |line|
+						puts line
+						@progress = line.strip
+						if line.include? "Permission denied (publickey)."
+							ssh_failed = true
+						end
 					end
 				end
 			end
 
-			if ssh_failed
+			if (ssh_failed)
 				puts "Cannot connect using SSH. Trying HTTPS..."
+			end
+
+			if !@sshUrl || ssh_failed
 
 				gitCredConfigValue = `git config --global --get credential.helper`
 				areCredsCached = gitCredConfigValue.include? "wincred"
@@ -1155,8 +1177,9 @@ class ManualSource < Source
 				target = has_dir ? dest_dir_temp : container
 
 				zip_file.each { |f|
-					FileUtils.mkdir_p(File.join(target, File.dirname(f.name)))
-					zip_file.extract(f, File.join(target, f.name))
+					filename = f.name.force_encoding("UTF-8")
+					FileUtils.mkdir_p(File.join(target, File.dirname(filename)))
+					zip_file.extract(f, File.join(target, filename))
 				}
 			}
 
@@ -1237,8 +1260,9 @@ class URLSource < Source
 				target = has_dir ? dest_dir_temp : container
 
 				zip_file.each { |f|
-					FileUtils.mkdir_p(File.join(target, File.dirname(f.name)))
-					zip_file.extract(f, File.join(target, f.name))
+					filename = f.name.force_encoding("UTF-8")
+					FileUtils.mkdir_p(File.join(target, File.dirname(filename)))
+					zip_file.extract(f, File.join(target, filename))
 				}
 			}
 
@@ -1444,6 +1468,7 @@ class Manager < Thor
 	class_option :lib_dir, :desc => "library directory"
 	class_option :verbose, :desc => "enable verbose output", :type => :boolean, :aliases => %w(v)
 	class_option :tmp_dir, :desc => "directory for temporary downloads"
+	class_option :packages_root_dir, :desc => "overrides default parsing root directory which is current directory"
 
 	# Uncomment to have more flexible options in spm.rb
 	# class_option :num_threads, :type => :numeric, :default => 64, :desc => "use multiple threads to download from S3 servers"
@@ -1454,6 +1479,7 @@ class Manager < Thor
 		Configuration.verbose = options[:verbose]
 		Configuration.lib_dir = options[:lib_dir] if options[:lib_dir]
 		Configuration.tmp_dir = options[:tmp_dir] if options[:tmp_dir]
+		Configuration.packages_root_dir = options[:packages_root_dir]
 
 		if Configuration.lib_dir != nil and !Configuration.lib_dir.empty?
 			Configuration.lib_dir = Configuration.lib_dir.gsub("\\", "/").gsub("\"", "")
@@ -1492,8 +1518,11 @@ class Manager < Thor
 		FileUtils.mkdir_p(Configuration.lib_dir)
 		FileUtils.mkdir_p(Cache.root)
 
-		Dir.glob("**/spm-packages.sjson").each {|pf| parse_packages(pf)}
-		Dir.glob("**/*-spm-packages.sjson").each {|pf| parse_packages(pf)}
+		root_dir = (!Configuration.packages_root_dir.to_s.empty? && Dir.exists?(Configuration.packages_root_dir)) ? Configuration.packages_root_dir : Dir.pwd
+ 		Dir.chdir(root_dir) {
+ 			Dir.glob("**/spm-packages.sjson").each {|pf| parse_packages(pf)}
+ 			Dir.glob("**/*-spm-packages.sjson").each {|pf| parse_packages(pf)}
+ 		}
 
 		parse_installed
 	end

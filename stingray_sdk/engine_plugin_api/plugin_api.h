@@ -647,6 +647,9 @@ typedef const char * (*PackageIncludeCompileFunction)(struct DataCompileParamete
 /* Function type for compiling entity component data. */
 typedef struct DataCompileResult (*EntityComponentCompileFunction)(struct EntityComponentCompileData *compile_data, struct EntityComponentPackageIncludeData *package_include_data);
 
+/* Function type for compiling resources to scene databases. */
+typedef const char* (*SceneDatabaseCompileFunction)(const char *file_name, const char *data, int64_t length, void *scene_ptr, const char *extract_embedded_path, const char *resource_name, const char *platform_data_folder);
+
 /* Enumerates the texture types that can be returned by custom texture readers. */
 enum SourceTextureReadResult_ResultType {
 	DC_STRR_RT_IMAGE2D,
@@ -726,8 +729,11 @@ struct DataCompilerApi
 	/* Adds an entity component compiler for the specified component typename. */
 	void(*add_entity_component_compiler)(const char *name, EntityComponentCompileFunction compile, int spawn_order);
 
+	/* Adds a scene database compiler for a new data type to the Stingray engine*/
+	void(*add_scene_database_compiler)(const char *extension, SceneDatabaseCompileFunction compile);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[31];
 };
 
 /* ----------------------------------------------------------------------
