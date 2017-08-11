@@ -80,7 +80,10 @@ set(CMAKE_EXE_LINKER_FLAGS_DEV "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 # Get the current working branch and latest commit hash and generate build identifier header file
 determine_build_revision("${PROJECT_SOURCE_DIR}" ENGINE_BUILD_IDENTIFIER)
 if( ENGINE_BUILD_IDENTIFIER )
-	execute_process(COMMAND git rev-parse --abbrev-ref HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE ENGINE_BUILD_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process(COMMAND git rev-parse --abbrev-ref HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE ENGINE_BUILD_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE GIT_ERROR)
+	    if( "${GIT_ERROR}" STRGREATER "")
+			    message(WARNING "The following git command: >> git rev-parse --abbrev-ref HEAD (get current git branch) << could not be executed, because no .git folder was found.")
+	    endif()
 endif()
 #configure_file("${PROJECT_SOURCE_DIR}/build_identifier.h.in" "${PROJECT_BINARY_DIR}/build_identifier.h")
 
@@ -158,7 +161,7 @@ if( PLATFORM_WINDOWS OR PLATFORM_XBOXONE OR PLATFORM_UWP )
 	add_compile_options($<$<CONFIG:DEBUG>:/Od> $<$<NOT:$<CONFIG:DEBUG>>:/Ox>)
 
 	# Inline function expansion
-	add_compile_options(/Ob2)
+	add_compile_options($<$<CONFIG:DEBUG>:/Ob0> $<$<NOT:$<CONFIG:DEBUG>>:/Ob2>)
 
 	# Enable intrinsic functions in dev/release
 	add_compile_options($<$<NOT:$<CONFIG:DEBUG>>:/Oi>)

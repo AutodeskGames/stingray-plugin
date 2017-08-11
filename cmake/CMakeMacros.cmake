@@ -269,7 +269,10 @@ endmacro()
 # If pResult already has a value this function does nothing
 macro(determine_build_revision pBaseDir pResult)
 	if( NOT ${pResult} )
-		execute_process(COMMAND git log -1 --format=%H WORKING_DIRECTORY ${pBaseDir} OUTPUT_VARIABLE ${pResult} OUTPUT_STRIP_TRAILING_WHITESPACE)
+		execute_process(COMMAND git log -1 --format=%H WORKING_DIRECTORY ${pBaseDir} OUTPUT_VARIABLE ${pResult} OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_VARIABLE GIT_ERROR)
+		    if( "${GIT_ERROR}" STRGREATER "")
+			    message(WARNING "The following git command: >> git log -1 --format=%H (get current git commit)<< could not be executed, because no .git folder was found.")
+			endif()
 	endif()
 	if( NOT ${pResult} )
 		execute_process(COMMAND hg identify -i WORKING_DIRECTORY ${pBaseDir} OUTPUT_VARIABLE ${pResult} OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
@@ -556,22 +559,37 @@ macro(link_plugins_from_folders plugins_folder)
 endmacro()
 
 macro(register_plugin_file)
-	# Registers a full path to a plugin dynamic library in the CMake cache
-	# variable PLUGIN_RESOURCE_FILES so it can be read by a higher-level
-	# CMake project.  This is used for adding libs to a bundle for platforms
-	# that don't support doing it automatically through CMake dependencies.
-	# Currently that is only iOS.
-	list(APPEND PLUGIN_RESOURCE_FILES "$<TARGET_FILE:${PROJECT_NAME}>")
-	set(PLUGIN_RESOURCE_FILES "${PLUGIN_RESOURCE_FILES}" CACHE INTERNAL "" FORCE)
+	if( BUILD_SHARED_LIBS)
+		if( PLATFORM_IOS )
+			# Registers a full path to a plugin dynamic library in the CMake cache
+			# variable PLUGIN_RESOURCE_FILES so it can be read by a higher-level
+			# CMake project.  This is used for adding libs to a bundle for platforms
+			# that don't support doing it automatically through CMake dependencies.
+			# Currently that is only iOS.
+			list(APPEND PLUGIN_RESOURCE_FILES "$<TARGET_FILE:${PROJECT_NAME}>")
+			set(PLUGIN_RESOURCE_FILES "${PLUGIN_RESOURCE_FILES}" CACHE INTERNAL "" FORCE)
+		elseif( PLATFORM_ANDROID )
+			# Remove the Gradle build directory as a post-build step for plugins.
+			# This way, if a plugin changes, the main_android project is forced to
+			# rebuild and rebundle the APK.  Otherwise Visual Studio doesn't notice
+			# the change and rebuild, and stale plugin libraries end up in the APK.
+			set(GRADLE_BUILD_DIR "${CMAKE_BINARY_DIR}/main_android/main_android.dir")
+			add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+				COMMAND "${CMAKE_COMMAND}" -E remove_directory "\"${GRADLE_BUILD_DIR}\""
+				COMMENT "Removing stale Gradle build")
+		endif()
+	endif()
 endmacro()
 
 macro(enable_ios_code_signing)
-	set_target_properties(${PROJECT_NAME} PROPERTIES
-		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME LaunchImage
-		XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "${ENGINE_IOS_CODE_SIGN_IDENTITY}"
-		XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
-		XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${ENGINE_IOS_DEVELOPMENT_TEAM}"
-		)
+	if( PLATFORM_IOS )
+		set_target_properties(${PROJECT_NAME} PROPERTIES
+			XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME LaunchImage
+			XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "${ENGINE_IOS_CODE_SIGN_IDENTITY}"
+			XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
+			XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${ENGINE_IOS_DEVELOPMENT_TEAM}"
+			)
+	endif()
 endmacro()
 
 # Removes all matching candidates from a list of files.

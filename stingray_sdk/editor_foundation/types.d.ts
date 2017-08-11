@@ -1,4 +1,15 @@
 /**
+ * Define common build settings used for product, platform and projects.
+ */
+interface BuildCommonSettings {
+    name?: string;
+    short_name?: string;
+    exe_prefix?: string;
+
+    [otherSetting: string]: any;
+}
+
+/**
  * Stingray foundation APIs.
  */
 interface Stingray {
@@ -13,15 +24,29 @@ interface Stingray {
         pluginsDir: string;
         appDir: string;
         editorDir: string;
+        appDataPath: string;
+        userTempDir: string;
+        logFilePath: string;
 
         config: {
-            build_info: {
-                project_name: string;
-                build_name: string;
-                build_version: string;
-            }
-        }
-    }
+            ports: {[portName: string]: number|[number, number]};
+
+            features: {[switchName: string]: boolean | string};
+
+            build_settings: {
+                [setting: string]: any;
+
+                product_version: string;
+                product_short_version: string;
+                product_full_version: string;
+
+                product: BuildCommonSettings;
+                platform: BuildCommonSettings;
+                licensing: {[setting: string]: any};
+                projects: {[projectName: string]: BuildCommonSettings};
+            };
+        };
+    };
 
     /**
      * Indicates if the system is ran through Team City.
@@ -82,7 +107,7 @@ interface Stingray {
     unloadNativeExtension: (id: string) => boolean;
 
     loadAsyncExtension: (path: string) => Promise<string>;
-    unloadAsyncExtension: (id: string) => Promise<any>;
+    unloadAsyncExtension: (id: string) => Promise<boolean>;
 
     hostExecute: (type: string, firstArg?: any) => Promise<any>;
 
@@ -93,15 +118,17 @@ interface Stingray {
     fs: FileSystemApi;
     path: PathApi;
     sjson: SJSONApi;
+    process: any;
 }
 
 /**
  * Generic functions to manipulate page location.
  */
 interface LocationApi {
-    removeParam: (paramName) => void;
-    addParam: (paramName, paramValue) => void;
-    toFilePath: (string) => string;
+    removeParam(paramName): void;
+    addParam(paramName, paramValue): void;
+    toFilePath(path: string): string;
+    toBootUrl(url: string): string;
 }
 
 /**
@@ -112,13 +139,15 @@ interface HostApi {
     getCommandLineSwitch: (name: string) => Promise<boolean | any>;
     createService: (name, path) => Promise<any>;
     setCursorStyle: (style: string) => Promise<boolean>;
+    setCursorPosition: (x: number, y: number) => void;
     openWindow: (url: string, id?: string, options?: object) => Promise<any>;
     crash: () => {};
+    cursorPosition: Function;
 
     /**
      * Execute a shell command or open an URL in the default browser.
      */
-    openUrl(url:string): boolean;
+    openUrl(url: string): boolean;
 }
 
 interface FileStats {
@@ -128,22 +157,26 @@ interface FileStats {
     size: number;
     readonly: boolean;
     hidden: boolean;
-    modified: number;
+    modified: Date;
 }
 
 interface FileSystemApi {
     exists (path: string): boolean;
-    enumerate (directory:string, searchPattern: any, recursive: boolean): string[];
+    enumerate (directory: string, searchPattern: any, recursive: boolean, filter?: any): string[];
     stats (path: string): FileStats;
-    unlink(path:string): boolean;
-    copy(source:string, dest:string): boolean;
-    move(source:string, dest:string): boolean;
-    read(path:string, asBinary:boolean): string;
-    write(path:string, content:any, asBinary:boolean): boolean;
-    unzip(path:string, destination:string): boolean;
-    mkdir(path:string): boolean;
-    toUniqueFileName (name:string, baseFolder:string): string;
-    toUniqueDirectoryName (name:string, baseFolder:string): string;
+    unlink(path: string): boolean;
+    copy(source: string, dest: string): boolean;
+    move(source: string, dest: string): boolean;
+    read(path: string, asBinary?: boolean): string;
+    write(path: string, content: any, asBinary?: boolean): boolean;
+    unzip(path: string, destination: string): boolean;
+    mkdir(path: string): boolean;
+    setPermissions(dest: string, permissions: any);
+    toUniqueFileName (name: string, baseFolder: string): string;
+    toUniqueDirectoryName (name: string, baseFolder: string): string;
+    watch(path: string): any;
+    unlock(path: string): any;
+    lock(path: string): any;
 
     Filters: any;
     FileNotify: any;
@@ -152,14 +185,14 @@ interface FileSystemApi {
 }
 
 interface SJSONApi {
-    load(path:string): any;
-    save(path:string, any): boolean;
-    parse(sjson:string): any;
-    stringify(obj:any): string;
+    load(path: string): any;
+    save(path: string, content: any): boolean;
+    parse(sjson: string): any;
+    stringify(obj: any): string;
 }
 
 /**
- * Stingray path manipulation API.
+ * Path manipulation API.
  */
 interface PathApi {
     sep: string;
@@ -179,51 +212,59 @@ interface PathApi {
     clean: (path: string, addSeparatorsAtEnd?: boolean) => string;
     resolve: (path: string) => string;
     relative: (from: string, to: string) => string;
-    suffix: (path: string, noLeadingDot: boolean) => string;
+    suffix: (path: string, noLeadingDot?: boolean) => string;
     ensureValid: (path: string) => string;
     areEquals: (path1: string, path2: string) => boolean;
     getFilePathWithoutExtension: (path: string) => string;
     isFileOrFolderNameValid: (name: string) => boolean;
 }
 
-interface BaseService {
-    new(id:string, resolveCallback?: Function): BaseService;
+declare class BaseService {
+    constructor(id: string, resolveCallback?: Function);
 
     _remoteService: any;
     promise: Promise<any>;
     marshallingService: any;
 
     ready: () => Promise<boolean>;
-    invoke: (methodName:string, ...args) => Promise<any>;
-    invokeMethod: (methodName:string, args:any[], options?: any) => Promise<any>;
+    invoke: (methodName: string, ...args) => Promise<any>;
+    invokeMethod: (methodName: string, args: any[], options?: any) => Promise<any>;
 }
 
 interface ExtensionDynamicString {
-    resolve(args:any[], keepAsString?:boolean): Promise<string>;
+    resolve(args: any[], keepAsString?: boolean): Promise<string>;
 }
 
-interface IExtension {
-    new(data: any): IExtension;
+declare abstract class IExtension {
+    constructor(data: any);
 
-    module:any;
+    module: any;
 
     define(extensionName: string, behaviors: object, parsers: Function[], toBeMerged: object): any;
 
     wrap (extensionData, pluginName): object;
     expandToPluginDir (fieldName, setDefaultToPluginRoot?): Function;
-    toDynamicString (s:string): ExtensionDynamicString;
+    toDynamicString (s: string): ExtensionDynamicString;
 }
 
 interface EventSource {
     new(): this;
-    emit (name:string, ...args): any;
-    on (name:string, ...args): any;
-    off(name: string, callback): any;
+    emit (name: string, ...args): any;
+    on (name: string, ...args): any;
+    off(name: string, callback?): any;
+}
+
+interface Element {
+    path: string;
+}
+
+interface MouseEvent {
+    path: HTMLElement[];
 }
 
 interface Promise<T> {
     cancel: () => void;
-    spread(a: (...args)=>any, b?:()=>Promise<T>): Promise<T>;
+    spread(a: (...args)=>any, b?: ()=>Promise<T>): Promise<T>;
     finally(a, b?): Promise<T>;
 }
 
@@ -234,21 +275,21 @@ interface String {
 }
 
 interface Math {
-    between: (min: number, max: number) => number
+    between: (min: number, max: number) => number;
 }
 
 interface PromiseConstructor {
     filter(array, promiseReturningFilter): Promise<any>;
     map(collection, promiseReturningTransformer): Promise<any>;
-    series(items:any[]|Object, next:any, initialValue?:any): Promise<any>;
+    series(items: any[]|Object, next: any, initialValue?: any): Promise<any>;
     while(predicate, action, result): Promise<any>;
-    require(modules:string[], doNotPrintErrors?:boolean): Promise<any>;
-    waterfall(funcs:Function[]): Promise<any>;
+    require(modules: string[], doNotPrintErrors?: boolean): Promise<any>;
+    waterfall(funcs: Function[]): Promise<any>;
     and(a: Promise<any>|any, b: Promise<any>): Promise<any>;
     or(a: Promise<any>, b: Promise<any>): Promise<any>;
     on(eventSource: EventSource, eventName: string, eventHandler: Function): Promise<any>;
     timeout(timeoutMs: number): Promise<any>;
-    until(condition: () => Promise<any>, timeoutMs?: number, intervalMs?:number): Promise<any>;
+    until(condition: () => Promise<any>, timeoutMs?: number, intervalMs?: number): Promise<any>;
 }
 
 interface Console {
@@ -259,12 +300,12 @@ interface CefRequest {
     request: string;
     persistent?: boolean;
     onSuccess: (result: string) => void;
-    onFailure: (code:number, msg:string) => void;
+    onFailure: (code: number, msg: string) => void;
 }
 
 interface Window {
 
-    $(...args:any[]): any;
+    $(...args: any[]): any;
 
     stingray: Stingray;
 
@@ -283,6 +324,8 @@ interface Window {
     cefQuery: (request: CefRequest) => Promise<any>;
 
     gc: () => void;
+
+    DOMParser: DOMParser;
 
     options: any;
     promise: PromiseLike<any>;
@@ -303,7 +346,7 @@ interface Window {
     layoutId: string;
     isClosing: boolean;
     isMainWindow: boolean;
-    bindLayout: Function;
+    bindLayout: (Function) => void;
     saveLayout: Function;
     removeLayout: Function;
     resetLayout: Function;
@@ -334,6 +377,8 @@ interface Window {
 
     // Used by the node editor
     PIXI: any;
+
+    resizeHeightTo: any;
 }
 
 interface EventTarget {
@@ -365,12 +410,8 @@ interface Document {
     updateTabResourceName: (tabRessourceName: string) => any;
 }
 
-interface Element {
-    contentDocument: Document;
-}
-
 interface RequireInternals {
-    contexts: {_:{config:{paths:object}}};
+    contexts: {_: {config: {paths: object}}};
 }
 
 interface Require {
@@ -398,30 +439,44 @@ interface WindowEventMap extends GlobalEventHandlersEventMap {
 }
 
 interface ErrorConstructor {
-    captureStackTrace(thisArg: any, func: any): void
+    captureStackTrace(thisArg: any, func: any): void;
 }
 
-interface OffHandler { (): any; promise: Promise<any>; }
+interface OffHandler { (): any; promise?: Promise<any>; }
 interface NestedCallbackHandler { (): any; callback: () => any; }
 
-interface IDataStore
-{
-    new(url:string): IDataStore;
+declare abstract class IDataStore {
+    constructor(url: string);
     findEvent (name, uri): any;
     getCandidates (uri, initialCandidate, enumerator?): any[];
     url: URL;
 }
 
 interface ITreeModel {
-    new (name: string);
+    new (name: string, options?: object);
+}
+
+interface ITreeNode {
+    name: string;
+    path: string;
+    isDirectory: boolean;
+    checkState: any;
+    isSelected: boolean;
+    isHidden: boolean;
+    isMissing?: boolean;
+    customNodeDisplay?: {
+        text: string;
+        containerClass: string;
+        elementClass: string;
+    };
 }
 
 interface IDefaultViewportMouseBehavior {
-    new (engineService: any, engineViewportId: string, engineViewportInterops: any)
+    new (engineService: any, engineViewportId: string, engineViewportInterops: any);
 }
 
 interface IDefaultViewportController {
-    new (engineService: any)
+    new (engineService: any);
 }
 
 interface Vector2Object {
@@ -435,93 +490,153 @@ interface Vector3Object {
     z: number;
 }
 
+interface MithrilAction {
+    event: string;
+    handler: Function;
+    variables?: string[];
+    withNoRedraw?: boolean;
+    active?: boolean;
+}
+
+interface MithrilActionDefaults {
+    withNoRedraw: boolean;
+    active: boolean;
+}
+
+interface IMithrilActionHandler {
+    defaults: MithrilActionDefaults;
+    globalHandler: Function;
+    actions: object;
+    activeEvents: string[];
+    new (defaults: MithrilActionDefaults);
+    add (actionName: string, action: MithrilAction);
+    attach (actionNames: string | string[], variables: string[], attrs: object, inactive?: boolean);
+    bindEvents (mithrilRoot: any);
+}
+
+interface EngineViewport extends EventSource {
+    viewportId: string;
+    createViewport(element: HTMLElement);
+}
+
+interface StingrayPlugin {
+    author: {
+        company: string;
+        name: string;
+        url: string;
+    };
+    categoryPath: string;
+    dependencies: any[];
+    deprecated: boolean;
+    description: string;
+    downloadUrl: string;
+    extensions: any[];
+    id: string;
+    infoUrl: string;
+    isInstalled: boolean;
+    isLoaded: boolean;
+    isUserPlugin: boolean;
+    keywords: string[];
+    lastUpdated: Date;
+    localFilePath: string;
+    name: string;
+    newVersion: any;
+    path: string;
+    qaVerified: boolean;
+    scope: string;
+    size: number;
+    status: string;
+    thumbnailUrl: string;
+    type: number;
+    verified: boolean;
+    version: {
+        build: number;
+        major: number;
+        minor: number;
+        patch: number;
+    };
+    viewPath: string;
+}
+
+interface StingrayPackage {
+    id: string;
+    filePath: string;
+}
+
+interface PluginCategory {
+    id: string;
+    name: string;
+    sub_categories: PluginCategory[];
+}
+
+interface ListViewSaveObject {
+    toSaveObject: Function;
+}
+
+interface ListViewObject {
+    dummy?: any;
+}
+
+interface ListViewColumn extends ListViewObject {
+    dummy?: any;
+}
+
+declare enum ListViewObjectType {
+    item = 0,
+    header,
+    background
+}
+
+interface ImpactReport {
+    SelectedFiles: string[];
+    MissingFiles: string[];
+    MoveDirectoryTransactions: string[];
+    PathToMoveAssetEntries: any[];
+}
+
+/**
+ * Both availLeft and availTop are not to be used in production but is already used in story-toolbar-left-controller
+ * see:
+ *  - https://developer.mozilla.org/en-US/docs/Web/API/Screen/availLeft
+ *  - https://developer.mozilla.org/en-US/docs/Web/API/Screen/availTop
+ */
+interface Screen {
+    availLeft: number;
+    availTop: number;
+}
 
 // Module not (yet) ported to TypeScript
-declare module 'lodash';
-declare module 'ace';
-declare module 'pixi';
+declare module "lodash";
 
-declare module 'core/views/viewport-context-menus';
+declare module "common/asset-utils";
+declare module "common/context-menu-utils";
+declare module "common/file-system-utils";
+declare module "common/keycodes";
+declare module "common/math-utils";
+declare module "common/version";
 
-declare module 'common/asset-utils';
-declare module 'common/keycodes';
-declare module 'common/context-menu-utils';
-declare module 'common/file-system-utils';
-declare module 'common/profiler';
-declare module 'common/lodash-ext';
-declare module 'common/console-connection';
-declare module 'common/math-utils';
-declare module 'common/project-utils';
-declare module 'common/default-viewport-controller';
-declare module 'common/default-viewport-mouse-behavior';
-declare module 'common/console-connection';
-declare module 'common/color-utils';
-declare module 'common/drag-utils';
-declare module 'common/string-utils';
+declare module "components/button";
+declare module "components/mithril-ext";
+declare module "components/list-view";
+declare module "components/textbox";
 
-declare module 'components/mithril-ext';
-declare module 'components/button';
-declare module 'components/textbox';
-declare module 'components/dom-tools';
-declare module 'components/journal-view';
-declare module 'components/list-view';
-declare module 'components/accordion';
-declare module 'components/filter-view';
-declare module 'components/resizer';
-declare module 'components/tree-view';
-declare module 'components/accordion';
-declare module 'components/color-gradient';
-declare module 'components/engine-viewport';
-declare module 'components/toolbar';
-declare module 'components/typeahead';
-declare module 'components/loading';
-declare module 'components/spinner';
+declare module "extensions/events";
+declare module "extensions/menus";
+declare module "extensions/migrations";
+declare module "extensions/parser-utils";
+declare module "extensions/services";
+declare module "extensions/templates";
 
-declare module '3rdparty/marked/marked.min';
+declare module "foundation/project";
+declare module "foundation/spm-registry";
 
-declare module 'properties/mithril-property-ext';
-declare module 'properties/property-editor-utils';
-declare module 'properties/property-editor-component';
-declare module 'properties/property-document';
-declare module 'properties/property-models';
-
-declare module 'docking/docking-utils';
-
-declare module 'foundation/spm-registry';
-declare module 'foundation/project';
-declare module 'foundation/backend-client';
-declare module 'foundation/data-server-store';
-declare module 'foundation/file-system-store';
-declare module 'foundation/document-editing';
-declare module 'foundation/asset-server';
-
-declare module 'extensions/actions';
-declare module 'extensions/asset-types';
-declare module 'extensions/contextual-actions';
-declare module 'extensions/events';
-declare module 'extensions/generic-parser';
-declare module 'extensions/menus';
-declare module 'extensions/migrations';
-declare module 'extensions/parser-utils';
-declare module 'extensions/preview-behaviors';
-declare module 'extensions/resources';
-declare module 'extensions/services';
-declare module 'extensions/views';
-declare module 'extensions/node-customizers';
-
-declare module 'services/level-editing-service';
-declare module 'services/log-service';
-declare module 'services/settings-service';
-declare module 'services/plugin-service';
-declare module 'services/project-service';
-declare module 'services/asset-service';
-declare module 'services/file-system-service';
-declare module 'services/savable-service';
-declare module 'services/asset-service';
-declare module 'services/content-database-service';
-declare module 'services/object-editing-service';
-declare module 'services/data-service';
-declare module 'services/engine-viewport-service';
-declare module 'services/object-creator-service';
-declare module 'services/animation-editing-service';
-
+declare module "services/event-service";
+declare module "services/file-system-service";
+declare module "services/host-service";
+declare module "services/level-editing-service";
+declare module "services/log-service";
+declare module "services/marshalling-service";
+declare module "services/plugin-service";
+declare module "services/project-service";
+declare module "services/savable-service";
+declare module "services/settings-service";

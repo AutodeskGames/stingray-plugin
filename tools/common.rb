@@ -9,8 +9,13 @@ require 'pathname'
 require 'open3'
 require 'timeout'
 
+require_relative './sjson'
+
 # Force stdout to flush its content immediately
 STDOUT.sync = true
+
+# Constants
+ERROR_STATUS = -1
 
 # Define host system
 if (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
@@ -24,12 +29,14 @@ else
 	$system_name = "linux"
 end
 
-$platforms = ["win32", "win64", "ios", "android", "xb1", "ps4", "web", "uwp32", "uwp64", "linux"]
+$reports = Array.new
+
+$platforms = ["win32", "win64", "ios", "osx", "android", "xb1", "ps4", "web", "uwp32", "uwp64", "linux"]
 
 # Define valid options
 $platforms_whitelist = {
 	"windows" => ["win32", "win64", "android", "xb1", "ps4", "web", "uwp32", "uwp64"],
-	"mac" => ["osx", "ios"],
+	"mac" => ["ios", "osx"],
 	"linux" => ["linux"]
 }
 
@@ -40,11 +47,12 @@ $platform_alias_options = {
 	"hololens" => [:hololens]
 }
 
-$devenvs = ["msvc10", "msvc11", "msvc12", "msvc14", "xcode", "makefile"]
+$devenvs = ["msvc10", "msvc11", "msvc12", "msvc14", "msvc15", "xcode", "makefile"]
 $default_devenv = {
 	"win32" => "msvc14",
 	"win64" => "msvc14",
 	"ios" => "xcode",
+	"osx" => "xcode",
 	"android" => "msvc14",
 	"xb1" => "msvc14",
 	"ps4" => "msvc14",
@@ -55,20 +63,23 @@ $default_devenv = {
 }
 
 $devenvs_whitelist = {
-	"win32" => ["msvc11", "msvc14"],
-	"win64" => ["msvc11", "msvc14"],
+	"win32" => ["msvc11", "msvc14", "msvc15"],
+	"win64" => ["msvc11", "msvc14", "msvc15"],
 	"ios" => ["xcode"],
-	"android" => ["msvc11", "msvc14"],
+	"osx" => ["xcode"],
+	"android" => ["msvc14"],
 	"xb1" => ["msvc14"],
-	"ps4" => ["msvc11", "msvc14"],
+	"ps4" => ["msvc14"],
 	"web" => ["makefile"],
-	"uwp64" => ["msvc14"],
-	"uwp32" => ["msvc14"]
+	"uwp64" => ["msvc14", "msvc15"],
+	"uwp32" => ["msvc14", "msvc15"]
 }
 
 $configs = ["debug", "dev", "release"]
 
 $remote_platforms = ["android", "ios", "ps4", "xb1"]
+
+$build_settings = nil
 
 # Define default platform
 if $system_windows
@@ -116,17 +127,37 @@ def get_repository_root()
 	raise "Couldn't find make.rb location while searching ascending starting from \"#{current_working_dir}\""
 end
 
-def find_package_root(platform, devenv, package_name)
+def get_build_setting(*properties)
+	if $build_settings == nil
+		build_settings_path = File.join(get_repository_root(), "build-settings.sjson")
+		$build_settings = Sjson.load(build_settings_path) if File.exist?(build_settings_path)
+	end
+
+	v = $build_settings
+	return nil if !v
+	properties.each {|name|
+		return nil if !v[name]
+		v = v[name]
+	}
+	return v
+end
+
+def get_package_root_cache(platform, devenv)
 	if $package_root_cache == nil
 		generate_package_root_cache(platform, devenv)
 	end
 
-	$package_root_cache.each do |k, v|
+	return $package_root_cache
+end
+
+def find_package_root(package_name)
+	devenv = $options[:devenv] != "msvc15" ? $options[:devenv] : "msvc14"
+	package_root_cache = get_package_root_cache($options[:platform], devenv)
+	package_root_cache.each do |k, v|
 		if k.include?(package_name)
 			return v
 		end
 	end
-
 	return ""
 end
 
@@ -273,7 +304,6 @@ def run_process(command, verbose, pause, is_build = false, print_time = false, t
 	return exit_code
 end
 
-$reports = Array.new
 def report_block_start(label, prefix = 'Running')
 	$reports.push({label: label, time_start: Time.now})
 	if label != ""
