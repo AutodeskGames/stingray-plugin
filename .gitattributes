@@ -23,6 +23,7 @@
 *.py text
 *.rb text
 *.resx text
+*.ts text
 *.txt text
 *.xaml text
 *.xml text
