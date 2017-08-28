@@ -27,6 +27,8 @@ If you want your plug-in to include C/C++ libraries that extend the editor or th
 
 -   [Ruby 2.0 or later](http://rubyinstaller.org).
 
+-   [Node 6.11.2 LTS or later](https://nodejs.org/en/).
+
 -   [Visual Studio 2015 with Update 3 & Patch KB3165756](https://www.visualstudio.com/downloads/#visual-studio-professional-2015-with-update-3).
 
 ## Step 2. Get a local copy of the source
