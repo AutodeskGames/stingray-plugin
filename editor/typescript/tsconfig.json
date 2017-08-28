@@ -1,6 +1,4 @@
-// ./node_modules/typescript/bin/tsc -p ./
 {
-    //"compileOnSave": true,
     "compilerOptions": {
         "target": "es6",
         "module": "amd",
@@ -11,6 +9,8 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "alwaysStrict": true,
+        "allowJs": true,
+        "checkJs": false,
 
         "types": [
             "requirejs"
@@ -28,7 +28,8 @@
     "include": [
         "../../stingray_sdk/editor_foundation/types.d.ts",
         "../../stingray_sdk/editor_foundation/stingray.d.ts",
-        "**/*.ts"
+        "**/*.ts",
+        "**/*.js"
     ],
 
     "exclude": [
