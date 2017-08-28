@@ -606,7 +606,7 @@ endmacro()
 macro(add_typescript_project target source_dir tsconfig)
 	set(files ${ARGN})
 
-	set(TYPESCRIPT_EXTS "*.ts" "*.json" "*.html" "*.css" "*.stingray_plugin")
+	set(TYPESCRIPT_EXTS "*.ts" "*.js" "*.json" "*.html" "*.css" "*.stingray_plugin")
 	find_source_files_of_type("${TYPESCRIPT_EXTS}" files ${source_dir})
 
 	set(tsp "${source_dir}/${tsconfig}")
