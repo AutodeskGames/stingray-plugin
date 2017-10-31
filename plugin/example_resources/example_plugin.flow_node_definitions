@@ -1,0 +1,29 @@
+nodes = [
+  /*
+      @adoc flow
+      @node Greeting Demo > Greeting
+      @des Greets the user in the command line
+      @in Greeting    The greeting to use which is provided to the user.
+  */
+  {
+    name = "greeting_flow_node"
+    ui_category = "Greeting Demo"
+    ui_brief = "Greeting Demo Node"
+    inputs = [
+      {
+        name ="in"
+        type = "event"
+      }
+      {
+        name = "greeting"
+        type = "string"
+      }
+    ]
+    outputs = [
+      {
+        name = "out"
+        type = "event"
+      }
+    ]
+  }
+]

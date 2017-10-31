@@ -3,6 +3,7 @@
 #include <plugin_foundation/id_string.h>
 #include <plugin_foundation/string.h>
 #include <plugin_foundation/allocator.h>
+#include <plugin_foundation/flow.h>
 
 #if _DEBUG
 	#include <stdlib.h>
@@ -25,6 +26,7 @@ ApiAllocator _allocator(nullptr, nullptr);
 LoggingApi *log = nullptr;
 ErrorApi *error = nullptr;
 UnitApi* unit = nullptr;
+FlowNodesApi* flow_node = nullptr;
 ResourceManagerApi* resource_manager = nullptr;
 RenderBufferApi* render_buffer = nullptr;
 
@@ -45,6 +47,11 @@ const IdString64 RESOURCE_ID = IdString64(RESOURCE_EXTENSION);
  * Returns the plugin name.
  */
 const char* get_name() { return "engine_plugin"; }
+
+/**
+* Defines the name of the flow node.
+*/
+const IdString32 EXAMPLE_FLOW_NODE_NAME("greeting_flow_node");
 
 /**
  * Clone the source resource data and append it's buffer size in front of the 
@@ -73,6 +80,25 @@ DataCompileResult my_resource_compiler(DataCompileParameters *input)
 }
 
 /**
+* Define an example flow node.
+*/
+void greeting_flow_node_trigger(FlowTriggerContext *tc, const FlowData *fd, const FlowParameters *fp)
+{
+	const struct NodeData {
+		const FlowString *used_greeting;
+	} &node_data = (const NodeData &)*fp;
+
+	enum { IN = 0, OUT = 0 };
+
+	if (fd->event_index == IN) {
+		if (node_data.used_greeting) {
+			log->info("Greeting Flow Node says", get_c_string(*node_data.used_greeting));
+			flow_node->trigger_out_event(tc, fd, OUT);
+		}
+	}
+}
+
+/**
  * Setup runtime and compiler common resources, such as allocators.
  */
 void setup_common_api(GetApiFunction get_engine_api)
@@ -85,6 +111,7 @@ void setup_common_api(GetApiFunction get_engine_api)
 
 	log = (LoggingApi*)get_engine_api(LOGGING_API_ID);
 	error = (ErrorApi*)get_engine_api(ERROR_API_ID);
+	flow_node = (FlowNodesApi*)get_engine_api(FLOW_NODES_API_ID);
 	resource_manager = (ResourceManagerApi*)get_engine_api(RESOURCE_MANAGER_API_ID);
 }
 
@@ -102,6 +129,8 @@ void setup_plugin(GetApiFunction get_engine_api)
 	stingray::Mesh = c_api->Mesh;
 	stingray::Material = c_api->Material;
 	stingray::Data = c_api->DynamicScriptData;
+
+	flow_node->setup_trigger_function(EXAMPLE_FLOW_NODE_NAME.id(), greeting_flow_node_trigger);
 }
 
 /**
@@ -144,6 +173,8 @@ void update_plugin(float dt)
  */
 void shutdown_plugin()
 {
+	flow_node->unregister_flow_node(EXAMPLE_FLOW_NODE_NAME.id());
+
 	if (allocator_object != nullptr) {
 		XENSURE(_allocator.api());
 		_allocator = ApiAllocator(nullptr, nullptr);
