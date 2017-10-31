@@ -97,7 +97,7 @@ void setup_plugin(GetApiFunction get_engine_api)
 
 	unit = (UnitApi*)get_engine_api(UNIT_API_ID);
 	render_buffer = (RenderBufferApi*)get_engine_api(RENDER_BUFFER_API_ID);
-	auto c_api = (ScriptApi*)get_engine_api(C_API_ID);
+	auto c_api = (CApi*)get_engine_api(C_API_ID);
 	stingray::Unit = c_api->Unit;
 	stingray::Mesh = c_api->Mesh;
 	stingray::Material = c_api->Material;
@@ -113,7 +113,7 @@ void setup_data_compiler(GetApiFunction get_engine_api)
 
 	#if _DEBUG
 		// Always trigger the resource compiler in debug mode.
-		srand(time(nullptr));
+		srand((unsigned int) time(nullptr));
 		RESOURCE_VERSION = rand();
 	#endif
 
