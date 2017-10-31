@@ -11,6 +11,9 @@ namespace stingray_plugin_foundation {
 // Common math functions.
 namespace math {
 	const float pi = 3.141592654f;
+	const float tan_pi_div_8 = (float(0.41421356237309504880));    // tan(pi/8)
+	const float sin_pi_div_4 = (float(0.70710678118654752440));    // sin(pi/4)
+
 
 	__forceinline bool is_pow2(unsigned);
 	__forceinline float square_root(float);
@@ -57,7 +60,8 @@ namespace math {
 	}
 }
 
-__forceinline float lerp(float a, float b, float t);
+template<class T>
+__forceinline T lerp(const T&a, const T&b, float t);
 
 // Finds the maximum value and its source from a number of tested
 // values.

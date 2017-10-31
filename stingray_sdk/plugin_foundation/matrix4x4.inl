@@ -153,6 +153,33 @@ __forceinline void set_to_translation_matrix(Matrix4x4 &m, const Vector3 &t)
 	m.v[tz] = t.z;
 }
 
+__forceinline void set_to_rotation_matrix(Matrix4x4 &m, float angle, const Vector3 &axis)
+{
+	set_to_identity_matrix(m);
+	float c = cosf(angle);
+	float s = sinf(angle);
+	float oneMinusC = 1.0f - c;
+	float xx = axis.x * axis.x;
+	float yy = axis.y * axis.y;
+	float zz = axis.z * axis.z;
+	float xymc = axis.x * axis.y * oneMinusC;
+	float xzmc = axis.x * axis.z * oneMinusC;
+	float yzmc = axis.y * axis.z * oneMinusC;
+	float xs = axis.x * s;
+	float ys = axis.y * s;
+	float zs = axis.z * s;
+
+	m.v[0] = xx * oneMinusC + c;
+	m.v[1] = xymc - zs;
+	m.v[2] = xzmc + ys;
+	m.v[4] = xymc + zs;
+	m.v[5] = yy * oneMinusC + c;
+	m.v[6] = yzmc - xs;
+	m.v[8] = xzmc - ys;
+	m.v[9] = yzmc + xs;
+	m.v[10] = zz * oneMinusC + c;
+}
+
 __forceinline void normalize(Matrix4x4 &m) {
 	Vector3 &x = x_axis(m);
 	Vector3 &y = y_axis(m);
@@ -276,6 +303,15 @@ __forceinline const Vector4 &row(const Matrix4x4 &m, int i)
 __forceinline void set_translation(Matrix4x4 &m, const Vector3 &t)
 {
 	translation(m) = t;
+}
+
+
+__forceinline Vector2 transform(const Matrix4x4 &m, const Vector2 &p)
+{
+	Vector2 pt;
+	pt.x = m.v[xx] * p.x + m.v[yx] * p.y;
+	pt.y = m.v[xy] * p.x + m.v[yy] * p.y;
+	return pt;
 }
 
 __forceinline Vector3 transform(const Matrix4x4 &m, const Vector3 &p)

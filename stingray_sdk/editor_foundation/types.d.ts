@@ -23,12 +23,22 @@ interface Stingray {
         tccFilePath: string;
         pluginsDir: string;
         appDir: string;
+        binariesDir: string;
         editorDir: string;
         appDataPath: string;
         userTempDir: string;
-        logFilePath: string;
 
         config: {
+            /**
+             * Returns an application configuration setting.
+             */
+            get(...items: string[]): any;
+
+            /**
+             * Resolves an application configuration relative file path setting based on the application directories.
+             */
+            resolvePath(...items: string[]): string;
+
             ports: {[portName: string]: number|[number, number]};
 
             resources: {[resourceType: string]: {[resourceName: string]: any}};
@@ -49,6 +59,8 @@ interface Stingray {
                 licensing: {[setting: string]: any};
                 projects: {[projectName: string]: BuildCommonSettings};
             };
+
+            links: {[linkName: string]: string}
         };
     };
 
@@ -113,9 +125,12 @@ interface Stingray {
     loadAsyncExtension: (path: string) => Promise<string>;
     unloadAsyncExtension: (id: string) => Promise<boolean>;
 
-    hostExecute: (type: string, firstArg?: any) => Promise<any>;
+    hostExecute: (type: string, ...args: any[]) => Promise<any>;
 
     openDevTools: () => void;
+
+    registerCallback: (callbackId: string, callback: Function) => void;
+    unregisterCallback: (callbackId: string) => boolean;
 
     location: LocationApi;
     host: HostApi;
@@ -140,9 +155,12 @@ interface LocationApi {
  */
 interface HostApi {
     quit: (exitCode?: number) => Promise<any>;
-    getCommandLineSwitch: (name: string) => Promise<boolean | any>;
+    getCommandLineSwitch: (name: string) => Promise<any>;
+    getCommandLineArgument: (name: string) => Promise<any>;
     createService: (name, path) => Promise<any>;
     setCursorStyle: (style: string) => Promise<boolean>;
+    setMenubarVisible: (visible: boolean) => Promise<boolean>;
+    isMenubarVisible: () => Promise<boolean>;
     setCursorPosition: (x: number, y: number) => void;
     openWindow: (url: string, id?: string, options?: object) => Promise<any>;
     crash: () => {};
@@ -163,12 +181,19 @@ interface FileStats {
     hidden: boolean;
     modified: Date;
 }
-
+type ZipProgressCallback = (file: string, current: number, total: number) => void;
+interface FileSystemAsyncApi {
+    zip(folderPath: string, zipFilePath: string, progressCb?: ZipProgressCallback): Promise<boolean>;
+    unzip(zipFilePath: string, folderPath: string, progressCb?: ZipProgressCallback): Promise<boolean>;
+    zipinfo(path: string): Promise<any>;
+    zipToSfx(zipFilePath: string, destinationPath: string, projectName: string, deleteZipAfter: boolean, exeRelativePath: string): Promise<boolean>;
+    unlink(path: string, toRecycleBin?: boolean): Promise<boolean>;
+}
 interface FileSystemApi {
     exists (path: string): boolean;
     enumerate (directory: string, searchPattern: any, recursive: boolean, filter?: any): string[];
     stats (path: string): FileStats;
-    unlink(path: string): boolean;
+    unlink(path: string, toRecycleBin?: boolean): boolean;
     copy(source: string, dest: string, overwrite?: boolean): boolean;
     move(source: string, dest: string): boolean;
     read(path: string, asBinary?: boolean): string;
@@ -181,6 +206,22 @@ interface FileSystemApi {
     watch(path: string): any;
     unlock(path: string): any;
     lock(path: string): any;
+    zip(folderPath: string, zipFilePath: string): boolean;
+    zipinfo(path: string): any;
+
+    /**
+     * Transform a zip file into a SFX exe file.
+     * @param {string} zipFilePath - Input zip file to be transformed into a SFX
+     * @param {string} destinationPath - Destination folder in which the <@projectName>.exe file will be created.
+     * @param {string} projectName - Name of the project and the final EXE file name.
+     * @param {boolean?} deleteZipAfter - Delete the source zip file once the operation is terminated
+     * @param {string?} exeRelativePath - Name of an executable to be executed after the archive is extracted.
+     * @return {boolean} True if the operation was successful, otherwise an exception is thrown.
+     */
+    zipToSfx(zipFilePath: string, destinationPath: string, projectName: string, deleteZipAfter: boolean, exeRelativePath: string): boolean;
+
+    // Async api
+    async: FileSystemAsyncApi;
 
     // TODO: Is that ok?
     getVersionInfo(exePath: string): {ProductVersion: string};
@@ -615,18 +656,18 @@ interface Screen {
     availTop: number;
 }
 
+interface IDefaultViewportController {
+    new(engineService: any);
+}
+
+interface IDefaultViewportMouseBehavior {
+    new (engineService, engineViewportId, engineViewportInterops);
+}
+
 // Module not (yet) ported to TypeScript
 declare module "lodash";
 declare module "ace";
 declare module "pixi";
 declare module "mithril";
-
 declare module "core/views/viewport-context-menus";
-
-declare module "components/list-view";
-
-declare module "directives/loading";
-
 declare module "3rdparty/marked/marked.min";
-
-declare module "docking/docking-utils";

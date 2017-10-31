@@ -81,10 +81,11 @@ struct GuiCApi
 	/*	Equivalent to vector4(a, r, g, b).		*/
 	CApiVector4	(*color_argb) (float a, float r, float g, float b);
 
-	unsigned(*get_id) (GuiPtr);
+	unsigned (*get_id) (GuiPtr);
 
 	void (*set_video_playback_speed)(VideoPlayerPtr video_player, float speed);
 	void (*set_video_loop)(VideoPlayerPtr video_player, unsigned loop);
+
 	unsigned (*video_has_audio)(VideoPlayerPtr video_player);
 	StreamSourcePtr (*video_sound_stream_source)(VideoPlayerPtr video_player);
 	void (*set_video_sound_stream_enabled)(VideoPlayerPtr video_player, unsigned enabled);
@@ -93,11 +94,36 @@ struct GuiCApi
 	unsigned (*video_times_looped)(VideoPlayerPtr video_player);
 	enum VideoCApi_TextureLayout (*video_texture_layout)(VideoPlayerPtr video_player);
 
-	/*	Not available in Release builds.	*/
+	/* Not available in Release builds. */
 	unsigned (*texture_size) (uint64_t resource_id64, unsigned int *out_width, unsigned int *out_height);
 	GuiThumbnailPtr (*thumbnail_load_texture)(unsigned num_textures, uint64_t* names_id64);
 	GuiThumbnailPtr (*thumbnail_load_dds)(const char *path, uint64_t name_id64);
 	void (*thumbnail_unload)(GuiThumbnailPtr thumbnail);
+
+	float (*video_playback_speed)(VideoPlayerPtr video_player);
+	unsigned (*video_format_supported)(const char *format);
+	void (*video_start)(VideoPlayerPtr video_player);
+	void (*video_stop)(VideoPlayerPtr video_player);
+	void (*video_pause)(VideoPlayerPtr video_player);
+	void (*video_resume)(VideoPlayerPtr video_player);
+	unsigned (*video_started)(VideoPlayerPtr video_player);
+	unsigned (*video_paused)(VideoPlayerPtr video_player);
+	unsigned (*video_loop)(VideoPlayerPtr video_player);
+	unsigned (*video_autostart)(VideoPlayerPtr video_player);
+	void (*set_video_start_frame)(VideoPlayerPtr video_player, unsigned start_frame);
+	unsigned (*video_start_frame)(VideoPlayerPtr video_player);
+	void (*set_video_end_frame)(VideoPlayerPtr video_player, unsigned end_frame);
+	unsigned (*video_end_frame)(VideoPlayerPtr video_player);
+	void (*video_frame_size)(VideoPlayerPtr video_player, unsigned int *out_width, unsigned int *out_height);
+	float (*video_frame_rate)(VideoPlayerPtr video_player);
+
+	/* Helper and legacy functions */
+	unsigned (*is_material_legacy_mode)(GuiPtr gui_pointer);
+	unsigned (*has_material_legacy)(GuiPtr gui_pointer, unsigned material_id32);
+	MaterialPtr (*material_legacy)(GuiPtr gui_pointer, unsigned material_id32, const char *optional_debug_material_name);
+
+	/* nullptr if !defined(HAS_SOUND) */
+	unsigned (*trigger_timpani_event)(VideoPlayerPtr video_player, TimpaniWorldInterfacePtr timpani_world, unsigned event_id32, const char *optional_debug_event_name, unsigned source_id);
 };
 
 #ifdef __cplusplus

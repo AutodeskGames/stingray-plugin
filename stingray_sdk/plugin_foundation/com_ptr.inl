@@ -1,9 +1,9 @@
 namespace stingray_plugin_foundation {
 
-#if defined(WINDOWSPC) || defined(XBOXONE)
+#if defined(WINDOWSPC) || defined(XBOXONE) || defined(UWP)
 
 template<typename T>
-ComPtr<T>::ComPtr(T* ptr = 0)  :  _owned(true), _ptr(ptr) {
+ComPtr<T>::ComPtr(T* ptr)  :  _owned(true), _ptr(ptr) {
 
 }
 

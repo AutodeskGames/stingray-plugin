@@ -36,6 +36,14 @@ struct ApplicationCApi
 	/*	The argv strings will be returned through the MultipleStringsBuffer you provide.
 		The function call returns the total number of bytes required to store all argv in the buffer.	*/
 	unsigned (*argv) (struct MultipleStringsBuffer* const out_result, unsigned buffer_size);
+
+	unsigned (*num_plugins)();
+	const char *(*plugin_name)(unsigned index);
+	uint64_t	(*pick_world) (uint32_t, uint32_t, WorldPtr, ConstCameraPtr, ConstViewportPtr, ConstShadingEnvironmentPtr, uint32_t, ConstWindowPtr optional);
+
+	const char *(*gl_renderer)();
+	const char *(*gl_version)();
+	const char *(*gl_vendor)();
 };
 
 #ifdef __cplusplus

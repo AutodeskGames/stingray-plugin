@@ -312,7 +312,7 @@ namespace stingray_plugin_foundation
 	template <typename COMPONENT> class ComponentManager
 	{
 	public:
-		ComponentManager(Allocator &allocator, ScriptApi *c_api, uint32_t &component_type_id32);
+		ComponentManager(Allocator &allocator, CApi *c_api, uint32_t &component_type_id32);
 		virtual ~ComponentManager();
 
 		COMPONENT *create_component(void *optional_owner);
@@ -329,7 +329,7 @@ namespace stingray_plugin_foundation
 		// Dispose an instance of your Component
 		virtual void dispose_component(Allocator &allocator, COMPONENT *component, void *optional_owner) = 0;
 
-		const ScriptApi *c_api;
+		const CApi *c_api;
 	private:
 		Allocator &allocator;
 		static uint32_t component_type_id32;

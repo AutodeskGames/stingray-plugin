@@ -1,13 +1,13 @@
 #pragma once
 
-#if defined(WINDOWSPC) || defined(XBOXONE)
+#if defined(WINDOWSPC) || defined(XBOXONE) || defined(UWP)
 
 namespace stingray_plugin_foundation {
 
 template<typename T>
 class ComPtr {
 public:
-	explicit ComPtr(T* ptr = 0);
+	explicit ComPtr(T* ptr = nullptr);
 	ComPtr(const ComPtr<T>& rhs);
 	~ComPtr();
 
@@ -23,9 +23,9 @@ private:
 	mutable bool _owned;
 };
 
-#endif
-
 }
+
+#endif
 
 #include "com_ptr.inl"
 

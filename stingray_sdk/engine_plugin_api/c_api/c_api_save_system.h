@@ -16,6 +16,8 @@ struct SaveSystemCApi
 
 	SaveToken (*auto_load) (const char* filename);
 	SaveToken (*auto_save) (const char* filename, struct SaveParameter* parameter_array, unsigned num_parameters);
+
+	unsigned (*get_progress_type) (SaveToken);
 };
 
 #ifdef __cplusplus

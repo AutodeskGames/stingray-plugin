@@ -38,8 +38,6 @@ struct LevelCApi
 
 	ConstMatrix4x4Ptr (*pose) (LevelPtr level_pointer);
 
-	ConstNavigationMeshPtr (*navigation_mesh)(ConstLevelPtr level_pointer);
-
 	struct Vector3ArrayWrapper (*spline)(LevelPtr level_pointer, unsigned spline_name_id32);
 	unsigned			(*num_splines)(LevelPtr level_pointer);
 	struct Vector3ArrayWrapper (*spline_by_index)(LevelPtr level_pointer, unsigned index);

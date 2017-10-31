@@ -80,6 +80,7 @@ struct WindowCApi
 	void (*remove_toggle_fullscreen_callback)(WindowPtr window, void *obj, WindowCApi_ToggleFullscreenFunction f);
 	void (*add_set_focus_callback)(WindowPtr window, void *obj, WindowCApi_SetFocusFunction f);
 	void (*remove_set_focus_callback)(WindowPtr window, void *obj, WindowCApi_SetFocusFunction f);
+	void (*sync_layered_window)(WindowPtr optional, struct WindowRectWrapper rect, int visible, int opacity);
 };
 
 #ifdef __cplusplus

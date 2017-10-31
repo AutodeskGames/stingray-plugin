@@ -23,6 +23,7 @@ struct WorldCApi
 	void	(*link_unit) (WorldPtr world_pointer, UnitRef child, unsigned child_node_index, UnitRef parent, unsigned parent_node_index);
 	void	(*unlink_unit) (WorldPtr world_pointer, UnitRef child);
 	void	(*update_unit) (WorldPtr world_pointer, UnitRef unit_ref);
+
 	ParticleRef (*create_particles) (WorldPtr world_pointer, uint64_t name_id64, const char *optional_debug_name, ConstMatrix4x4Ptr transform);
 	void	(*destroy_particles) (WorldPtr world_pointer, ParticleRef id);
 	void	(*stop_spawning_particles) (WorldPtr world_pointer, ParticleRef id);
@@ -71,7 +72,7 @@ struct WorldCApi
 
 	ConstMatrix4x4Ptr	(*debug_camera_pose) (WorldPtr world_pointer);
 
-	/* Begin Development functions */
+	/* Begin Development functions - these are nullptr in release builds */
 	void	(*set_flow_enabled) (WorldPtr world_pointer, int enable);
 	void	(*set_editor_flow_enabled) (WorldPtr world_pointer, int enable);
 
@@ -92,6 +93,12 @@ struct WorldCApi
 	void		(*record_world_debug_text)(ReplayPtr replay_ptr, ConstVector4Ptr color, ConstVector3Ptr world_position, const char* text);
 	void		(*set_unit_record_mode)(ReplayPtr replay_ptr, UnitRef unit, enum ReplayRecordMode replay_record_mode);
 	/* End Development functions */
+
+	UnitRef (*spawn_unit_with_material)(WorldPtr world_pointer, uint64_t unit_name_id64, const char *optional_debug_unit_name, ConstMatrix4x4Ptr transform, int trigger_spawned, uint64_t material_id64, const char *optional_debug_material_name);
+
+	GuiPtr (*create_screen_gui_with_materials)(WorldPtr world_pointer, ConstVector2Ptr opt_position, ConstVector2Ptr opt_scale, int immediate, int dock_right, int dock_top, unsigned material_count, uint64_t *materials);
+	GuiPtr (*create_world_gui_with_materials)(WorldPtr world_pointer, ConstMatrix4x4Ptr tm_pointer, float width, float height, int shadow_caster, int immediate, unsigned material_count, uint64_t *materials);
+
 };
 
 #ifdef __cplusplus

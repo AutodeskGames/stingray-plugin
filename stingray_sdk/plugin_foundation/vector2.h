@@ -42,6 +42,7 @@ __forceinline float length(const Vector2 &v);
 __forceinline float length_squared(const Vector2 &v);
 __forceinline Vector2 normalize(const Vector2 &v);
 __forceinline float dot(const Vector2 &v0, const Vector2 &v1);
+__forceinline float cross(const Vector2& p0, const Vector2& p1, const Vector2& p2);
 __forceinline float distance(const Vector2 &v0, const Vector2 &v1);
 __forceinline float distance_squared(const Vector2 &v0, const Vector2 &v1);
 __forceinline Vector2 lerp(const Vector2 &a, const Vector2 &b, float t);

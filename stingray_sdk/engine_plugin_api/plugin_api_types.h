@@ -19,7 +19,6 @@ typedef struct CApiLight CApiLight;
 typedef struct CApiMaterial CApiMaterial;
 typedef struct CApiMesh CApiMesh;
 typedef struct CApiShadingEnvironment CApiShadingEnvironment;
-typedef struct CApiNavigationMesh CApiNavigationMesh;
 typedef struct CApiPhysicsWorld CApiPhysicsWorld;
 typedef struct CApiLineObject CApiLineObject;
 typedef struct CApiGui CApiGui;

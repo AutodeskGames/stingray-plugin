@@ -140,6 +140,10 @@ __forceinline float dot(const Vector2 &v0, const Vector2 &v1) {
 	return v0.x * v1.x + v0.y * v1.y;
 }
 
+__forceinline float cross(const Vector2& p0, const Vector2& p1, const Vector2& p2) {
+	return (p2.x - p1.x)*(p1.y - p0.y) - (p2.y - p1.y)*(p1.x - p0.x);
+}
+
 __forceinline float distance(const Vector2 &v0, const Vector2 &v1) {
 	Vector2	tmp = vector2(v0.x-v1.x,v0.y-v1.y);
 	return length(tmp);

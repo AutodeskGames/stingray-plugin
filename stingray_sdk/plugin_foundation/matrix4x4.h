@@ -25,6 +25,7 @@ __forceinline void set_to_zero_matrix(Matrix4x4 &m);
 __forceinline void set_to_identity_matrix(Matrix4x4 &m);
 __forceinline void set_to_scale_matrix(Matrix4x4 &m, const Vector3 &s);
 __forceinline void set_to_translation_matrix(Matrix4x4 &m, const Vector3 &t);
+__forceinline void set_to_rotation_matrix(Matrix4x4 &m, float angle, const Vector3 &axis);
 __forceinline const Matrix4x4 &matrix4x4_zero();
 __forceinline const Matrix4x4 &matrix4x4_identity();
 __forceinline void normalize(Matrix4x4 &m);
@@ -69,6 +70,7 @@ __forceinline Vector4 &row(Matrix4x4 &m, int i);
 __forceinline const Vector4 &row(const Matrix4x4 &m, int i);
 
 // Transforms the point p with the matrix m.
+__forceinline Vector2 transform(const Matrix4x4 &m, const Vector2 &p);
 __forceinline Vector3 transform(const Matrix4x4 &m, const Vector3 &p);
 __forceinline Vector3 transform_without_translation(const Matrix4x4 &m, const Vector3 &p);
 __forceinline Vector4 transform(const Matrix4x4 &m, const Vector4 &p);

@@ -130,6 +130,8 @@ struct RD_EngineData {
 	/* A custom rendering environment returned by the plugin in get_render_env(). */
 	void* render_env;
 	void* render_target;
+	unsigned render_target_width;
+	unsigned render_target_height;
 	void* depth_stencil_target;
 };
 
@@ -1140,11 +1142,13 @@ struct LoggingApi
 /* Opaque struct representing the render device. On a D3D platform, this will be ID3D11Device. */
 struct RI_Device;
 
-/* Enum describing the different resource types used by the renderer. */
-enum RI_ResourceType {
-	RI_RESOURCE_TEXTURE,
-	RI_RESOURCE_RENDER_TARGET,
-	RI_RESOURCE_NOT_INITIALIZED = 0x00FFFFFF
+/* Enum describing what API is used by the renderer. */
+enum RI_DeviceType {
+	RI_DEVICE_D3D11,
+	RI_DEVICE_D3D12,
+	RI_DEVICE_OPENGL,
+	RI_DEVICE_METAL,
+	RI_DEVICE_GNM,
 };
 
 /* Used to identify a render resource. */
@@ -1154,21 +1158,24 @@ struct RenderResource {
 
 #if defined(WINDOWSPC) || defined(XBOXONE) || defined(UWP)
 	/* D3D rendering interface. */
-	struct ID3D11RenderTargetView;
-	struct ID3D11ShaderResourceView;
-	struct ID3D11Texture2D;
+	/* On D3D11 this will be ID3D11RenderTargetView pointer, on D3D12 it will be a D3D12_CPU_DESCRIPTOR_HANDLE pointer. */
+	struct RenderTargetView;
+	/* On D3D11 this will be ID3D11ShaderResourceView pointer, on D3D12 it will be a D3D12_CPU_DESCRIPTOR_HANDLE pointer. */
+	struct ShaderResourceView;
+	/* On D3D11 this will be ID3D11Texture2D pointer, on D3D12 it will be a D3D12_CPU_DESCRIPTOR_HANDLE pointer. */
+	struct Texture2D;
 	struct IDXGISwapChain;
 
 	struct RI_PlatformTexture2d
 	{
-		struct ID3D11Texture2D          *texture;
-		struct ID3D11ShaderResourceView *resource_view;
-		struct ID3D11ShaderResourceView *resource_view_srgb;
+		struct Texture2D          *texture;
+		struct ShaderResourceView *resource_view;
+		struct ShaderResourceView *resource_view_srgb;
 	};
 
 	struct RI_PlatformRenderTarget
 	{
-		struct ID3D11RenderTargetView *render_target_view;
+		struct RenderTargetView *render_target_view;
 	};
 
 	struct RI_PlatformSwapChain
@@ -1230,8 +1237,8 @@ struct RenderInterfaceApi
 	/* Returns the render device. */
 	struct RI_Device* (*device)();
 
-	/* Returns the named global render resource. */
-	struct RenderResource* (*global_render_resource)(const char *name);
+	/* Returns the named render resource. */
+	struct RenderResource* (*render_resource)(const char *name, unsigned swap_chain_handle);
 
 	/* Returns a texture. */
 	struct RI_PlatformTexture2d (*texture_2d)(struct RenderResource *render_resource);
@@ -1248,8 +1255,14 @@ struct RenderInterfaceApi
 	/* Sets render setting values that are applied to the render configuration  */
 	void (*set_render_setting)(const char* name, ConstConfigRootPtr value);
 
+	/* Returns the type of API used by the renderer. */
+	enum RI_DeviceType (*device_type)();
+
+	/* Returns the render target view for the specied resource, layer and mip_level. */
+	struct RI_PlatformRenderTarget(*render_target_view)(struct RenderResource *render_resource, int layer, int mip_level);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[31];
+	void *reserved[29];
 };
 
 /* ----------------------------------------------------------------------
@@ -1280,6 +1293,13 @@ struct U_TriangleMesh
 	const char *vertices;
 	unsigned vertex_stride;
 	float transform[16];
+};
+
+struct U_BoundingVolume
+{
+	float min[3];
+	float max[3];
+	float radius;
 };
 
 /* Represents a convex mesh. */
@@ -1437,9 +1457,11 @@ struct UnitApi
 	/* Query number of playing animation clips and fill in playback details. */
 	uint32_t (*get_playing_animation_infos)(CApiUnit *unit, uint32_t layer_id, struct U_AnimationPlayingInfo *playing_infos, uint32_t maximum);
 
+	/* Returns the bounding volume of the mesh at the specified index. */
+	void(*mesh_bounding_volume)(CApiUnit *unit, int mesh_index, struct U_BoundingVolume *bounding_volume);
 
 	/* Reserved for expansion of the API. */
-	void *reserved[31];
+	void *reserved[30];
 };
 
 /*
@@ -1645,8 +1667,11 @@ struct ApplicationApi
 	void (*console_send_with_binary_data)(const char *text, uint32_t text_len, const char *data,
 		uint32_t data_len, uint8_t sync, int client_id);
 
+	/* Returns the swap chain handle of a window */
+	unsigned (*swap_chain_handle_for_window)(void *window);
+
 	/* Reserved for expansion of the API. */
-	void *reserved[32];
+	void *reserved[31];
 };
 
 /* ----------------------------------------------------------------------
@@ -2098,10 +2123,10 @@ struct RenderBufferApi
 	struct RenderResource* (*lookup_resource)(uint32_t handle);
 
 	/* Overrides a resource with another resource. */
-	void (*resource_override)(struct RenderResource *resource_to_override, struct RenderResource *resource);
+	void (*resource_override)(struct RenderResource *original_resource, struct RenderResource *new_resource);
 
-	/* Releases the override done to the resource.*/
-	void (*release_resource_override)(struct RenderResource *overriden_resource);
+	/* Resets the orignal resource that new_resource was overriding to its original state */
+	void (*release_resource_override)(struct RenderResource *new_resource);
 
 	/* Partial update of a buffer, offset and size in bytes. Partial updates are not allowed to grow a buffer, use update_buffer if you need to resize the buffer. */
 	void(*partial_update_buffer)(uint32_t handle, uint32_t offset, uint32_t size, const void *data);

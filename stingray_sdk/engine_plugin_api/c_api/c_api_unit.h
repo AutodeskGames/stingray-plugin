@@ -204,6 +204,9 @@ struct UnitCApi
 
 	double      (*animation_get_length)(uint64_t animation_name_id64, const char *optional_debug_animation_name);
 	void        (*get_animation_merge_options) (UnitRef unit_ref, float *max_start_time, float *max_drift, float *clock_fidelity);
+
+	uint64_t	(*resource_name) (UnitRef);
+	uint64_t	(*level_name) (UnitRef);
 };
 #ifdef __cplusplus
 }

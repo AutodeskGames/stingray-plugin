@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-	* These types mainly exist to simplify the otherwise ambiguous abstracted void pointers used by the ScriptApi.
+	* These types mainly exist to simplify the otherwise ambiguous abstracted void pointers used by the CApi.
 	* They should be able to be casted to and treated the same way their respective plugin_foundation type is.
 */
 
@@ -41,7 +41,6 @@ extern "C" {
 	typedef CApiGui* GuiPtr;
 	typedef CApiQuaternion* QuaternionPtr;
 	typedef CApiWindow* WindowPtr;
-	typedef CApiNavigationMesh* NavigationMeshPtr;
 	typedef CApiVideoPlayer* VideoPlayerPtr;
 	typedef CApiReplay* ReplayPtr;
 	typedef CApiCallbackData32* CallbackData32Ptr;
@@ -86,7 +85,6 @@ extern "C" {
 	typedef const CApiQuaternion* ConstQuaternionPtr;
 	typedef const CApiLevel* ConstLevelPtr;
 	typedef const CApiMesh* ConstMeshPtr;
-	typedef const CApiNavigationMesh* ConstNavigationMeshPtr;
 	typedef CApiMaterialData* MaterialDataPtr;
 
 	typedef CApiUnitRef UnitRef;
@@ -422,7 +420,7 @@ extern "C" {
 
 	enum RaycastType	{ RAY_TYPE_ANY, RAY_TYPE_CLOSEST, RAY_TYPE_ALL };
 	enum ActorTemplate	{ ACTOR_T_STATIC = 1, ACTOR_T_DYNAMIC, ACTOR_T_BOTH };
-	enum OverlapShape	{ OVERLAP_SPHERE, OVERLAP_AABB, OVERLAP_OOBB, OVERLAP_CAPSULE };
+	enum OverlapType	{ OVERLAP_SPHERE, OVERLAP_AABB, OVERLAP_OOBB, OVERLAP_CAPSULE };
 
 	struct CollisionHit
 	{

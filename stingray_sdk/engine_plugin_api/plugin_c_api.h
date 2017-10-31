@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-struct ScriptApi
+struct CApi
 {
 	struct InputCApi *Input;
 	struct WorldCApi* World;

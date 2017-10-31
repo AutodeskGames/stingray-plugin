@@ -412,7 +412,7 @@ namespace stingray_plugin_foundation {
 
 	///////////////////// ComponentManager
 
-	template <typename COMPONENT> ComponentManager<COMPONENT>::ComponentManager(Allocator &allocator, ScriptApi *c_api, uint32_t &component_type_id32)
+	template <typename COMPONENT> ComponentManager<COMPONENT>::ComponentManager(Allocator &allocator, CApi *c_api, uint32_t &component_type_id32)
 		: allocator(allocator)
 		, c_api(c_api)
 		, base_component_api({ nullptr })

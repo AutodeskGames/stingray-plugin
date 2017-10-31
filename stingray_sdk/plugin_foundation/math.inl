@@ -89,9 +89,9 @@ __forceinline unsigned math::div_round(unsigned a, unsigned b) {
 	return (a+b/2)/b;
 }
 
-__forceinline float lerp(float a, float b, float p)
+template<class T> __forceinline T lerp(const T& a, const T& b, float p)
 {
-	return a * (1-p) + b * p;
+	return static_cast<T>(a * (1-p) + b * p);
 }
 
 inline void Crossfade::update(float dt)

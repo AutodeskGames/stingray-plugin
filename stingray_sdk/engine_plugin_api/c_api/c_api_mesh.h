@@ -31,6 +31,8 @@ struct MeshCApi
 	ConstMatrix4x4Ptr	(*world_pose) (ConstMeshPtr);
 	// Performance-warning; Fetches the world_pose, extracts a Matrix3x3 from it and returns a copy on the stack.
 	struct CApiQuaternion (*world_rotation) (ConstMeshPtr);
+
+	unsigned (*visibility) (ConstMeshPtr);
 };
 
 #ifdef __cplusplus

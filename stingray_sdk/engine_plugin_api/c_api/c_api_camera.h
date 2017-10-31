@@ -33,7 +33,6 @@ struct CameraCApi
 
 	enum CameraProjectionType (*projection_type)(ConstCameraPtr camera_pointer);
 	void (*set_projection_type)(CameraPtr camera_pointer, enum CameraProjectionType camera_projection_type);
-	void (*set_orthographic_view)(CameraPtr camera_pointer, float min_x, float max_x, float min_z, float max_z, unsigned index);
 	void (*set_post_projection_transform)(CameraPtr camera_pointer, ConstMatrix4x4Ptr transform);
 
 

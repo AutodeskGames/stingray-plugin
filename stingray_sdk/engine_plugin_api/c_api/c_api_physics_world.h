@@ -23,7 +23,7 @@ struct PhysicsWorldCApi
 	RaycastId	(*make_raycast) (PhysicsWorldPtr, enum RaycastType, enum ActorTemplate, unsigned collision_filter_id32);
 	void		(*destroy_raycast) (RaycastId);
 
-	unsigned	(*overlap) (ActorPtr* out_buffer, unsigned num_elements, PhysicsWorldPtr, enum OverlapShape, ConstVector3Ptr optional_position, ConstQuaternionPtr optional_rotation,
+	unsigned	(*overlap) (ActorPtr* out_buffer, unsigned num_elements, PhysicsWorldPtr, enum OverlapType, ConstVector3Ptr optional_position, ConstQuaternionPtr optional_rotation,
 							ConstMatrix4x4Ptr optional_pose, ConstVector3Ptr optional_size, enum ActorTemplate, unsigned collision_filter_id32);
 
 	unsigned	(*linear_sphere_sweep) (struct CollisionHit* out_buffer, unsigned num_elements, PhysicsWorldPtr, ConstVector3Ptr from, ConstVector3Ptr to,
