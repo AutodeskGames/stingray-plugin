@@ -13,7 +13,7 @@ author = {
     name = "Jonathan Schmidt"
     email = "jonathan.schmidt@autodesk.com"
     company = "Autodesk Inc."
-    url = "https://git.autodesk.com/gameware/stingray-plugin"
+    url = "https://github.com/AutodeskGames/stingray-plugin"
 }
 keywords = ["autodesk", "interactive", "stingray", "plugin", "example"]
 

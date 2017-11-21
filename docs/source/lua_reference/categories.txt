@@ -1,0 +1,11 @@
+@adoc lua
+
+@ns stingray : nil
+@des The main namespace for the Lua API elements provided by the Stingray3D engine.
+
+@cat my_category My Category
+@des A collection of related documentation items.
+
+@obj MyObject : lightuserdata
+@des My test object.
+@grp my_category

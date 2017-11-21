@@ -1,0 +1,10 @@
+
+	{
+		"output_path":		"$(SR_DOC_OUTPUT_DIR)/lua_HTML",
+		"index_title":		"My Plugin Documentation",
+		"index_file":		"./source/lua_reference/index.txt",
+		"images_path":		"./source/lua_reference/images",
+		"version_history":	"./source/lua_reference/versions",
+		"save_version_as":	"",
+		"ref_id":			"lua_ref"
+	}
