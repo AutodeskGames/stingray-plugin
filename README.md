@@ -17,7 +17,7 @@ You'll find a sample plug-in that is already set up with some basic content, and
 	- `spm.rb` fetches and installs build packages and external libraries. It's called internally by `make.rb`, but you can also use it on its own as well if your plug-in has other dependencies that you want to download automatically.
 	- `cmake` generates and compiles Visual Studio solutions for the native plug-in extensions.
 
-For more information about plug-ins, how they work, and what you can do with them, see the [Autodesk Interactive SDK Help](http://help-staging.autodesk.com/view/Stingray/ENU/?contextId=SDK_HOME).
+For more information about plug-ins, how they work, and what you can do with them, see the [Autodesk Interactive SDK Help](http://help.autodesk.com/view/Stingray/ENU/?contextId=SDK_HOME).
 
 ## Step 1. Install prerequisites
 
@@ -91,6 +91,7 @@ See [the wiki](https://github.com/AutodeskGames/stingray-plugin/wiki/How-to-crea
 -   `stingray_sdk`: Autodesk Interactive editor and engine C/C++ header based plugin SDK downloaded by `spm`.
 -   `tools`: Various build tools downloaded by `spm`.
 -   `make.rb`: Build interface script. Execute `make.rb --help` to see all the options.
+-	`docs`:	Ruby script and template to automatically generate documentation for your plugin using Adoc.
 
 Once you've successfully built the Autodesk Interactive plugin, you can zip the `plugin` folder and **distribute** your plugin. For help getting started with with the Autodesk Interactive SDK, see the tutorial videos and topics in the [main Autodesk Interactive SDK Help](http://help.autodesk.com/view/Stingray/ENU/?guid=__sdk_help_introduction_html).
 
@@ -99,9 +100,22 @@ Once you've successfully built the Autodesk Interactive plugin, you can zip the 
 -   `stingray-example.plugin`: Initial plugin descriptor. It is strongly recommended to rename the file name of this file.
 -   `sample_project/`: Example project that demonstrate how your plugin works.
 
+## Documentation
+
+*Note: This currently requires Stingray source access due to the dependency on Adoc.*
+
+In the [`./docs`](./docs) directory there's a ruby script that will generate documentation for your plugin using Adoc. Refer to the comments in the script and the other documentation example files in the `./docs` dir, as well as the Stingray repository docs readme to learn how to annotate your code comments for Adoc parsing.
+
+You do not need to install the `ixg-doc-tools` to generate your plugin docs. Just define the `%SR_SOURCE_DIR%` environment variable (e.g. `c:\dev\stingray`) or modify the line in [`make_plugin_docs.rb`](./docs/make_plugin_docs.rb). Then run the script and refer to the output directory in the console to view the generated documentation.
+
+Usage:
+```
+ruby docs/make_plugin_docs.rb
+```
+
 ## More help
 
-Please see the [Autodesk Interactive SDK Help](http://help-staging.autodesk.com/view/Stingray/ENU/?contextId=SDK_HOME) for more details on working with plug-ins, API reference documentation, and more.
+Please see the [Autodesk Interactive SDK Help](http://help.autodesk.com/view/Stingray/ENU/?contextId=SDK_HOME) for more details on working with plug-ins, API reference documentation, and more.
 
 ## Stay in touch!
 

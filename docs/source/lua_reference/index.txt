@@ -1,0 +1,12 @@
+Welcome to My Plugin!
+
+More details can be found here:
+
+    *   [A PDF](../relative/path/to/some.pdf)
+    *   [An external link](https://www.autodesk.com/products/stingray)
+
+The best place to begin is by going through the [categories](categories.html), which cover the entire API grouped by topic. The category descriptions provide an overview. Alternatively, you can take a look at the [list of all objects](objects.html), or start exploring the elements exposed in the main [`stingray` namespace](ns_stingray.html).
+
+Be sure to enable the plugin in the Stingray Editor:
+
+![Example of including an image](add_plugin.png)
